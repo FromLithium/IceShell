@@ -21,7 +21,7 @@ using System.Reflection;
 using System.ComponentModel;
 
 /// <summary>
-/// Represents the command-line interactive shell, the core of IceShell.
+/// Provides the shell experience of IceShell.
 /// </summary>
 public class Shell : IShell
 {
@@ -42,8 +42,6 @@ public class Shell : IShell
     public const string DefaultPrompt = "$P$G ";
 
     private readonly ShellSettings _settings;
-
-    private static readonly DirCache DIR_CACHE = new(Environment.CurrentDirectory);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Shell"/> class, with the default settings.
@@ -81,16 +79,6 @@ public class Shell : IShell
 
     /// <inheritdoc/>
     public CommandErrorCode LastError { get; private set; }
-
-    /// <summary>
-    /// Changes the current directory of this process.
-    /// </summary>
-    /// <param name="target">The target directory. Must be a system path.</param>
-    public static void ChangeDirectory(string target)
-    {
-        DIR_CACHE.UpdateDirectory(target);
-        Directory.SetCurrentDirectory(target);
-    }
 
     /// <summary>
     /// Quits this instance.
@@ -226,7 +214,7 @@ public class Shell : IShell
     public int RunInteractive()
     {
         ReadLine.HistoryEnabled = true;
-        ReadLine.AutoCompletionHandler = new ShellCompletionHandler(Dispatcher.CommandManager, DIR_CACHE);
+        ReadLine.AutoCompletionHandler = new ShellCompletionHandler(Dispatcher.CommandManager, Executive.DirCache);
 
         ModuleManager.LoadDirectory(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "modules"));
         ModuleManager.Initialize();

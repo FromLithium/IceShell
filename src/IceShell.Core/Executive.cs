@@ -8,6 +8,7 @@ using IceShell.Settings;
 using NexusKrop.IceCube;
 using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core;
+using NexusKrop.IceShell.Core.Completion.Cache;
 using NexusKrop.IceShell.Core.FileSystem;
 using ReadLineReboot;
 using System.Diagnostics;
@@ -19,7 +20,8 @@ using System.Text;
 /// </summary>
 public static class Executive
 {
-    private static ShellSettings? _settings;
+    private static ShellSettings? InstanceSettings;
+    internal static readonly DirCache DirCache = new(Environment.CurrentDirectory);
 
     #region Start Info handling
     internal static ProcessStartInfo CreateStartInfo(CommandSection section)
@@ -86,7 +88,7 @@ public static class Executive
             PosixSignalRegistration.Create(PosixSignal.SIGTERM, OnTermination);
         }
 
-        _settings = settings;
+        InstanceSettings = settings;
     }
 
     private static void OnTermination(PosixSignalContext context)
@@ -165,7 +167,7 @@ public static class Executive
 
         e.Cancel = true;
 
-        if ((_settings?.TerminateUponInterrupt == true) && OperatingSystem.IsLinux())
+        if ((InstanceSettings?.TerminateUponInterrupt == true) && OperatingSystem.IsLinux())
         {
             WatchingProcess.EndGracefully();
         }
@@ -298,4 +300,16 @@ public static class Executive
         result = builder.ToString();
         return true;
     }
+
+
+    /// <summary>
+    /// Changes the current directory of this process.
+    /// </summary>
+    /// <param name="target">The target directory. Must be a system path.</param>
+    public static void ChangeDirectory(string target)
+    {
+        DirCache.UpdateDirectory(target);
+        Directory.SetCurrentDirectory(target);
+    }
+
 }

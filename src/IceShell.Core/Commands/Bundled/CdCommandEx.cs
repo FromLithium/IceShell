@@ -46,7 +46,7 @@ public class CdCommandEx : IShellCommand
             return CommandResult.WithBadDirectory(target);
         }
 
-        Shell.ChangeDirectory(target);
+        Executive.ChangeDirectory(target);
 
         return CommandResult.Ok();
     }
