@@ -7,7 +7,6 @@
     <Nullable>enable</Nullable>
     <PackageId>IceShell.Core</PackageId>
     <Title>IceShell Core</Title>
-    <RepositoryUrl>https://github.com/NexusKrop/IceShell.git</RepositoryUrl>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -15,7 +14,7 @@
     <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
     <PackageReference Include="Kajabity.Tools.Java" Version="0.3.8607.38728" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="7.0.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+    <PackageReference Include="Microsoft.SourceLink.Gitea" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
