@@ -44,6 +44,21 @@ public interface ICommandManager
     bool HasDefinition(string alias);
 
     /// <summary>
+    /// Determines whether the specified alias is registered. This method does not check if
+    /// the command that the alias points to actually exists.
+    /// </summary>
+    /// <param name="alias">The alias to check.</param>
+    /// <returns><see langword="true" /> if found; otherwise, <see langword="false"/>.</returns>
+    bool HasAlias(string alias);
+
+    /// <summary>
+    /// Determines whether a command registered with the specified ID exists.
+    /// </summary>
+    /// <param name="commandId">The case-sensitive ID to search for.</param>
+    /// <returns><see langword="true" /> if found; otherwise, <see langword="false"/>.</returns>
+    bool HasCommand(string commandId);
+
+    /// <summary>
     /// Registers a command.
     /// </summary>
     /// <param name="type">The command implementation type.</param>
@@ -56,4 +71,12 @@ public interface ICommandManager
     /// </para>
     /// </remarks>
     void Register(Type type);
+
+    /// <summary>
+    /// Registers an alias bound to the specified command. The command may or may not be registered.
+    /// </summary>
+    /// <param name="alias">The alias.</param>
+    /// <param name="commandId">The identifier of the command to bound to.</param>
+    /// <exception cref="ArgumentException">The command alias is already registered.</exception>
+    void RegisterAlias(string alias, string commandId);
 }

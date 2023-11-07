@@ -1,5 +1,20 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
+
+// ----------------------------------------------------------------------------
+//
+// !!! READ BEFORE EDITING THIS FILE !!!
+// Some important implementation details about this class:
+//
+// 1. Command aliases are case-insensitive. When checking or registering new
+//    aliases, be sure to convert them to their upper-case equivalent by
+//    using ToUpperInvariant().
+//
+// 2. Command IDs, in other hand, are case-sensitive.
+//
+// If any of these are broken then features broken these rules cannot work.
+//
+// ----------------------------------------------------------------------------
 
 namespace NexusKrop.IceShell.Core.Commands;
 
@@ -12,7 +27,6 @@ using global::IceShell.Core.Exceptions;
 using global::IceShell.Core.Api;
 using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.Commands.Bundled;
-using NexusKrop.IceShell.Core.Commands.Complex;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -61,6 +75,7 @@ public class CommandManager : ICommandManager
     }
 
     private readonly Dictionary<string, CommandEntry> _complexCommands = new();
+    private readonly Dictionary<string, string> _aliases = new();
 
     /// <summary>
     /// Gets the registered command entries.
@@ -71,12 +86,17 @@ public class CommandManager : ICommandManager
     public int CommandCount => _complexCommands.Count;
 
     /// <inheritdoc />
-    public IEnumerable<string> CommandAliases => _complexCommands.Keys;
+    public IEnumerable<string> CommandAliases => _aliases.Keys;
 
     /// <inheritdoc />
     public CommandEntry? GetDefinition(string alias)
     {
-        if (!_complexCommands.TryGetValue(alias.ToUpperInvariant(), out var x))
+        if (!_aliases.TryGetValue(alias.ToUpperInvariant(), out var realId))
+        {
+            return null;
+        }
+
+        if (!_complexCommands.TryGetValue(realId, out var x))
         {
             x = null;
         }
@@ -92,14 +112,19 @@ public class CommandManager : ICommandManager
     /// <inheritdoc />
     public bool HasDefinition(string alias)
     {
-        if (!_complexCommands.TryGetValue(alias.ToUpperInvariant(), out var def))
+        if (!_aliases.TryGetValue(alias.ToUpperInvariant(), out var def))
         {
             return false;
         }
 
-        if (def.OSPlatform.Any())
+        if (!_complexCommands.TryGetValue(def, out var entry))
         {
-            return Array.Exists(def.OSPlatform, OperatingSystem.IsOSPlatform);
+            return false;
+        }
+
+        if (entry.OSPlatform.Any())
+        {
+            return Array.Exists(entry.OSPlatform, OperatingSystem.IsOSPlatform);
         }
         else
         {
@@ -223,14 +248,15 @@ public class CommandManager : ICommandManager
             throw new ArgumentException(LangMessage.GetFormat("api_command_invalid_attribute", type.FullName ?? "<null>"), nameof(type));
         }
 
-        _complexCommands.Add(attribute.Name.ToUpperInvariant(), new(type, attribute.Name, platforms.ToArray(), definition, "Awaiting description change (#2)"));
+        _complexCommands.Add(attribute.Name, new(type, attribute.Name, platforms.ToArray(), definition, "Awaiting description change (#2)"));
+        RegisterAlias(attribute.Name, attribute.Name);
 
         // Register all of its aliases
         foreach (var attr in aliasAttr)
         {
             if (attr is CommandAliasAttribute alias)
             {
-                _complexCommands.Add(alias.Alias.ToUpperInvariant(), new(type, attribute.Name, platforms.ToArray(), definition, "TODO #2"));
+                RegisterAlias(alias.Alias, attribute.Name);
             }
         }
     }
@@ -239,5 +265,30 @@ public class CommandManager : ICommandManager
     public bool Any()
     {
         return _complexCommands.Count > 0;
+    }
+
+    /// <inheritdoc/>
+    public void RegisterAlias(string alias, string commandId)
+    {
+        var upper = alias.ToUpperInvariant();
+
+        if (_aliases.ContainsKey(upper))
+        {
+            throw new ArgumentException("Alias is already registered.", nameof(alias));
+        }
+
+        _aliases[upper] = commandId;
+    }
+
+    /// <inheritdoc/>
+    public bool HasAlias(string alias)
+    {
+        return _aliases.ContainsKey(alias.ToUpperInvariant());
+    }
+
+    /// <inheritdoc/>
+    public bool HasCommand(string commandId)
+    {
+        return _complexCommands.ContainsKey(commandId);
     }
 }

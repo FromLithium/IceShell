@@ -13,7 +13,8 @@ public sealed class CommandInfoAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandInfoAttribute"/> class.
     /// </summary>
-    /// <param name="name">The name of the command. This will became the ID as well as the first alias of the command.</param>
+    /// <param name="name">The name of the command. This will became the unique case-sensitive ID as well as
+    /// the first alias of the command.</param>
     public CommandInfoAttribute(string name)
     {
         Name = name;

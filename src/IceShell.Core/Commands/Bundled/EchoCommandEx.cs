@@ -14,10 +14,15 @@ using System;
 /// <summary>
 /// Displays messages.
 /// </summary>
-[CommandInfo("echo")]
+[CommandInfo(Id)]
 [GreedyString]
 public class EchoCommandEx : IShellCommand
 {
+    /// <summary>
+    /// The command ID of the echo command.
+    /// </summary>
+    public const string Id = "echo";
+
     /// <summary>
     /// Gets or sets the message to display.
     /// </summary>
