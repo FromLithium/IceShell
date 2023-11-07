@@ -132,18 +132,15 @@ public class CommandManager : ICommandManager
         }
     }
 
-    private static CommandDefinition GetDefine(Type type)
+    private static CommandDefinition GetDefine(string id, Type type)
     {
-        var definition = new CommandDefinition();
+        var definition = new CommandDefinition(id);
         var commandAttr = type.GetCustomAttribute<CommandInfoAttribute>()!;
 
         if (!string.IsNullOrWhiteSpace(commandAttr.CustomUsage))
         {
             definition.CustomUsage = commandAttr.CustomUsage;
         }
-
-        // TODO generate description (See #2)
-        definition.Description = "[Awaiting issue #2 completion]";
 
         if (type.GetCustomAttribute<GreedyStringAttribute>() != null)
         {
@@ -213,6 +210,11 @@ public class CommandManager : ICommandManager
             throw new ArgumentException(LangMessage.GetFormat("api_more_than_one_attribute", nameof(CommandInfoAttribute), type.FullName ?? type.Name), nameof(type));
         }
 
+        if (attributes[0] is not CommandInfoAttribute attribute)
+        {
+            throw new ArgumentException(LangMessage.GetFormat("api_command_invalid_attribute", type.FullName ?? "<null>"), nameof(type));
+        }
+
         // Step 2: Search platform attributes
         foreach (var attr in type.GetCustomAttributes(typeof(SupportedOSPlatformAttribute), false))
         {
@@ -226,7 +228,7 @@ public class CommandManager : ICommandManager
         var aliasAttr = type.GetCustomAttributes(typeof(CommandAliasAttribute), false);
 
         // Step 4: Create definitions
-        var definition = GetDefine(type);
+        var definition = GetDefine(attribute.Name, type);
 
         // Step 5: Verify definition
         if (definition.VariableValues && (definition.VariableValueBuffer == null
@@ -241,11 +243,6 @@ public class CommandManager : ICommandManager
         if (intf != typeof(IShellCommand))
         {
             throw ExceptionHelper.CommandNoInterface(type, nameof(IShellCommand));
-        }
-
-        if (attributes[0] is not CommandInfoAttribute attribute)
-        {
-            throw new ArgumentException(LangMessage.GetFormat("api_command_invalid_attribute", type.FullName ?? "<null>"), nameof(type));
         }
 
         _complexCommands.Add(attribute.Name, new(type, attribute.Name, platforms.ToArray(), definition, "Awaiting description change (#2)"));
@@ -290,5 +287,11 @@ public class CommandManager : ICommandManager
     public bool HasCommand(string commandId)
     {
         return _complexCommands.ContainsKey(commandId);
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<string> GetBoundAliases(string commandId)
+    {
+        return _aliases.Where(x => x.Value.Equals(commandId)).Select(x => x.Key);
     }
 }

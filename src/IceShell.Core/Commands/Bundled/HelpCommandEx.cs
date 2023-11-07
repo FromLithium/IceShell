@@ -10,6 +10,7 @@ using global::IceShell.Core.Commands;
 using global::IceShell.Core.Commands.Attributes;
 using NexusKrop.IceShell.Core.Commands.Complex;
 using Spectre.Console;
+using System.Text;
 
 /// <summary>
 /// Provides help information for IceShell commands.
@@ -17,6 +18,10 @@ using Spectre.Console;
 [CommandInfo("help")]
 public class HelpCommandEx : IShellCommand
 {
+    private const string DescriptionMessageFormat = "command.{0}.description";
+    private const string OptionMessageFormat = "command.{0}.option_{1}.description";
+    private const string ValueMessageFormat = "command.{0}.value_{1}.description";
+
     /// <summary>
     /// Gets or sets the name of the command that the user wants help information.
     /// </summary>
@@ -50,7 +55,7 @@ public class HelpCommandEx : IShellCommand
 
         var def = commandType.Definition;
 
-        def.PrintHelp(commandName);
+        PrintHelp(def, shell.Dispatcher.CommandManager);
         return CommandResult.Ok();
     }
 
@@ -73,8 +78,6 @@ public class HelpCommandEx : IShellCommand
         var keys = new List<string>(keysEnumerable);
         keys.Sort();
 
-        var noDescMessage = LangMessage.Get("help_no_description");
-
         foreach (var cmdName in keys)
         {
             var item = shell.Dispatcher.CommandManager.GetDefinition(cmdName);
@@ -84,11 +87,102 @@ public class HelpCommandEx : IShellCommand
                 continue;
             }
 
-            grid.AddRow(Markup.Escape(cmdName), Markup.Escape(item.Description ?? noDescMessage));
+            grid.AddRow(Markup.Escape(cmdName), Markup.Escape(GetCommandDescription(item.Id)));
         }
 
         AnsiConsole.Write(grid);
 
         return CommandResult.Ok();
+    }
+
+    private static string AssembleUsage(CommandDefinition definition)
+    {
+        if (definition.CustomUsage != null)
+        {
+            return $" {definition.CustomUsage}";
+        }
+
+        var builder = new StringBuilder();
+        builder.Append(' ');
+
+        if (definition.Options.Any())
+        {
+            builder.Append("[options...]");
+        }
+
+        definition.Values.ForEach(x =>
+        {
+            if (x.Required)
+            {
+                builder.Append('<').Append(x.Name).Append('>');
+            }
+            else
+            {
+                builder.Append('[').Append(x.Name).Append(']');
+            }
+
+            builder.Append(' ');
+        });
+
+        return builder.ToString();
+    }
+
+    private static string GetCommandDescription(string commandId)
+    {
+        return string.Format(DescriptionMessageFormat, commandId);
+    }
+
+    private static void PrintHelp(CommandDefinition definition, ICommandManager manager)
+    {
+        Console.WriteLine(LangMessage.Get(string.Format(DescriptionMessageFormat, definition.Id)));
+        Console.WriteLine();
+        var usage = AssembleUsage(definition);
+
+        foreach (var alias in manager.GetBoundAliases(definition.Id))
+        {
+            Console.WriteLine("{0}{1}", alias, usage);
+        }
+
+        if (definition.Values.Any())
+        {
+            Console.WriteLine();
+
+            // Values
+            Console.WriteLine("Values: ");
+            Console.WriteLine();
+
+            var grid = new Grid();
+            grid.AddColumn();
+            grid.AddColumn();
+
+            foreach (var value in definition.Values)
+            {
+                grid.AddRow(Markup.Escape(value.Name),
+                    Markup.Escape(LangMessage.Get(string.Format(ValueMessageFormat, definition.Id, value.Name))));
+            }
+
+            AnsiConsole.Write(grid);
+        }
+
+        if (definition.Options.Any())
+        {
+            Console.WriteLine();
+
+            // Options
+            Console.WriteLine("Options: ");
+            Console.WriteLine();
+
+            var grid = new Grid();
+            grid.AddColumn();
+            grid.AddColumn();
+
+            foreach (var option in definition.Options)
+            {
+                grid.AddRow(Markup.Escape(option.Value.HasValue ? $"/{option.Key}" : $"/{option.Key}:<value>"),
+                    Markup.Escape(LangMessage.Get(string.Format(OptionMessageFormat, definition.Id, option.Key))));
+            }
+
+            AnsiConsole.Write(grid);
+        }
     }
 }

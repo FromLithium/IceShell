@@ -11,7 +11,7 @@ using System.IO;
 /// <summary>
 /// Displays or modifies an environment variable.
 /// </summary>
-[CommandInfo("SET")]
+[CommandInfo("set")]
 [GreedyString]
 public class SetCommand : IShellCommand
 {

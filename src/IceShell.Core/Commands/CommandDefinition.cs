@@ -20,8 +20,22 @@ using System.Text;
 /// </remarks>
 public class CommandDefinition
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CommandDefinition"/> class.
+    /// </summary>
+    /// <param name="id">The ID of the command.</param>
+    public CommandDefinition(string id)
+    {
+        Id = id;
+    }
+
     internal Dictionary<char, ComplexOptionDefinition> Options { get; } = new();
     internal List<ComplexValueDefinition> Values { get; } = new();
+
+    /// <summary>
+    /// Gets or sets the ID of the command.
+    /// </summary>
+    public string Id { get; set; }
 
     /// <summary>
     /// Gets or sets whether the command uses variable values.
@@ -32,11 +46,6 @@ public class CommandDefinition
     /// Gets or sets whether the last value provided will be a greedy string.
     /// </summary>
     public bool GreedyString { get; set; }
-
-    /// <summary>
-    /// Gets or sets the description of the command.
-    /// </summary>
-    public string Description { get; set; } = "No description provided.";
 
     /// <summary>
     /// Gets or sets the variable value buffer of the command.
@@ -61,10 +70,9 @@ public class CommandDefinition
     /// Prints help message of the command.
     /// </summary>
     /// <param name="cmdName">The command name to use in the help message.</param>
+    [Obsolete("The user should create their own print help message function.")]
     public void PrintHelp(string cmdName)
     {
-        Console.WriteLine(Description);
-        Console.WriteLine();
         Console.WriteLine(GetUsage(cmdName));
 
         var noDescText = LangMessage.Get("help_no_description");
@@ -83,7 +91,7 @@ public class CommandDefinition
 
             foreach (var value in Values)
             {
-                grid.AddRow(value.Name, value.Description ?? noDescText);
+                grid.AddRow(value.Name, noDescText);
             }
 
             AnsiConsole.Write(grid);
@@ -104,7 +112,7 @@ public class CommandDefinition
             foreach (var option in Options)
             {
                 grid.AddRow(option.Value.HasValue ? $"/{option.Key}" : $"/{option.Key}:<value>",
-                    option.Value.Description ?? noDescText);
+                    noDescText);
             }
 
             AnsiConsole.Write(grid);
@@ -116,6 +124,7 @@ public class CommandDefinition
     /// </summary>
     /// <param name="cmdName">The name of the command to include in the usage.</param>
     /// <returns>The command usage definition string.</returns>
+    [Obsolete("Command should assembly their own usage string.")]
     public string GetUsage(string cmdName)
     {
         if (CustomUsage != null)

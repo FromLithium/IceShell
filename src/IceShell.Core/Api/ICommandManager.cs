@@ -79,4 +79,11 @@ public interface ICommandManager
     /// <param name="commandId">The identifier of the command to bound to.</param>
     /// <exception cref="ArgumentException">The command alias is already registered.</exception>
     void RegisterAlias(string alias, string commandId);
+
+    /// <summary>
+    /// Gets all aliases bound to the specified command.
+    /// </summary>
+    /// <param name="commandId">The identifier of the command to search for.</param>
+    /// <returns>An enumerable of all aliases bound to the command.</returns>
+    IEnumerable<string> GetBoundAliases(string commandId);
 }

@@ -15,5 +15,4 @@ using System.Reflection;
 /// <param name="Name">The name for reference.</param>
 /// <param name="Required">Whether or not the argument is required.</param>
 /// <param name="Property">The property to store the value.</param>
-/// <param name="Description">The description of the value.</param>
-public record ComplexValueDefinition(string Name, PropertyInfo Property, bool Required = false, string? Description = null);
+public record ComplexValueDefinition(string Name, PropertyInfo Property, bool Required = false);
