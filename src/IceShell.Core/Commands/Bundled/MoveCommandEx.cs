@@ -4,12 +4,12 @@
 namespace NexusKrop.IceShell.Core.Commands.Bundled;
 using global::IceShell.Core.Commands.Attributes;
 using global::IceShell.Core.Commands.Bundled;
-using NexusKrop.IceShell.Core.Commands.Complex;
+using global::IceShell.Core.Api;
 
 /// <summary>
 /// Defines a command that moves or renames a file.
 /// </summary>
-[ComplexCommand("move", Description = "Move one or more files.")]
+[CommandInfo("move")]
 [VariableValue]
 public class MoveCommandEx : DestinationFileCommandBase
 {

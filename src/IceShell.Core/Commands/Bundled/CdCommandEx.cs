@@ -8,13 +8,12 @@ using global::IceShell.Core.Api;
 using global::IceShell.Core.Commands;
 using global::IceShell.Core.Commands.Attributes;
 using global::IceShell.Core.Commands.Complex;
-using NexusKrop.IceShell.Core.Commands.Complex;
 using NexusKrop.IceShell.Core.FileSystem;
 
 /// <summary>
 /// Displays the name of or changes the current directory.
 /// </summary>
-[ComplexCommand("cd", "Displays the name of or changes the current directory.")]
+[CommandInfo("cd")]
 [CommandAlias("chdir")]
 [GreedyString]
 public class CdCommandEx : IShellCommand

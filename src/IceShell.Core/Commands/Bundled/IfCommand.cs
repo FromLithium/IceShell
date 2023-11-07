@@ -12,7 +12,7 @@ using System;
 /// <summary>
 /// Checks for a condition.
 /// </summary>
-[ComplexCommand("if", "Checks for a condition.")]
+[CommandInfo("if")]
 public class IfCommand : IShellCommand
 {
     /// <summary>

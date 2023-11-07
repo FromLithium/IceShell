@@ -19,7 +19,7 @@ using NexusKrop.IceShell.Core.FileSystem;
 /// <summary>
 /// Deletes one or more files.
 /// </summary>
-[ComplexCommand("del", "Deletes one or more files.")]
+[CommandInfo("del")]
 [VariableValue]
 public class DeleteFileCommandEx : IShellCommand
 {

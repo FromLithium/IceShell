@@ -35,7 +35,7 @@ using System.Text;
 /// </code>
 /// </para>
 /// </remarks>
-[ComplexCommand("dir", "Displays a list of files and subdirectories in a directory.")]
+[CommandInfo("dir")]
 internal class DirCommandEx : IShellCommand
 {
     private sealed record class DirTableRow(string ShortDateTime, string Size, string FileName);

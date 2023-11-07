@@ -13,7 +13,7 @@ using System;
 /// <summary>
 /// Defines a command that shows the version of the operating system and the shell program.
 /// </summary>
-[ComplexCommand("ver", "Displays the IceShell version.")]
+[CommandInfo("ver")]
 public class ShellVersionCommand : IShellCommand
 {
     /// <inheritdoc />

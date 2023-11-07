@@ -5,12 +5,12 @@ namespace NexusKrop.IceShell.Core.Commands.Bundled;
 
 using global::IceShell.Core.Commands.Attributes;
 using global::IceShell.Core.Commands.Bundled;
-using NexusKrop.IceShell.Core.Commands.Complex;
+using global::IceShell.Core.Api;
 
 /// <summary>
 /// Copies a file to another location.
 /// </summary>
-[ComplexCommand("copy", "Copies a file to another location.", CustomUsage = "<sources...> <destination>")]
+[CommandInfo("copy", CustomUsage = "<sources...> <destination>")]
 [VariableValue]
 public class CopyCommandEx : DestinationFileCommandBase
 {

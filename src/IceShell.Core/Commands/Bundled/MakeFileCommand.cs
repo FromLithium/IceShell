@@ -16,7 +16,7 @@ using System;
 /// <summary>
 /// Defines a command that creates an empty file.
 /// </summary>
-[ComplexCommand("mkfile")]
+[CommandInfo("mkfile")]
 public class MakeFileCommand : IShellCommand
 {
     /// <summary>

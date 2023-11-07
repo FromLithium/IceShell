@@ -110,17 +110,15 @@ public class CommandManager : ICommandManager
     private static CommandDefinition GetDefine(Type type)
     {
         var definition = new CommandDefinition();
-        var commandAttr = type.GetCustomAttribute<ComplexCommandAttribute>()!;
+        var commandAttr = type.GetCustomAttribute<CommandInfoAttribute>()!;
 
         if (!string.IsNullOrWhiteSpace(commandAttr.CustomUsage))
         {
             definition.CustomUsage = commandAttr.CustomUsage;
         }
 
-        if (!string.IsNullOrWhiteSpace(commandAttr.Description))
-        {
-            definition.Description = commandAttr.Description;
-        }
+        // TODO generate description (See #2)
+        definition.Description = "[Awaiting issue #2 completion]";
 
         if (type.GetCustomAttribute<GreedyStringAttribute>() != null)
         {
@@ -183,11 +181,11 @@ public class CommandManager : ICommandManager
         var platforms = new List<string>();
 
         // Step 1: Search command attributes
-        var attributes = type.GetCustomAttributes(typeof(ComplexCommandAttribute), false);
+        var attributes = type.GetCustomAttributes(typeof(CommandInfoAttribute), false);
 
         if (attributes.Length != 1)
         {
-            throw new ArgumentException(LangMessage.GetFormat("api_more_than_one_attribute", nameof(ComplexCommandAttribute), type.FullName ?? type.Name), nameof(type));
+            throw new ArgumentException(LangMessage.GetFormat("api_more_than_one_attribute", nameof(CommandInfoAttribute), type.FullName ?? type.Name), nameof(type));
         }
 
         // Step 2: Search platform attributes
@@ -220,19 +218,19 @@ public class CommandManager : ICommandManager
             throw ExceptionHelper.CommandNoInterface(type, nameof(IShellCommand));
         }
 
-        if (attributes[0] is not ComplexCommandAttribute attribute)
+        if (attributes[0] is not CommandInfoAttribute attribute)
         {
             throw new ArgumentException(LangMessage.GetFormat("api_command_invalid_attribute", type.FullName ?? "<null>"), nameof(type));
         }
 
-        _complexCommands.Add(attribute.Name.ToUpperInvariant(), new(type, platforms.ToArray(), definition, attribute.Description));
+        _complexCommands.Add(attribute.Name.ToUpperInvariant(), new(type, attribute.Name, platforms.ToArray(), definition, "Awaiting description change (#2)"));
 
         // Register all of its aliases
         foreach (var attr in aliasAttr)
         {
             if (attr is CommandAliasAttribute alias)
             {
-                _complexCommands.Add(alias.Alias.ToUpperInvariant(), new(type, platforms.ToArray(), definition, attribute.Description));
+                _complexCommands.Add(alias.Alias.ToUpperInvariant(), new(type, attribute.Name, platforms.ToArray(), definition, "TODO #2"));
             }
         }
     }

@@ -8,6 +8,7 @@ using System;
 /// Specifies that the class attributed is a complex command.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
+[Obsolete("This attribute will no longer be recognised by the command manager. Use CommandInfoAttribute instead.", true)]
 public sealed class ComplexCommandAttribute : Attribute
 {
     /// <summary>
@@ -20,7 +21,7 @@ public sealed class ComplexCommandAttribute : Attribute
         Name = name;
         Description = description;
     }
-    
+
     /// <summary>
     /// Gets or sets the name of the command.
     /// </summary>

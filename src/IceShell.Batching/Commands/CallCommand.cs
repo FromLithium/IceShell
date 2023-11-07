@@ -7,9 +7,8 @@ using IceShell.Core;
 using IceShell.Core.Api;
 using IceShell.Core.Commands;
 using IceShell.Core.Commands.Attributes;
-using NexusKrop.IceShell.Core.Commands.Complex;
 
-[ComplexCommand("call", description: "Calls a batch file.")]
+[CommandInfo("call")]
 public class CallCommand : IShellCommand
 {
     [Value("file", true, 0)]

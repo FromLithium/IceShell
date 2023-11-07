@@ -14,7 +14,7 @@ using Spectre.Console;
 /// <summary>
 /// Provides help information for IceShell commands.
 /// </summary>
-[ComplexCommand("help", "Provides help information for IceShell commands.")]
+[CommandInfo("help")]
 public class HelpCommandEx : IShellCommand
 {
     /// <summary>

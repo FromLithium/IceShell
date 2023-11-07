@@ -13,7 +13,7 @@ using System;
 /// Clears the screen.
 /// </summary>
 /// <seealso cref="Console.Clear()"/>
-[ComplexCommand("cls", "Clears the screen.")]
+[CommandInfo("cls")]
 public class ClearScreenCommandEx : IShellCommand
 {
     /// <inheritdoc />

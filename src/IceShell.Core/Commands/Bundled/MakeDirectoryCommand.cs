@@ -17,7 +17,7 @@ using System;
 /// <summary>
 /// Creates a directory, or a tree of directories.
 /// </summary>
-[ComplexCommand("mkdir", "Creates a directory, or a tree of directories.")]
+[CommandInfo("mkdir")]
 [CommandAlias("md")]
 public class MakeDirectoryCommand : IShellCommand
 {

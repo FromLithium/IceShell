@@ -14,7 +14,7 @@ using NexusKrop.IceShell.Core.FileSystem;
 /// <summary>
 /// Defines a command that prints out the contents of a file.
 /// </summary>
-[ComplexCommand("type", "Displays the contents of a text file.")]
+[CommandInfo("type")]
 public class TypeCommandEx : IShellCommand
 {
     /// <summary>

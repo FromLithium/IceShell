@@ -11,7 +11,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Vanara.PInvoke;
 
-[ComplexCommand("vol", "[Windows] Get information about a volume.")]
+[CommandInfo("vol")]
 internal class VolumeInfoCommand : IShellCommand
 {
     [Value("volume", false, 0)]

@@ -7,7 +7,7 @@ using NexusKrop.IceShell.Core.Commands.Complex;
 /// <summary>
 /// Searches for lines of strings containing the specified keyword.
 /// </summary>
-[ComplexCommand("find", "Searches for lines of strings containing the specified keyword.")]
+[CommandInfo("find")]
 public class FindCommand : IShellCommand
 {
     /// <summary>

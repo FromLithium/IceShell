@@ -11,7 +11,7 @@ using NexusKrop.IceShell.Core.Commands.Complex;
 /// <summary>
 /// Quits the IceShell program.
 /// </summary>
-[ComplexCommand("exit", "Quits the IceShell program.")]
+[CommandInfo("exit")]
 public class ExitCommandEx : IShellCommand
 {
     /// <inheritdoc/>

@@ -5,15 +5,13 @@ namespace IceShell.Core.Commands.Bundled;
 
 using IceShell.Core.Api;
 using IceShell.Core.Commands.Attributes;
-using IceShell.Core.Exceptions;
-using NexusKrop.IceShell.Core.Commands.Complex;
 using System;
 using System.IO;
 
 /// <summary>
 /// Displays or modifies an environment variable.
 /// </summary>
-[ComplexCommand("SET", "Displays or modifies environment variable.")]
+[CommandInfo("SET")]
 [GreedyString]
 public class SetCommand : IShellCommand
 {

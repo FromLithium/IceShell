@@ -14,7 +14,7 @@ using System;
 /// <summary>
 /// Displays messages.
 /// </summary>
-[ComplexCommand("echo", "Displays messages.")]
+[CommandInfo("echo")]
 [GreedyString]
 public class EchoCommandEx : IShellCommand
 {

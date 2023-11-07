@@ -12,7 +12,7 @@ using NexusKrop.IceShell.Core.Commands.Complex;
 /// <summary>
 /// Changes the IceShell command prompt.
 /// </summary>
-[ComplexCommand("prompt", "Changes the IceShell command prompt.")]
+[CommandInfo("prompt")]
 [GreedyString]
 public class PromptCommandEx : IShellCommand
 {

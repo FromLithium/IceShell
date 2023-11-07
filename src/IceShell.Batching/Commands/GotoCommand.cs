@@ -5,13 +5,10 @@ namespace IceShell.Batching.Commands;
 
 using IceShell.Core;
 using IceShell.Core.Api;
-using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands;
 using IceShell.Core.Commands.Attributes;
-using IceShell.Core.Exceptions;
-using NexusKrop.IceShell.Core.Commands.Complex;
 
-[ComplexCommand("goto", Description = "In a batch file, jump to the specified label.")]
+[CommandInfo("goto")]
 public class GotoCommand : IShellCommand
 {
     [Value("label", true, 0)]

@@ -7,12 +7,11 @@ using global::IceShell.Core;
 using global::IceShell.Core.Api;
 using global::IceShell.Core.Commands;
 using global::IceShell.Core.Commands.Attributes;
-using NexusKrop.IceShell.Core.Commands.Complex;
 
 /// <summary>
 /// Defines a command that does nothing and always succeeds. This command is intended to be a comment command.
 /// </summary>
-[ComplexCommand("rm")]
+[CommandInfo("rem")]
 [GreedyString]
 public class RemarksCommand : IShellCommand
 {

@@ -17,7 +17,7 @@ using System.ComponentModel;
 /// <summary>
 /// Starts the specified file or executable program.
 /// </summary>
-[ComplexCommand("start", "Starts the specified file or executable program.")]
+[CommandInfo("start")]
 public class StartCommandEx : IShellCommand
 {
     /// <summary>
