@@ -1,4 +1,4 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Core.CLI.Languages;
@@ -26,16 +26,11 @@ public class LanguageFile
 
     private readonly JavaProperties _properties;
 
-    /// <inheritdoc cref="LanguageService.UnknownCommand(string)"/>
-    [Obsolete("Use LangMessage to get 'shell_unknown_command' instead.")]
-    public string UnknownCommand(string command)
-    {
-        return string.Format(_properties["shell_unknown_command"], command);
-    }
-
-    /// <inheritdoc cref="LanguageService.Get(string)" />
-    /// <param name="key">The key of the message.</param>
-    /// <returns>The message string. If the message does not exist, returns the <paramref name="key"/> instead.</returns>
+    /// <summary>
+    /// Gets the message associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key of the message to locate.</param>
+    /// <returns>The localised message if found; otherwise the key.</returns>
     public string Get(string key)
     {
         if (!_properties.TryGetValue(key, out var value))

@@ -8,7 +8,7 @@ using global::IceShell.Core.Api;
 using global::IceShell.Core.CLI.Languages;
 using global::IceShell.Core.Commands;
 using global::IceShell.Core.Commands.Attributes;
-using NexusKrop.IceShell.Core.Commands.Complex;
+using NexusKrop.IceCube.Util.Enumerables;
 using Spectre.Console;
 using System.Text;
 
@@ -87,7 +87,7 @@ public class HelpCommandEx : IShellCommand
                 continue;
             }
 
-            grid.AddRow(Markup.Escape(cmdName), Markup.Escape(GetCommandDescription(item.Id)));
+            grid.AddRow(Markup.Escape(cmdName), Markup.Escape(LangMessage.Get(GetCommandDescription(item.Id))));
         }
 
         AnsiConsole.Write(grid);
@@ -155,11 +155,16 @@ public class HelpCommandEx : IShellCommand
             grid.AddColumn();
             grid.AddColumn();
 
-            foreach (var value in definition.Values)
-            {
-                grid.AddRow(Markup.Escape(value.Name),
-                    Markup.Escape(LangMessage.Get(string.Format(ValueMessageFormat, definition.Id, value.Name))));
-            }
+            // Add a row for each command and their description.
+            definition.Values.Select(x => x.Name)
+                .ForEach(name =>
+                    grid.AddRow(Markup.Escape(name),
+                        // Now the description.
+                        Markup.Escape(LangMessage.Get(string.Format(ValueMessageFormat,
+                        // The ID.
+                        definition.Id,
+                        // The name.
+                        name)))));
 
             AnsiConsole.Write(grid);
         }

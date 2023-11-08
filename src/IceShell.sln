@@ -37,6 +37,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IceShell.Platform.Linux", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IceShell.Platform.Windows", "IceShell.Platform.Windows\IceShell.Platform.Windows.csproj", "{B7A9E28D-5E77-4FF2-BC57-E2CF9D49885F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Localisation", "Localisation", "{5CE019A4-92ED-4034-9BE8-0ECEF66BF51B}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "IceShell.LanguageFiles", "IceShell.LanguageFiles\IceShell.LanguageFiles.shproj", "{5F748564-6DB9-4EC8-B93B-921C98CC29F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,8 +88,13 @@ Global
 		{F75BC986-A349-46CA-92F6-A70DA34EF299} = {E5FEEB9B-9887-4FAF-B446-7D71DD8EAA26}
 		{8B5211CB-06CC-499A-AD7E-43433D7598F4} = {1CE0255F-ED95-4E2C-A691-C92B8FDFF642}
 		{B7A9E28D-5E77-4FF2-BC57-E2CF9D49885F} = {1CE0255F-ED95-4E2C-A691-C92B8FDFF642}
+		{5F748564-6DB9-4EC8-B93B-921C98CC29F5} = {5CE019A4-92ED-4034-9BE8-0ECEF66BF51B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22F2D783-56E2-4268-B860-ED731EBD0D97}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		IceShell.LanguageFiles\IceShell.LanguageFiels.projitems*{5f748564-6db9-4ec8-b93b-921c98cc29f5}*SharedItemsImports = 13
+		IceShell.LanguageFiles\IceShell.LanguageFiels.projitems*{60907104-94af-4c44-9073-c535527cc0fa}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
