@@ -1,10 +1,12 @@
+// Copyright (C) WithLithum & contributors 2023
+// See "COPYING.txt" for licence
+
 namespace IceShell.Platform.Windows;
 
 using IceShell.Core;
 using IceShell.Core.Api;
 using IceShell.Core.Commands;
 using IceShell.Core.Commands.Attributes;
-using NexusKrop.IceShell.Core.Commands.Complex;
 using Spectre.Console;
 using System.ComponentModel;
 using System.IO;
