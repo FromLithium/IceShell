@@ -9,7 +9,6 @@ using global::IceShell.Core.Commands;
 using global::IceShell.Core.Commands.Attributes;
 using global::IceShell.Parsing;
 using global::IceShell.Core.Api;
-using NexusKrop.IceShell.Core.Commands.Complex;
 using NexusKrop.IceShell.Core.FileSystem;
 using System;
 using System.Collections.Generic;
@@ -167,6 +166,12 @@ internal class DirCommandEx : IShellCommand
             _timeFormat = TimeFormat;
         }
 
+        // You cannot specify All Upper-case and All Lower-case at the same time.
+        if (AllUpperCase && AllLowerCase)
+        {
+            return CommandResult.WithError(CommandErrorCode.BadArgument, LangMessage.Get("command.dir.error.cannot_have_all_upper_and_lower"));
+        }
+
         if (context.NextAction == SyntaxNextAction.Redirect)
         {
             Execute(RevealHidden, out pipeStream);
@@ -181,41 +186,35 @@ internal class DirCommandEx : IShellCommand
 
     private void Execute(bool revealHidden, out TextReader? pipeStream)
     {
-        var windows = OperatingSystem.IsWindows();
         var sb = new StringBuilder();
 
+        var dirInfo = new DirectoryInfo(_dir);
+
         // Iterate through directories.
-        foreach (var folder in Directory.GetDirectories(_dir))
+        foreach (var folder in dirInfo.GetDirectories())
         {
             // Acquire info and last changed date/time for the entry.
-            var info = new DirectoryInfo(folder);
-            var modified = Directory.GetLastWriteTime(folder);
+            var modified = folder.LastWriteTime;
+
+            var procName = ProcessNameByOption(folder.Name);
 
             // Add to row.
-            sb.AppendFormat("{0}\0{1}\0{2}", info.Name, "DIR", modified.ToString("o")).AppendLine();
+            sb.AppendFormat("{0}\0{1}\0{2}", procName, "DIR", modified.ToString("o")).AppendLine();
         }
 
         // Do the same for files.
-        foreach (var file in Directory.GetFiles(_dir))
+        foreach (var file in dirInfo.GetFiles())
         {
-            var info = new FileInfo(file);
-            var modified = File.GetLastWriteTime(file);
+            var modified = file.LastWriteTime;
 
-            if (!revealHidden)
+            if (!revealHidden && IsHidden(file))
             {
-                if (windows && (info.Attributes.HasFlag(FileAttributes.Hidden)
-                    || info.Attributes.HasFlag(FileAttributes.System)))
-                {
-                    continue;
-                }
-
-                if (!windows && info.Name.StartsWith('.'))
-                {
-                    continue;
-                }
+                continue;
             }
 
-            sb.AppendFormat("{0}\0{1}\0{2}", info.Name, info.Length.ToString(), modified.ToString("o")).AppendLine();
+            var procName = ProcessNameByOption(file.Name);
+
+            sb.AppendFormat("{0}\0{1}\0{2}", procName, file.Length.ToString(), modified.ToString("o")).AppendLine();
         }
 
         var str = sb.ToString();
@@ -232,14 +231,13 @@ internal class DirCommandEx : IShellCommand
         Console.WriteLine(LangMessage.Get("dir_directory_of"), _dir);
         Console.WriteLine();
 
-        var windows = OperatingSystem.IsWindows();
+        var dirInfo = new DirectoryInfo(_dir);
 
         // Iterate through directories.
-        foreach (var folder in Directory.GetDirectories(_dir))
+        foreach (var folder in dirInfo.GetDirectories())
         {
             // Acquire info and last changed date/time for the entry.
-            var info = new DirectoryInfo(folder);
-            var modified = Directory.GetLastWriteTime(folder);
+            var modified = folder.LastWriteTime;
 
             // Generate text for date time.
             var tableDate = GetTableDateTime(modified);
@@ -251,17 +249,16 @@ internal class DirCommandEx : IShellCommand
             }
 
             // Add to row.
-            _rows.Add(new(tableDate, "<DIR>", info.Name));
+            _rows.Add(new(tableDate, "<DIR>", folder.Name));
 
             // +1 to directory entry count.
             _dirCount++;
         }
 
         // Do the same for files.
-        foreach (var file in Directory.GetFiles(_dir))
+        foreach (var file in dirInfo.GetFiles())
         {
-            var info = new FileInfo(file);
-            var modified = File.GetLastWriteTime(file);
+            var modified = file.LastWriteTime;
 
             var tableDate = GetTableDateTime(modified);
 
@@ -270,21 +267,12 @@ internal class DirCommandEx : IShellCommand
                 _dateLongest = tableDate.Length;
             }
 
-            if (!revealHidden)
+            if (!revealHidden && IsHidden(file))
             {
-                if (windows && (info.Attributes.HasFlag(FileAttributes.Hidden)
-                    || info.Attributes.HasFlag(FileAttributes.System)))
-                {
-                    continue;
-                }
-
-                if (!windows && info.Name.StartsWith('.'))
-                {
-                    continue;
-                }
+                continue;
             }
 
-            _rows.Add(new(tableDate, info.Length.ToString(), info.Name));
+            _rows.Add(new(tableDate, file.Length.ToString(), file.Name));
             _fileCount++;
         }
 
@@ -301,6 +289,38 @@ internal class DirCommandEx : IShellCommand
         Console.WriteLine("{0} files, {1} directories", _fileCount, _dirCount);
     }
 
+    private bool IsHidden(FileSystemInfo info)
+    {
+        var windows = OperatingSystem.IsWindows();
+
+        if (windows && (info.Attributes.HasFlag(FileAttributes.Hidden)
+                    || info.Attributes.HasFlag(FileAttributes.System)))
+        {
+            return true;
+        }
+
+        if (!windows && info.Name.StartsWith('.'))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private string ProcessNameByOption(string name)
+    {
+        if (AllUpperCase)
+        {
+            return name.ToUpper();
+        }
+        else if (AllLowerCase)
+        {
+            return name.ToLower();
+        }
+
+        return name;
+    }
+
     [Value("directory", required: false, position: 0)]
     public string? TargetDir { get; set; }
 
@@ -312,4 +332,12 @@ internal class DirCommandEx : IShellCommand
 
     [Option('h', false)]
     public bool RevealHidden { get; set; }
+
+    // ***** Anniversary preview update options
+
+    [Option('L', false)]
+    public bool AllLowerCase { get; set; }
+
+    [Option('U', false)]
+    public bool AllUpperCase { get; set; }
 }
