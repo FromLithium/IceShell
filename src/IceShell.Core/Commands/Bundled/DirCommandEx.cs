@@ -13,6 +13,7 @@ using NexusKrop.IceShell.Core.FileSystem;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using global::IceShell.Core.Api.Native;
 
 /// <summary>
 /// Displays a list of files and subdirectories in a directory.
@@ -249,7 +250,7 @@ internal class DirCommandEx : IShellCommand
             }
 
             // Add to row.
-            _rows.Add(new(tableDate, "<DIR>", folder.Name));
+            _rows.Add(new(tableDate, "<DIR>", ProcessNameByOption(folder.Name)));
 
             // +1 to directory entry count.
             _dirCount++;
@@ -272,7 +273,7 @@ internal class DirCommandEx : IShellCommand
                 continue;
             }
 
-            _rows.Add(new(tableDate, file.Length.ToString(), file.Name));
+            _rows.Add(new(tableDate, file.Length.ToString(), ProcessNameByOption(file.Name)));
             _fileCount++;
         }
 
@@ -289,7 +290,7 @@ internal class DirCommandEx : IShellCommand
         Console.WriteLine("{0} files, {1} directories", _fileCount, _dirCount);
     }
 
-    private bool IsHidden(FileSystemInfo info)
+    private static bool IsHidden(FileSystemInfo info)
     {
         var windows = OperatingSystem.IsWindows();
 
@@ -309,6 +310,13 @@ internal class DirCommandEx : IShellCommand
 
     private string ProcessNameByOption(string name)
     {
+        if (ShortName && OperatingSystem.IsWindows())
+        {
+            var shortName = WindowsFileApi.GetShortPathName(name);
+
+            return AllLowerCase ? shortName.ToLower() : shortName;
+        }
+
         if (AllUpperCase)
         {
             return name.ToUpper();
@@ -340,4 +348,7 @@ internal class DirCommandEx : IShellCommand
 
     [Option('U', false)]
     public bool AllUpperCase { get; set; }
+
+    [Option('S', false)]
+    public bool ShortName { get; set; }
 }
