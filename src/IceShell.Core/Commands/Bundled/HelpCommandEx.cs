@@ -183,7 +183,7 @@ public class HelpCommandEx : IShellCommand
 
             foreach (var option in definition.Options)
             {
-                grid.AddRow(Markup.Escape(option.Value.HasValue ? $"/{option.Key}" : $"/{option.Key}:<value>"),
+                grid.AddRow(Markup.Escape(option.Value.HasValue ? $"/{option.Key}:<value>" : $"/{option.Key}"),
                     Markup.Escape(LangMessage.Get(string.Format(OptionMessageFormat, definition.Id, option.Key))));
             }
 
