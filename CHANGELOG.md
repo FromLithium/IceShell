@@ -11,12 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Commands
 
-- Added new `MORE` command to display a large section of text in pages.
-- Added new `MEM` command for the Microsoft Windows platform, that displays the memory information.
 - Added several options for the `DIR` command.
     - Added `/U` option which displays all entries in upper-case.
     - Added `/L` option which displays all entries in lower-case.
     - Added `/S` option which displays all entries in their short name format whenever the platform and the file system supports such format.
+    - Added `/B` option which displays only a list of names of files and directories.
+- Added new `MORE` command to display a large section of text in pages.
+- Added new `MEM` command for the Microsoft Windows platform, that displays the memory information.
 - Added more template placeholders support for `PROMPT` command.
 - Added new parsing logic allowing support for many integral number types as well as enumerations being declared as argument types.
 

@@ -173,19 +173,66 @@ internal class DirCommandEx : IShellCommand
             return CommandResult.WithError(CommandErrorCode.BadArgument, LangMessage.Get("command.dir.error.cannot_have_all_upper_and_lower"));
         }
 
-        if (context.NextAction == SyntaxNextAction.Redirect)
+        if (Bare)
         {
-            Execute(RevealHidden, out pipeStream);
+            pipeStream = ExecuteBare();
         }
         else
         {
-            Execute(RevealHidden);
+            if (context.NextAction == SyntaxNextAction.Redirect)
+            {
+                ExecuteStreamed(out pipeStream);
+            }
+            else
+            {
+                ExecuteDisplay();
+            }
         }
+
 
         return CommandResult.Ok(pipeStream);
     }
 
-    private void Execute(bool revealHidden, out TextReader? pipeStream)
+    private TextReader ExecuteBare()
+    {
+        var ms = new MemoryStream();
+
+        using (var writer = new StreamWriter(ms, leaveOpen: true))
+        {
+            var dirInfo = new DirectoryInfo(_dir);
+
+            // Iterate through directories.
+            foreach (var folder in dirInfo.GetDirectories())
+            {
+                if (!RevealHidden && IsHidden(folder))
+                {
+                    continue;
+                }
+
+                var procName = ProcessNameByOption(folder.Name);
+
+                writer.WriteLine(procName);
+            }
+
+            // Do the same for files.
+            foreach (var file in dirInfo.GetFiles())
+            {
+                if (!RevealHidden && IsHidden(file))
+                {
+                    continue;
+                }
+
+                var procName = ProcessNameByOption(file.Name);
+
+                writer.WriteLine(procName);
+            }
+        }
+
+        ms.Position = 0;
+        return new StreamReader(ms);
+    }
+
+    private void ExecuteStreamed(out TextReader? pipeStream)
     {
         var sb = new StringBuilder();
 
@@ -194,6 +241,11 @@ internal class DirCommandEx : IShellCommand
         // Iterate through directories.
         foreach (var folder in dirInfo.GetDirectories())
         {
+            if (!RevealHidden && IsHidden(folder))
+            {
+                continue;
+            }
+
             // Acquire info and last changed date/time for the entry.
             var modified = folder.LastWriteTime;
 
@@ -206,12 +258,12 @@ internal class DirCommandEx : IShellCommand
         // Do the same for files.
         foreach (var file in dirInfo.GetFiles())
         {
-            var modified = file.LastWriteTime;
-
-            if (!revealHidden && IsHidden(file))
+            if (!RevealHidden && IsHidden(file))
             {
                 continue;
             }
+
+            var modified = file.LastWriteTime;
 
             var procName = ProcessNameByOption(file.Name);
 
@@ -226,7 +278,7 @@ internal class DirCommandEx : IShellCommand
     // The code of printing human-friendly stuff are much more complex than
     // printing machine-readable stuff (mainly due to we have to align a table, nowadays these are covered
     // by Spectre Console anyway)
-    private void Execute(bool revealHidden)
+    private void ExecuteDisplay()
     {
         // Print DOS-like table title, sans the volume information (too complex).
         Console.WriteLine(LangMessage.Get("dir_directory_of"), _dir);
@@ -237,6 +289,12 @@ internal class DirCommandEx : IShellCommand
         // Iterate through directories.
         foreach (var folder in dirInfo.GetDirectories())
         {
+            // Check if reveal hidden is off, and the entry is hidden. If both, conceal it.
+            if (!RevealHidden && IsHidden(folder))
+            {
+                continue;
+            }
+
             // Acquire info and last changed date/time for the entry.
             var modified = folder.LastWriteTime;
 
@@ -259,6 +317,11 @@ internal class DirCommandEx : IShellCommand
         // Do the same for files.
         foreach (var file in dirInfo.GetFiles())
         {
+            if (!RevealHidden && IsHidden(file))
+            {
+                continue;
+            }
+
             var modified = file.LastWriteTime;
 
             var tableDate = GetTableDateTime(modified);
@@ -266,11 +329,6 @@ internal class DirCommandEx : IShellCommand
             if (_dateLongest < tableDate.Length)
             {
                 _dateLongest = tableDate.Length;
-            }
-
-            if (!revealHidden && IsHidden(file))
-            {
-                continue;
             }
 
             _rows.Add(new(tableDate, file.Length.ToString(), ProcessNameByOption(file.Name)));
@@ -351,4 +409,7 @@ internal class DirCommandEx : IShellCommand
 
     [Option('S', false)]
     public bool ShortName { get; set; }
+
+    [Option('B', false)]
+    public bool Bare { get; set; }
 }
