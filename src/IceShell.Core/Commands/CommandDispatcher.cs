@@ -119,6 +119,11 @@ public class CommandDispatcher : ICommandDispatcher
             if (line.IsCommand)
             {
                 exitCode = Execute(line, executor, context);
+
+                if (exitCode.OutStream != null)
+                {
+                    pipeStream = exitCode.OutStream;
+                }
             }
             else
             {
