@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Commands
+
+- Added new `MORE` command to display a large section of text in pages.
+- Added new `MEM` command for the Microsoft Windows platform, that displays the memory information.
+- Added several options for the `DIR` command.
+    - Added `/U` option which displays all entries in upper-case.
+    - Added `/L` option which displays all entries in lower-case.
+    - Added `/S` option which displays all entries in their short name format whenever the platform and the file system supports such format.
+- Added more template placeholders support for `PROMPT` command.
+- Added new parsing logic allowing support for many integral number types as well as enumerations being declared as argument types.
+
 #### Syntax
 
 - Added support for single AND symbol operator (`&`) which executes the next command regardless of the result of the last command.
@@ -25,9 +36,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Commands
 
+- Overhauled the command help description system and registration entry system for better internationalisation.
+    - Commands are now registered by IDs, and aliases are now registered in a separate registry. 
+    - Now command and argument descriptions are automatically internationalised.
+    - Introduced a new `CommandInfo` attribute for the API that replaces the prior `ComplexCommand` attribute.
+    - Command registration now longer holds the command and argument descriptions.
 - `PROMPT` command will check the syntax of the prompt template.
 
-## [v0.2.0-alpha]
+#### Shell
+
+- Updated to a new logo.
+- Language files are now located in the `lang` directory.
+
+### Fixed
+
+- Fixed an issue resulted in pipeline redirection stopped working.
+- Fixed an issue where the notations for options with and without a value in help descriptions were reversed.
+
+## [v0.2.0-alpha] - 2023/10/18
 
 ### Added
 
@@ -85,7 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Addressed an issue where `-255` is always returned (instead of the exit code of the command executed) when the `iceshell` executable is used to execute command rather than launching the interactive shell.
 - Addressed an issue where `HELP` command fails in certain conditions due to markup syntaxes in command aliases and descriptions being recognised.
 
-## [v0.1.0-alpha]
+## [v0.1.0-alpha] - 2023/09/02
 
 - Initial alpha release.
 
