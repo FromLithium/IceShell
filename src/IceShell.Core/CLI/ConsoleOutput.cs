@@ -21,6 +21,21 @@ public static class ConsoleOutput
     }
 
     /// <summary>
+    /// Fills the current line with white-spaces, then returns the cursor to the beginning of the line.
+    /// </summary>
+    public static void WipeEntireLine()
+    {
+        var width = Console.BufferWidth;
+
+        for (int i = 0; i < width; i++)
+        {
+            Console.Write(' ');
+        }
+
+        Console.Write('\r');
+    }
+
+    /// <summary>
     /// Writes the specified message, followed by the current line terminator,
     /// with the specified colour.
     /// </summary>
