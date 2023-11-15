@@ -14,6 +14,8 @@ using ReadLineReboot;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 /// <summary>
 /// Provides executive services for the IceShell processes.
@@ -64,6 +66,23 @@ public static class Executive
 
     internal static bool Interrupt { get; private set; }
 
+    /// <summary>
+    /// Searches for files from the current directory based on the specified pattern. 
+    /// </summary>
+    /// <param name="pattern">The pattern to search for.</param>
+    /// <returns>The search result.</returns>
+    public static IEnumerable<string> GlobFiles(string pattern)
+    {
+        var currentDir = Directory.GetCurrentDirectory();
+        var matcher = new Matcher();
+
+        matcher.AddInclude(PathSearcher.ExpandVariables(pattern));
+
+        var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(currentDir)));
+
+        return result.Files.Select(x => Path.Combine(currentDir, x.Path));
+    }
+    
     internal static void WatchProcess(Process process)
     {
         if (process == null)

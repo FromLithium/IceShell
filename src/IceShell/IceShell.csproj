@@ -34,6 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IceShell.Batching\IceShell.Batching.csproj" />
     <ProjectReference Include="..\IceShell.Core\IceShell.Core.csproj" />
+    <ProjectReference Include="..\IceShell.Platform.Linux\IceShell.Platform.Linux.csproj" />
     <ProjectReference Include="..\IceShell.Platform.Windows\IceShell.Platform.Windows.csproj" />
   </ItemGroup>
 

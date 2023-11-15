@@ -4,6 +4,7 @@
 using IceShell.Batching;
 using IceShell.Core;
 using IceShell.Core.CLI.Languages;
+using IceShell.Platform.Linux;
 using IceShell.Platform.Windows;
 using IceShell.Settings;
 using NexusKrop.IceShell.Core;
@@ -66,6 +67,11 @@ shell.ModuleManager.AddModule(new BatchingModule());
 if (OperatingSystem.IsWindows())
 {
     shell.ModuleManager.AddModule(new WindowsPlatformModule());
+}
+
+if (OperatingSystem.IsLinux())
+{
+    shell.ModuleManager.AddModule(new LinuxPlatformModule());
 }
 
 var retCode = -255;

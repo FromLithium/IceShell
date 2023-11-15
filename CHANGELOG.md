@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+This version is to be the Anniversary Preview version.
+
 ### Added
 
 #### Commands
@@ -16,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added `/L` option which displays all entries in lower-case.
     - Added `/S` option which displays all entries in their short name format whenever the platform and the file system supports such format.
     - Added `/B` option which displays only a list of names of files and directories.
+- Added new `DATE` command to dispaly the current date and time.
 - Added new `MORE` command to display a large section of text in pages.
 - Added new `MEM` command for the Microsoft Windows platform, that displays the memory information.
 - Added more template placeholders support for `PROMPT` command.

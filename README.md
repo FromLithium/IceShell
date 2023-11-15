@@ -24,7 +24,7 @@ See the [IceShell Reference](docs/manual/README.md). Alternatively, type `help` 
 Before you download a release build, please do note that this project is in early development, and thus developer builds are much
 newer than release builds.
 
-Releases can be found at the release page.
+Releases can be found at the release page. See [release change-logs](CHANGELOG.md).
 
 ### Development builds
 
