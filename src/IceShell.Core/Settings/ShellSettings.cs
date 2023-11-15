@@ -31,6 +31,11 @@ public class ShellSettings
     /// Gets or sets the language file to use.
     /// </summary>
     public string Language { get; set; } = "en";
+    
+    /// <summary>
+    /// Gets or sets a value indicating whether the launcher should add platform modules.
+    /// </summary>
+    public bool AddPlatformModules { get; set; }
 
     /// <summary>
     /// Writes the configuration to the specified file. The existing contents of the file will be deleted.
@@ -40,10 +45,19 @@ public class ShellSettings
     {
         var parser = new FileIniDataParser();
 
-        var data = new IniData();
-        data["Shell"]["DisplayDateTimeOnStartup"] = DisplayDateTimeOnStartUp.ToString();
-        data["Shell"][nameof(Language)] = Language;
-        data["Shell"][nameof(DisplayShellInfoOnStartUp)] = DisplayShellInfoOnStartUp.ToString();
+        var data = new IniData
+        {
+            ["Shell"] =
+            {
+                ["DisplayDateTimeOnStartup"] = DisplayDateTimeOnStartUp.ToString(),
+                [nameof(DisplayShellInfoOnStartUp)] = DisplayShellInfoOnStartUp.ToString(),
+                [nameof(Language)] = Language
+            },
+            ["Launcher"] =
+            {
+                [nameof(AddPlatformModules)] = AddPlatformModules.ToString()
+            }
+        };
 
         parser.WriteFile(file, data);
     }
@@ -74,10 +88,21 @@ public class ShellSettings
             // Add data here
             DisplayDateTimeOnStartUp = bool.Parse(GetSettingSafe(data, "Shell", "DisplayDateTimeOnStartup", "false")),
             Language = GetSettingSafe(data, "Shell", nameof(Language), "en"),
-            DisplayShellInfoOnStartUp = bool.Parse(GetSettingSafe(data, "Shell", nameof(DisplayShellInfoOnStartUp), "false"))
+            DisplayShellInfoOnStartUp = bool.Parse(GetSettingSafe(data, "Shell", nameof(DisplayShellInfoOnStartUp), "false")),
+            AddPlatformModules = GetBoolSettingSafe(data, "Launcher", nameof(GetBoolSettingSafe), true)
         };
     }
 
+    private static bool GetBoolSettingSafe(IniData data, string key, string name, bool defaultValue = false)
+    {
+        if (!bool.TryParse(GetSettingSafe(data, key, name, string.Empty), out var result))
+        {
+            return defaultValue;
+        }
+
+        return result;
+    }
+    
     private static string GetSettingSafe(IniData data, string key, string name, string defaultValue)
     {
         var section = data[key];

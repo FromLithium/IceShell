@@ -64,14 +64,17 @@ var shell = new Shell(sh);
 
 shell.ModuleManager.AddModule(new BatchingModule());
 
-if (OperatingSystem.IsWindows())
+if (sh.AddPlatformModules)
 {
-    shell.ModuleManager.AddModule(new WindowsPlatformModule());
-}
+    if (OperatingSystem.IsWindows())
+    {
+        shell.ModuleManager.AddModule(new WindowsPlatformModule());
+    }
 
-if (OperatingSystem.IsLinux())
-{
-    shell.ModuleManager.AddModule(new LinuxPlatformModule());
+    if (OperatingSystem.IsLinux())
+    {
+        shell.ModuleManager.AddModule(new LinuxPlatformModule());
+    }
 }
 
 var retCode = -255;
