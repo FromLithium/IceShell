@@ -60,7 +60,8 @@ public class CommandManager : ICommandManager
         typeof(IfCommand),
         typeof(FindCommand),
         typeof(RemarksCommand),
-        typeof(MoreCommand)
+        typeof(MoreCommand),
+        typeof(DateCommand)
     };
 
     /// <summary>

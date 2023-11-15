@@ -6,6 +6,10 @@ vsspell_section_id = 9f07c577adcd4fd7a93a42a503828225
 vsspell_dictionary_languages_9f07c577adcd4fd7a93a42a503828225=en-GB
 
 [*.cs]
+#### SEC RESHARPER ####
+
+#### END RESHARPER ####
+
 charset = utf-8
 csharp_using_directive_placement = inside_namespace:silent
 csharp_indent_labels = one_less_than_current
@@ -23,7 +27,6 @@ csharp_style_expression_bodied_indexers = true:silent
 csharp_style_expression_bodied_accessors = true:silent
 csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
-[*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
@@ -33,7 +36,6 @@ dotnet_style_null_propagation = true:suggestion
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
 dotnet_style_prefer_auto_properties = true:silent
 dotnet_style_object_initializer = true:suggestion
-[*.cs]
 #### Naming styles ####
 
 # Naming rules
