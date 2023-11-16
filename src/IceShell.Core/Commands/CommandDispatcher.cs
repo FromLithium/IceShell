@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using IceShell.Core.Api.Commands;
 using NewCommandParser = Parsing.CommandParser;
 
 /// <summary>
@@ -52,6 +53,9 @@ public class CommandDispatcher : ICommandDispatcher
 
     /// <inheritdoc />
     public ICommandManager CommandManager => _manager;
+
+    /// <inheritdoc />
+    public ICommandArgumentConverter? ArgumentConverter => _convertService;
 
     /// <inheritdoc />
     public CommandSectionCompound ParseLine(string line)

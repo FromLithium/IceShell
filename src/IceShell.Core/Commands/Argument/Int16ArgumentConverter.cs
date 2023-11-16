@@ -12,19 +12,16 @@ using System.Reflection;
 /// </summary>
 public class Int16ArgumentConverter : IArgumentConverter
 {
-    /// <inheritdoc/>
-    public void Convert(string from, PropertyInfo property, object instance)
+    /// <inheritdoc />
+    public bool TryConvert(string from, Type targetType, out object? result)
     {
-        if (property.PropertyType != typeof(short))
+        if (!short.TryParse(from, out var retVal))
         {
-            throw new InvalidOperationException("Property is not Int16.");
+            result = null;
+            return false;
         }
 
-        if (!short.TryParse(from, out var result))
-        {
-            throw ExceptionHelper.CannotResolve(from);
-        }
-
-        property.SetValue(instance, result);
+        result = retVal;
+        return true;
     }
 }

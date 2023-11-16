@@ -4,7 +4,7 @@
 // ----------------------------------------------------------------------------
 //
 // !!! READ BEFORE EDITING THIS FILE !!!
-// Some important implementation details about this class:
+// Some important implementation details API contract about this class:
 //
 // 1. Command aliases are case-insensitive. When checking or registering new
 //    aliases, be sure to convert them to their upper-case equivalent by
@@ -33,6 +33,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using global::IceShell.Core.Api.Commands;
+using global::IceShell.Core.Commands.Registry;
 
 /// <summary>
 /// Provides services for the registration and lookup for the registered commands.
@@ -85,7 +87,7 @@ public class CommandManager : ICommandManager
     /// Gets the registered command entries.
     /// </summary>
     public IReadOnlyDictionary<string, CommandEntry> CommandEntries { get; }
-
+    
     /// <inheritdoc />
     public int CommandCount => _complexCommands.Count;
 
@@ -126,14 +128,7 @@ public class CommandManager : ICommandManager
             return false;
         }
 
-        if (entry.OSPlatform.Any())
-        {
-            return Array.Exists(entry.OSPlatform, OperatingSystem.IsOSPlatform);
-        }
-        else
-        {
-            return true;
-        }
+        return !entry.OSPlatform.Any() || Array.Exists(entry.OSPlatform, OperatingSystem.IsOSPlatform);
     }
 
     private static CommandDefinition GetDefine(string id, Type type)
@@ -242,9 +237,9 @@ public class CommandManager : ICommandManager
         }
 
         // Now begin registering
-        var intf = type.GetInterface(nameof(IShellCommand));
+        var interfaceType = type.GetInterface(nameof(IShellCommand));
 
-        if (intf != typeof(IShellCommand))
+        if (interfaceType != typeof(IShellCommand))
         {
             throw ExceptionHelper.CommandNoInterface(type, nameof(IShellCommand));
         }

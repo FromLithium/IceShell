@@ -9,8 +9,10 @@ using NexusKrop.IceShell.Core.CLI;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.CLI.Languages;
 
-internal class ArgumentConvertService
+internal class ArgumentConvertService : ICommandArgumentConverter
 {
     private readonly Dictionary<Type, IArgumentConverter> _converters = new();
 
@@ -39,9 +41,15 @@ internal class ArgumentConvertService
             return false;
         }
 
+        if (!TryConvert(from, target.PropertyType, out var result))
+        {
+            ConsoleOutput.PrintShellError(LangMessage.MsgFromErrorCode(CommandErrorCode.BadArgument));
+            return false;
+        }
+
         try
         {
-            converter.Convert(from, target, instance);
+            target.SetValue(instance, result);
         }
         catch (CommandFormatException ex)
         {
@@ -50,5 +58,35 @@ internal class ArgumentConvertService
         }
 
         return true;
+    }
+
+    public bool TryConvert(string from, Type targetType, out object? result)
+    {
+        var searchType = targetType;
+        
+        if (searchType.IsEnum)
+        {
+            searchType = typeof(Enum);
+        }
+        
+        if (!_converters.TryGetValue(searchType, out var converter))
+        {
+            result = default;
+            return false;
+        }
+
+        if (!converter.TryConvert(from, targetType, out var retVal))
+        {
+            result = default;
+            return false;
+        }
+
+        result = retVal;
+        return true;
+    }
+
+    public bool CanConvertTo(Type type)
+    {
+        return _converters.ContainsKey(type);
     }
 }

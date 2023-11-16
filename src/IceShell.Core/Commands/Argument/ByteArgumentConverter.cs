@@ -27,4 +27,19 @@ public class ByteArgumentConverter : IArgumentConverter
 
         property.SetValue(instance, result);
     }
+
+    /// <inheritdoc />
+    public bool TryConvert(string from, Type targetType, out object? result)
+    {
+        result = null;
+        
+        // It cannot be boxed from here?
+        if (!byte.TryParse(from, out var byteResult))
+        {
+            return false;
+        }
+
+        result = byteResult;
+        return true;
+    }
 }

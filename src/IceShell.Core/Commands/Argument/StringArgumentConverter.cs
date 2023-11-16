@@ -9,8 +9,10 @@ using System.Reflection;
 /// </summary>
 internal class StringArgumentConverter : IArgumentConverter
 {
-    public void Convert(string from, PropertyInfo property, object instance)
+    /// <inheritdoc />
+    public bool TryConvert(string from, Type targetType, out object? result)
     {
-        property.SetValue(instance, from);
+        result = from;
+        return true;
     }
 }

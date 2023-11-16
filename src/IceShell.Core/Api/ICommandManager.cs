@@ -3,6 +3,7 @@
 
 namespace IceShell.Core.Api;
 
+using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands;
 
 /// <summary>
