@@ -18,6 +18,7 @@ using System.Text;
 /// Command definitions does not know about the name of the command, and this behaviour is intentional. Commands can have aliases,
 /// and is up to the developer to determine the name of the command to display in help messages, etc.
 /// </remarks>
+[Obsolete("Use CommandRegistryEntry and AnnotatedCommandProvider.")]
 public class CommandDefinition
 {
     /// <summary>

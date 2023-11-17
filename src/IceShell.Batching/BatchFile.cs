@@ -11,6 +11,7 @@ using IceShell.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using IceShell.Core.Api.Commands;
 
 public class BatchFile : ICommandExecutor
 {
@@ -27,7 +28,7 @@ public class BatchFile : ICommandExecutor
 
     public int CurrentLine { get; private set; }
 
-    public static BatchFile Parse(IEnumerable<string> lines, ICommandDispatcher dispatcher)
+    public static BatchFile Parse(IEnumerable<string> lines, IRegistryCommandDispatcher dispatcher)
     {
         var retVal = new List<CommandSectionCompound>();
         var labels = new Dictionary<string, int>();
@@ -52,7 +53,7 @@ public class BatchFile : ICommandExecutor
                 continue;
             }
 
-            retVal.Add(dispatcher.ParseLine(line));
+            retVal.Add(dispatcher.Parse(line));
         }
 
         return new(retVal, labels);

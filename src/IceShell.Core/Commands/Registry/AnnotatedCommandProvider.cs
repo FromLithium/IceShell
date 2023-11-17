@@ -5,18 +5,53 @@ namespace IceShell.Core.Commands.Registry;
 
 using System.Reflection;
 using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Argument;
 using IceShell.Core.Exceptions;
 using NexusKrop.IceCube.Collections;
 
 internal class AnnotatedCommandProvider
 {
-    private readonly ICommandDispatcher _dispatcher;
+    private readonly IRegistryCommandDispatcher _dispatcher;
     private readonly Dictionary<CommandOptionInfo, PropertyInfo> _options = new();
     private readonly Dictionary<CommandValueInfo, PropertyInfo> _values = new();
+    private readonly ArgumentConvertService _converter = new();
 
-    internal AnnotatedCommandProvider(ICommandDispatcher dispatcher)
+    internal AnnotatedCommandProvider(IRegistryCommandDispatcher dispatcher, Type type, PropertyInfo? variableBuffer = null)
     {
         _dispatcher = dispatcher;
+        this.Type = type;
+        VariableBuffer = variableBuffer;
+    }
+
+    internal Type Type { get; }
+    
+    internal PropertyInfo? VariableBuffer { get; set; }
+    
+    internal void SetProperty(CommandOptionInfo argument, string value, IShellCommand instance)
+    {
+        if (!_options.TryGetValue(argument, out var property))
+        {
+            throw new ArgumentException("The specified argument is not registered with this provider.", nameof(argument));
+        }
+        
+        CheckForConversion(property);
+        if (!_converter.TryConvert(value, property.PropertyType, out var result))
+        {
+            throw new CommandInterruptException(CommandResult.WithError(CommandErrorCode.BadArgument));
+        }
+        
+        property.SetValue(instance, result);
+    }
+
+    internal void SetSwitchProperty(CommandOptionInfo argument, IShellCommand instance)
+    {
+        if (!_options.TryGetValue(argument, out var property))
+        {
+            throw new ArgumentException("The specified option switch is not registered with this provider.", nameof(argument));
+        }
+        
+        property.SetValue(instance, true);
     }
 
     internal void SetProperty(CommandValueInfo argument, string value, IShellCommand instance)
@@ -27,7 +62,7 @@ internal class AnnotatedCommandProvider
         }
         
         CheckForConversion(property);
-        if (!_dispatcher.ArgumentConverter!.TryConvert(value, property.PropertyType, out var result))
+        if (!_converter.TryConvert(value, property.PropertyType, out var result))
         {
             throw new CommandInterruptException(CommandResult.WithError(CommandErrorCode.BadArgument));
         }
@@ -47,7 +82,7 @@ internal class AnnotatedCommandProvider
         }
     }
 
-    private void AddValue(CommandValueInfo info, PropertyInfo property, bool ignoreConverterCheck = false)
+    internal void AddValue(CommandValueInfo info, PropertyInfo property, bool ignoreConverterCheck = false)
     {
         if (property.PropertyType != typeof(string) && !ignoreConverterCheck)
         {
@@ -57,7 +92,7 @@ internal class AnnotatedCommandProvider
         _values.Add(info, property);
     }
     
-    private void AddValueOption(CommandOptionInfo option, PropertyInfo property, bool ignoreConverterCheck = false)
+    internal void AddValueOption(CommandOptionInfo option, PropertyInfo property, bool ignoreConverterCheck = false)
     {
         if (property.PropertyType != typeof(string) && !ignoreConverterCheck)
         {
@@ -69,12 +104,12 @@ internal class AnnotatedCommandProvider
 
     private void CheckForConversion(PropertyInfo property)
     {
-        if (_dispatcher.ArgumentConverter == null)
+        if (_converter == null)
         {
             throw new ArgumentException("Argument type conversion is not supported.", nameof(property));
         }
 
-        if (!_dispatcher.ArgumentConverter.CanConvertTo(property.PropertyType))
+        if (!_converter.CanConvertTo(property.PropertyType))
         {
             throw new ArgumentException("Conversion of argument to the property type is not supported.", nameof(property));
         }

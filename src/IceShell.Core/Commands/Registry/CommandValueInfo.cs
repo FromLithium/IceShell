@@ -19,11 +19,6 @@ public struct CommandValueInfo
   public int Position { get; set; }
 
   /// <summary>
-  /// Gets or sets the default value of this value parameter.
-  /// </summary>
-  public string? DefaultValue { get; set; }
-
-  /// <summary>
   /// Gets or sets a value indicating whether this value parameter is required.
   /// </summary>
   public bool Required { get; set; }

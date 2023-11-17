@@ -5,12 +5,16 @@ namespace IceShell.Batching;
 
 using IceShell.Batching.Commands;
 using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
 
 public class BatchingModule : IModule
 {
-    public void Initialize(ICommandDispatcher dispatcher)
+    public void Initialize(IRegistryCommandDispatcher dispatcher)
     {
-        dispatcher.CommandManager.Register(typeof(GotoCommand));
-        dispatcher.CommandManager.Register(typeof(CallCommand));
+        var registry = new AnnotatedCommandRegistry(dispatcher);
+        
+        registry.Register(typeof(GotoCommand));
+        registry.Register(typeof(CallCommand));
     }
 }

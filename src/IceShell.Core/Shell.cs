@@ -16,13 +16,14 @@ using global::IceShell.Settings;
 using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.CLI;
 using NexusKrop.IceShell.Core.Completion;
-using NexusKrop.IceShell.Core.Completion.Cache;
 using NexusKrop.IceShell.Core.FileSystem;
 using ReadLineReboot;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.ComponentModel;
+using global::IceShell.Core.Api.Commands;
+using global::IceShell.Core.Commands.Registry;
 
 /// <summary>
 /// Provides the shell experience of IceShell.
@@ -62,7 +63,7 @@ public class Shell : IShell
     {
         _settings = settings;
         Prompt = DefaultPrompt;
-        Dispatcher = new CommandDispatcher(this);
+        Dispatcher = new RegistryCommandDispatcher();
         ModuleManager = new ModuleManager(Dispatcher);
     }
 
@@ -73,7 +74,7 @@ public class Shell : IShell
     public string Prompt { get; set; }
 
     /// <inheritdoc />
-    public ICommandDispatcher Dispatcher { get; }
+    public IRegistryCommandDispatcher Dispatcher { get; }
 
     /// <inheritdoc />
     public bool SupportsJump => false;
@@ -175,9 +176,9 @@ public class Shell : IShell
 
         try
         {
-            var batchLine = Dispatcher.ParseLine(line);
+            var batchLine = Dispatcher.Parse(line);
 
-            cmdResult = Dispatcher.Execute(batchLine, this);
+            cmdResult = Dispatcher.Execute(this, actualExecutor ?? this, batchLine);
         }
         catch (CommandFormatException ex)
         {
@@ -207,7 +208,7 @@ public class Shell : IShell
     /// <inheritdoc />
     public CommandResult Execute(CommandSectionCompound compound, ICommandExecutor? actualExecutor = null)
     {
-        return Dispatcher.Execute(compound, actualExecutor ?? this);
+        return Dispatcher.Execute(this, actualExecutor ?? this, compound);
     }
 
     /// <summary>
@@ -218,7 +219,7 @@ public class Shell : IShell
     public int RunInteractive()
     {
         ReadLine.HistoryEnabled = true;
-        ReadLine.AutoCompletionHandler = new ShellCompletionHandler(Dispatcher.CommandManager, Executive.DirCache);
+        ReadLine.AutoCompletionHandler = new ShellCompletionHandler(Dispatcher, Executive.DirCache);
 
         ModuleManager.LoadDirectory(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "modules"));
         ModuleManager.Initialize();

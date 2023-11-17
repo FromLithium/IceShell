@@ -8,8 +8,7 @@ namespace IceShell.Core.Commands.Registry;
 /// </summary>
 /// <param name="Identifier">The identifier.</param>
 /// <param name="IsSwitch">If <see langword="true"/>, this option does not have a value.</param>
-/// <param name="DefaultValue">The default value.</param>
-public record struct CommandOptionInfo(char Identifier, bool IsSwitch, string? DefaultValue = null)
+public record struct CommandOptionInfo(char Identifier, bool IsSwitch)
 {
     /// <summary>
     /// Gets or sets the identifier of the option.
@@ -20,11 +19,6 @@ public record struct CommandOptionInfo(char Identifier, bool IsSwitch, string? D
     /// Gets or sets a value indicating whether this option is registered as a switch.
     /// </summary>
     public bool IsSwitch { get; set; }
-
-    /// <summary>
-    /// Gets or sets the default value.
-    /// </summary>
-    public string? DefaultValue { get; set; } = DefaultValue;
 
     /// <inheritdoc />
     public override int GetHashCode()
