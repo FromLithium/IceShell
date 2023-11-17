@@ -5,10 +5,11 @@ namespace IceShell.Tests.Converters;
 
 using IceShell.Core;
 using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands;
 using IceShell.Core.Commands.Registry;
 
-public class AnnotatedCommandRegistryTests
+public class CommandRegistryTests
 {
     [CommandInfo("test")]
     private class TestCommand : IShellCommand
@@ -57,6 +58,21 @@ public class AnnotatedCommandRegistryTests
             Assert.That(command.CustomUsage, Is.Null);
             Assert.That(command.Options, Is.Empty);
             Assert.That(command.Values, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void Registry_SimpleRegularCommandTest()
+    {
+        var dispatcher = new RegistryCommandDispatcher();
+        var commandInfo = new CommandRegistryEntry("regular");
+        
+        dispatcher.Register(commandInfo, (_, _, _) => CommandResult.Ok());
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(dispatcher.AnyCommand("regular"));
+            Assert.That(dispatcher.HasAlias("REGULAR"));
         });
     }
 }
