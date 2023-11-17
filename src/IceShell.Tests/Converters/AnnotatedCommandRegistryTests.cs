@@ -7,17 +7,42 @@ using IceShell.Core;
 using IceShell.Core.Api;
 using IceShell.Core.Commands;
 using IceShell.Core.Commands.Registry;
-using Moq;
 
 public class AnnotatedCommandRegistryTests
 {
     [CommandInfo("test")]
-    internal class TestCommand : IShellCommand
+    private class TestCommand : IShellCommand
     {
         public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
         {
             return CommandResult.Ok();
         }
+    }
+
+    [Test]
+    public void Register_AnnotatedCommandTest()
+    {
+        var dispatcher = new RegistryCommandDispatcher();
+        var registry = new AnnotatedCommandRegistry(dispatcher);
+        
+        registry.Register(typeof(TestCommand));
+        
+        Assert.That(dispatcher.AnyCommand("test"));
+    }
+    
+    [Test]
+    public void Registry_AliasCaseInsensitive()
+    {
+        var dispatcher = new RegistryCommandDispatcher();
+        var registry = new AnnotatedCommandRegistry(dispatcher);
+        
+        registry.Register(typeof(TestCommand));
+        Assert.Multiple(() =>
+        {
+            Assert.That(dispatcher.HasAlias("TEST"));
+            Assert.That(dispatcher.HasAlias("TeSt"));
+            Assert.That(dispatcher.HasAlias("test"));
+        });
     }
 
     [Test]

@@ -479,3 +479,4 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+/src/.idea/.idea.IceShell/.idea/discord.xml

@@ -36,6 +36,13 @@ public interface IRegistryCommandDispatcher
     /// </summary>
     /// <returns><see langword="true"/> if found; otherwise, <see langword="false"/>.</returns>
     bool AnyCommand();
+
+    /// <summary>
+    /// Determines whether there is a command with the specified identifier associated with this instance.
+    /// </summary>
+    /// <param name="id">The identifier to look up for.</param>
+    /// <returns><see langword="true"/> if found; otherwise, <see langword="false"/>.</returns>
+    bool AnyCommand(string id);
     
     /// <summary>
     /// Registers the specified command to its delegate.

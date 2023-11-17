@@ -1,6 +1,21 @@
 ﻿// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
+// ----------------------------------------------------------------------------
+//
+// !!! READ BEFORE EDITING THIS FILE !!!
+// Some important implementation details API contract about this class:
+//
+// 1. Command aliases are case-insensitive. When checking or registering new
+//    aliases, be sure to convert them to their upper-case equivalent by
+//    using ToUpperInvariant().
+//
+// 2. Command IDs, in other hand, are case-sensitive.
+//
+// If any of these are broken then features broken these rules cannot work.
+//
+// ----------------------------------------------------------------------------
+
 namespace IceShell.Core.Commands.Registry;
 
 using System.Diagnostics;
@@ -42,6 +57,11 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
         return _commandRegistry.Count > 0;
     }
 
+    public bool AnyCommand(string id)
+    {
+        return _commandRegistry.ContainsKey(id);
+    }
+
     public void Register(CommandRegistryEntry command, CommandDelegate routine)
     {
         _commandRegistry[command.Identifier] = command;
@@ -69,7 +89,7 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
 
     public bool HasAlias(string alias)
     {
-        return _commandRegistry.ContainsKey(alias.ToUpperInvariant());
+        return _aliases.ContainsKey(alias.ToUpperInvariant());
     }
 
     public void PutAlias(string alias, string id)
@@ -79,7 +99,7 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
             throw new ArgumentException("The specified ID does not exist.", nameof(id));
         }
         
-        _aliases.Add(alias, id);
+        _aliases.Add(alias.ToUpperInvariant(), id);
     }
 
     public CommandSectionCompound Parse(string line)
