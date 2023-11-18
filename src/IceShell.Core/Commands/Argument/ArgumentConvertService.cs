@@ -1,16 +1,11 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Core.Commands.Argument;
 
-using IceShell.Core.Api;
-using IceShell.Core.Exceptions;
-using NexusKrop.IceShell.Core.CLI;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using IceShell.Core.Api.Commands;
-using IceShell.Core.CLI.Languages;
 
 internal class ArgumentConvertService : ICommandArgumentConverter
 {
@@ -26,40 +21,7 @@ internal class ArgumentConvertService : ICommandArgumentConverter
     {
         _converters.Remove(type);
     }
-
-    internal bool TryConvert(string from, PropertyInfo target, IShellCommand instance)
-    {
-        var targetType = target.PropertyType;
-
-        if (targetType.IsEnum)
-        {
-            targetType = typeof(Enum);
-        }
-
-        if (!_converters.TryGetValue(targetType, out var converter))
-        {
-            return false;
-        }
-
-        if (!TryConvert(from, target.PropertyType, out var result))
-        {
-            ConsoleOutput.PrintShellError(LangMessage.MsgFromErrorCode(CommandErrorCode.BadArgument));
-            return false;
-        }
-
-        try
-        {
-            target.SetValue(instance, result);
-        }
-        catch (CommandFormatException ex)
-        {
-            ConsoleOutput.PrintShellError(ex.Message);
-            return false;
-        }
-
-        return true;
-    }
-
+    
     public bool TryConvert(string from, Type targetType, out object? result)
     {
         var searchType = targetType;
@@ -87,6 +49,14 @@ internal class ArgumentConvertService : ICommandArgumentConverter
 
     public bool CanConvertTo(Type type)
     {
+        // This means that if the type is an enum, it is treated as the base Enum type
+        // which matches the Enum converter since it must treat all generic enumeration converters,
+        // unless another converter is registered specifically for that enumeration.
+        if (!_converters.ContainsKey(type) && type.IsEnum)
+        {
+            type = typeof(Enum);
+        }
+        
         return _converters.ContainsKey(type);
     }
 }
