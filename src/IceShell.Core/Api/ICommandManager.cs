@@ -3,12 +3,14 @@
 
 namespace IceShell.Core.Api;
 
+using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands;
 
 /// <summary>
 /// Represents a command manager that provides registration services.
 /// </summary>
 /// <seealso cref="NexusKrop.IceShell.Core.Commands.CommandManager"/>
+[Obsolete("Use IRegistryCommandDispatcher instead.")]
 public interface ICommandManager
 {
     /// <summary>

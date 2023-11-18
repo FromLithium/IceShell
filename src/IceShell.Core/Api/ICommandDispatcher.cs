@@ -3,18 +3,25 @@
 
 namespace IceShell.Core.Api;
 
+using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands;
 using IceShell.Core.Exceptions;
 
 /// <summary>
 /// Represents a command dispatcher.
 /// </summary>
+[Obsolete("Use ICommandRegistryDispatcher.")]
 public interface ICommandDispatcher
 {
     /// <summary>
     /// Gets the command manager for this instance.
     /// </summary>
     public ICommandManager CommandManager { get; }
+    
+    /// <summary>
+    /// Gets the argument conversion service for this instance.
+    /// </summary>
+    public ICommandArgumentConverter? ArgumentConverter { get; }
 
     /// <summary>
     /// Executes the specified compound of command sections. If any of the sections in the compound returned

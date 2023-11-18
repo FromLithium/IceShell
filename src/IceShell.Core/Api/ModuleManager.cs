@@ -9,6 +9,7 @@ using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using IceShell.Core.Api.Commands;
 
 /// <summary>
 /// Provides module management interface and service for shell environments.
@@ -16,13 +17,13 @@ using System.Reflection;
 public class ModuleManager : IModuleManager
 {
     private readonly List<IModule> _modules = new();
-    private readonly ICommandDispatcher _commandDispatcher;
+    private readonly IRegistryCommandDispatcher _commandDispatcher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ModuleManager"/> class.
     /// </summary>
     /// <param name="commandDispatcher">The dispatcher.</param>
-    public ModuleManager(ICommandDispatcher commandDispatcher)
+    public ModuleManager(IRegistryCommandDispatcher commandDispatcher)
     {
         _commandDispatcher = commandDispatcher;
     }

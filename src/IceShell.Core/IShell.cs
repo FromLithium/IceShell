@@ -4,6 +4,7 @@
 namespace IceShell.Core;
 
 using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands;
 
 /// <summary>
@@ -19,7 +20,7 @@ public interface IShell : ICommandExecutor
     /// <summary>
     /// Gets the command dispatcher for this instance.
     /// </summary>
-    ICommandDispatcher Dispatcher { get; }
+    IRegistryCommandDispatcher Dispatcher { get; }
 
     /// <summary>
     /// Gets the module manager for this instance.

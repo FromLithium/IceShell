@@ -1,4 +1,4 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace NexusKrop.IceShell.Core.Commands.Bundled;
@@ -11,6 +11,8 @@ using global::IceShell.Core.Commands.Attributes;
 using NexusKrop.IceCube.Util.Enumerables;
 using Spectre.Console;
 using System.Text;
+using global::IceShell.Core.Api.Commands;
+using global::IceShell.Core.Commands.Registry;
 
 /// <summary>
 /// Provides help information for IceShell commands.
@@ -46,22 +48,19 @@ public class HelpCommandEx : IShellCommand
 
     private static CommandResult ExecuteDetailed(IShell shell, string commandName)
     {
-        var commandType = shell.Dispatcher.CommandManager.GetDefinition(commandName);
-
-        if (commandType == null)
+        if (!shell.Dispatcher.SearchInfoByAlias(commandName, out var definition)
+        || definition == null)
         {
             return CommandResult.WithError(CommandErrorCode.BadArgument, LangMessage.GetFormat("help_not_found", commandName ?? ""));
         }
 
-        var def = commandType.Definition;
-
-        PrintHelp(def, shell.Dispatcher.CommandManager);
+        PrintHelp(definition, shell.Dispatcher);
         return CommandResult.Ok();
     }
 
     private static CommandResult ExecuteSummary(IShell shell)
     {
-        if (!shell.Dispatcher.CommandManager.Any())
+        if (!shell.Dispatcher.AnyCommand())
         {
             Console.WriteLine(LangMessage.Get("help_no_commands"));
             return CommandResult.Ok();
@@ -74,20 +73,18 @@ public class HelpCommandEx : IShellCommand
         grid.AddColumn();
         grid.AddRow(" ", " ");
 
-        var keysEnumerable = shell.Dispatcher.CommandManager.CommandAliases;
+        var keysEnumerable = shell.Dispatcher.EnumerateAliases();
         var keys = new List<string>(keysEnumerable);
         keys.Sort();
 
         foreach (var cmdName in keys)
         {
-            var item = shell.Dispatcher.CommandManager.GetDefinition(cmdName);
-
-            if (item == null)
+            if (!shell.Dispatcher.SearchInfoByAlias(cmdName, out var item))
             {
                 continue;
             }
 
-            grid.AddRow(Markup.Escape(cmdName), Markup.Escape(LangMessage.Get(GetCommandDescription(item.Id))));
+            grid.AddRow(Markup.Escape(cmdName), Markup.Escape(LangMessage.Get(GetCommandDescription(item.Identifier))));
         }
 
         AnsiConsole.Write(grid);
@@ -95,7 +92,7 @@ public class HelpCommandEx : IShellCommand
         return CommandResult.Ok();
     }
 
-    private static string AssembleUsage(CommandDefinition definition)
+    private static string AssembleUsage(CommandRegistryEntry definition)
     {
         if (definition.CustomUsage != null)
         {
@@ -114,11 +111,11 @@ public class HelpCommandEx : IShellCommand
         {
             if (x.Required)
             {
-                builder.Append('<').Append(x.Name).Append('>');
+                builder.Append('<').Append(x.ReferenceName).Append('>');
             }
             else
             {
-                builder.Append('[').Append(x.Name).Append(']');
+                builder.Append('[').Append(x.ReferenceName).Append(']');
             }
 
             builder.Append(' ');
@@ -132,13 +129,13 @@ public class HelpCommandEx : IShellCommand
         return string.Format(DescriptionMessageFormat, commandId);
     }
 
-    private static void PrintHelp(CommandDefinition definition, ICommandManager manager)
+    private static void PrintHelp(CommandRegistryEntry definition, IRegistryCommandDispatcher manager)
     {
-        Console.WriteLine(LangMessage.Get(string.Format(DescriptionMessageFormat, definition.Id)));
+        Console.WriteLine(LangMessage.Get(string.Format(DescriptionMessageFormat, definition.Identifier)));
         Console.WriteLine();
         var usage = AssembleUsage(definition);
 
-        foreach (var alias in manager.GetBoundAliases(definition.Id))
+        foreach (var alias in manager.EnumerateAliases(definition.Identifier))
         {
             Console.WriteLine("{0}{1}", alias, usage);
         }
@@ -156,13 +153,13 @@ public class HelpCommandEx : IShellCommand
             grid.AddColumn();
 
             // Add a row for each command and their description.
-            definition.Values.Select(x => x.Name)
+            definition.Values.Select(x => x.ReferenceName)
                 .ForEach(name =>
                     grid.AddRow(Markup.Escape(name),
                         // Now the description.
                         Markup.Escape(LangMessage.Get(string.Format(ValueMessageFormat,
                         // The ID.
-                        definition.Id,
+                        definition.Identifier,
                         // The name.
                         name)))));
 
@@ -183,8 +180,8 @@ public class HelpCommandEx : IShellCommand
 
             foreach (var option in definition.Options)
             {
-                grid.AddRow(Markup.Escape(option.Value.HasValue ? $"/{option.Key}:<value>" : $"/{option.Key}"),
-                    Markup.Escape(LangMessage.Get(string.Format(OptionMessageFormat, definition.Id, option.Key))));
+                grid.AddRow(Markup.Escape(!option.Value.IsSwitch ? $"/{option.Key}:<value>" : $"/{option.Key}"),
+                    Markup.Escape(LangMessage.Get(string.Format(OptionMessageFormat, definition.Identifier, option.Key))));
             }
 
             AnsiConsole.Write(grid);

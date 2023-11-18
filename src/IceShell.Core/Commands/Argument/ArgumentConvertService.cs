@@ -1,54 +1,73 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Core.Commands.Argument;
 
-using IceShell.Core.Api;
-using IceShell.Core.Exceptions;
-using NexusKrop.IceShell.Core.CLI;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using IceShell.Core.Api.Commands;
 
-internal class ArgumentConvertService
+internal class ArgumentConvertService : ICommandArgumentConverter
 {
     private readonly Dictionary<Type, IArgumentConverter> _converters = new();
-
-    internal ArgumentConvertService RegisterConverter(Type type, IArgumentConverter converter)
+    
+    public ICommandArgumentConverter RegisterConverter(Type type, IArgumentConverter converter)
     {
         _converters.Add(type, converter);
         return this;
+    }
+
+    internal void AddDefaultConverters()
+    {
+        RegisterConverter(typeof(Enum), new EnumArgumentConverter())
+            .RegisterConverter(typeof(byte), new ByteArgumentConverter())
+            .RegisterConverter(typeof(sbyte), new SByteArgumentConverter())
+            .RegisterConverter(typeof(short), new Int16ArgumentConverter())
+            .RegisterConverter(typeof(int), new Int32ArgumentConverter())
+            .RegisterConverter(typeof(long), new Int64ArgumentConverter())
+            .RegisterConverter(typeof(string), new StringArgumentConverter());
     }
 
     internal void UnregisterConverter(Type type)
     {
         _converters.Remove(type);
     }
-
-    internal bool TryConvert(string from, PropertyInfo target, IShellCommand instance)
+    
+    public bool TryConvert(string from, Type targetType, out object? result)
     {
-        var targetType = target.PropertyType;
-
-        if (targetType.IsEnum)
+        var searchType = targetType;
+        
+        if (searchType.IsEnum)
         {
-            targetType = typeof(Enum);
+            searchType = typeof(Enum);
         }
-
-        if (!_converters.TryGetValue(targetType, out var converter))
+        
+        if (!_converters.TryGetValue(searchType, out var converter))
         {
+            result = default;
             return false;
         }
 
-        try
+        if (!converter.TryConvert(from, targetType, out var retVal))
         {
-            converter.Convert(from, target, instance);
-        }
-        catch (CommandFormatException ex)
-        {
-            ConsoleOutput.PrintShellError(ex.Message);
+            result = default;
             return false;
         }
 
+        result = retVal;
         return true;
+    }
+
+    public bool CanConvertTo(Type type)
+    {
+        // This means that if the type is an enum, it is treated as the base Enum type
+        // which matches the Enum converter since it must treat all generic enumeration converters,
+        // unless another converter is registered specifically for that enumeration.
+        if (!_converters.ContainsKey(type) && type.IsEnum)
+        {
+            type = typeof(Enum);
+        }
+        
+        return _converters.ContainsKey(type);
     }
 }

@@ -4,12 +4,21 @@
 namespace IceShell.Platform.Windows;
 
 using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
 
 public class WindowsPlatformModule : IModule
 {
-    public void Initialize(ICommandDispatcher dispatcher)
+    public void Initialize(IRegistryCommandDispatcher dispatcher)
     {
-        dispatcher.CommandManager.Register(typeof(VolumeInfoCommand));
-        dispatcher.CommandManager.Register(typeof(MemoryInfoCommand));
+        var registry = new AnnotatedCommandRegistry(dispatcher);
+
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        registry.Register(typeof(VolumeInfoCommand));
+        registry.Register(typeof(MemoryInfoCommand));
     }
 }

@@ -3,30 +3,26 @@
 
 namespace IceShell.Core.Commands.Argument;
 
-using IceShell.Core.Exceptions;
-using System.Reflection;
-
 /// <summary>
 /// Supports enumeration argument conversion.
 /// </summary>
 public class EnumArgumentConverter : IArgumentConverter
 {
     /// <inheritdoc />
-    /// <exception cref="InvalidOperationException">The property is not an enumeration.</exception>
-    public void Convert(string from, PropertyInfo property, object instance)
+    public bool TryConvert(string from, Type targetType, out object? result)
     {
-        if (!property.PropertyType.IsEnum)
+        result = null;
+        
+        if (!targetType.IsEnum)
         {
-            throw new InvalidOperationException("The property is not an enumeration.");
+            return false;
         }
 
-        var type = property.PropertyType;
-
-        if (!Enum.TryParse(type, from, true, out var result))
+        if (!Enum.TryParse(targetType, from, true, out result))
         {
-            throw ExceptionHelper.WithMessage("Invalid value");
+            return false;
         }
 
-        property.SetValue(instance, result);
+        return true;
     }
 }

@@ -4,19 +4,20 @@
 namespace NexusKrop.IceShell.Core.Completion;
 
 using global::IceShell.Core.Api;
+using global::IceShell.Core.Api.Commands;
 using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.Completion.Cache;
 using ReadLineReboot;
 
 internal class ShellCompletionHandler : IAutoCompleteHandler
 {
-    internal ShellCompletionHandler(ICommandManager manager, DirCache cache)
+    internal ShellCompletionHandler(IRegistryCommandDispatcher manager, DirCache cache)
     {
         _manager = manager;
         _cache = cache;
     }
 
-    private readonly ICommandManager _manager;
+    private readonly IRegistryCommandDispatcher _manager;
     private readonly DirCache _cache;
 
     public char[] Separators { get; set; } = new char[] { ' ', '.', '\\' };
@@ -45,9 +46,9 @@ internal class ShellCompletionHandler : IAutoCompleteHandler
             return Array.Empty<string>();
         }
 
-        var list = new List<string>(_manager.CommandCount);
+        var list = new List<string>(_manager.AliasCount);
 
-        foreach (var command in _manager.CommandAliases)
+        foreach (var command in _manager.EnumerateAliases())
         {
             if (command.Equals(begin))
             {

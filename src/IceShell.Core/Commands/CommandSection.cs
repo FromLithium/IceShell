@@ -5,6 +5,7 @@ namespace IceShell.Core.Commands;
 
 using IceShell.Parsing;
 using System.Collections.Generic;
+using IceShell.Core.Api.Commands;
 
 /// <summary>
 /// Represents a line of command.
@@ -26,7 +27,7 @@ public record CommandSection
     /// <param name="parsedCommand">The parsed internal command.</param>
     /// <param name="commandName">The name of the command.</param>
     /// <param name="nextAction">The action to perform to the next command.</param>
-    public CommandSection(CommandUnit parsedCommand, string commandName, SyntaxNextAction nextAction = SyntaxNextAction.None)
+    public CommandSection(RegistryCommandParseResult parsedCommand, string commandName, SyntaxNextAction nextAction = SyntaxNextAction.None)
     {
         IsCommand = true;
         Command = parsedCommand;
@@ -66,7 +67,7 @@ public record CommandSection
     /// <summary>
     /// Gets the parsed command.
     /// </summary>
-    public CommandUnit? Command { get; }
+    public RegistryCommandParseResult? Command { get; }
 
     /// <summary>
     /// Gets the action to perform to the next command in the compound.

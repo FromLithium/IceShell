@@ -11,6 +11,8 @@ using System.Runtime.InteropServices;
 public static partial class SystemService
 {
     [LibraryImport("libc", StringMarshalling = StringMarshalling.Utf8)]
+    // ReSharper disable once IdentifierTypo
+    // ReSharper disable once InconsistentNaming
     private static partial int rpmatch(string response);
 
     /// <summary>
@@ -20,8 +22,8 @@ public static partial class SystemService
     /// <param name="defaultAnswer">The response to return if the user have not provided a response.</param>
     /// <returns>The type of the answer.</returns>
     /// <remarks>
-    /// On GNU/Linux systems, this method is a wrapper of the <see href="https://www.man7.org/linux/man-pages/man3/rpmatch.3.html">rpmatch</see> system method;
-    /// on other systems, this method determines based on the following values (case insensitive):
+    /// <para>On GNU/Linux systems, this method is a wrapper of the <see href="https://www.man7.org/linux/man-pages/man3/rpmatch.3.html">rpmatch</see> system method;
+    /// on other systems, this method determines based on the following values (case insensitive):</para>
     /// <list type="bullet">
     ///     <item><c>Y</c> -> Yes</item>
     ///     <item><c>N</c> -> No</item>

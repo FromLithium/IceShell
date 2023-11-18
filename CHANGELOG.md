@@ -13,6 +13,9 @@ This version is to be the Anniversary Preview version.
 
 #### Commands
 
+- Overhauled the API interface and the internal system of the command dispatching and registration system.
+  - Annotated commands now is registered by a separate service connected to the new dispatcher service.
+  - Now is possible to register "regular" commands without the use of any command classes at all.
 - Added several options for the `DIR` command.
     - Added `/U` option which displays all entries in upper-case.
     - Added `/L` option which displays all entries in lower-case.

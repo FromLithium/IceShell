@@ -11,19 +11,16 @@ using System.Reflection;
 /// </summary>
 public class Int64ArgumentConverter : IArgumentConverter
 {
-    /// <inheritdoc/>
-    public void Convert(string from, PropertyInfo property, object instance)
+    /// <inheritdoc />
+    public bool TryConvert(string from, Type targetType, out object? result)
     {
-        if (property.PropertyType != typeof(long))
+        if (!long.TryParse(from, out var retVal))
         {
-            throw new InvalidOperationException("Property is not Int64.");
+            result = null;
+            return false;
         }
 
-        if (!long.TryParse(from, out var result))
-        {
-            throw ExceptionHelper.CannotResolve(from);
-        }
-
-        property.SetValue(instance, result);
+        result = retVal;
+        return true;
     }
 }

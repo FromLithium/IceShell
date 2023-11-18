@@ -4,6 +4,7 @@
 using IceShell.Batching;
 using IceShell.Core;
 using IceShell.Core.CLI.Languages;
+using IceShell.Core.Commands.Bundled;
 using IceShell.Platform.Linux;
 using IceShell.Platform.Windows;
 using IceShell.Settings;
@@ -76,6 +77,10 @@ if (sh.AddPlatformModules)
         shell.ModuleManager.AddModule(new LinuxPlatformModule());
     }
 }
+
+// Create default commands.
+var bundledProvider = new BundledCommandsProvider(shell.Dispatcher);
+bundledProvider.Register();
 
 var retCode = -255;
 

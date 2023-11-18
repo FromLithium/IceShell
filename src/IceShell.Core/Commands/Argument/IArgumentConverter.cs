@@ -1,9 +1,7 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Core.Commands.Argument;
-
-using System.Reflection;
 
 /// <summary>
 /// Defines an interface that converts string value to other types.
@@ -11,10 +9,11 @@ using System.Reflection;
 public interface IArgumentConverter
 {
     /// <summary>
-    /// Converts the specified string.
+    /// Converts from the specified string value to the specified result.
     /// </summary>
-    /// <param name="from">The string to convert.</param>
-    /// <param name="property">The property to store the conversion result to.</param>
-    /// <param name="instance">The instance of the command.</param>
-    public void Convert(string from, PropertyInfo property, object instance);
+    /// <param name="from">The string to convert from.</param>
+    /// <param name="targetType">The target type to convert to.</param>
+    /// <param name="result">The conversion result.</param>
+    /// <returns><see langword="true"/> if successful; otherwise, <see langword="false"/>.</returns>
+    public bool TryConvert(string from, Type targetType, out object? result);
 }
