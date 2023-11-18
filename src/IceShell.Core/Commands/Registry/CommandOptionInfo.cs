@@ -18,7 +18,7 @@ public record struct CommandOptionInfo(char Identifier, bool IsSwitch)
     /// <summary>
     /// Gets or sets a value indicating whether this option is registered as a switch.
     /// </summary>
-    public bool IsSwitch { get; set; }
+    public bool IsSwitch { get; set; } = IsSwitch;
 
     /// <inheritdoc />
     public override int GetHashCode()
