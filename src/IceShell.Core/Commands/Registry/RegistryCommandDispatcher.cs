@@ -71,7 +71,7 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
 
     public bool SearchInfoByAlias(string alias, out CommandRegistryEntry? result)
     {
-        if (!_aliases.TryGetValue(alias, out var id))
+        if (!_aliases.TryGetValue(alias.ToUpperInvariant(), out var id))
         {
             result = null;
             return false;
