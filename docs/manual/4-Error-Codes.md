@@ -7,7 +7,7 @@ Commands from external modules can have custom error codes; refer to their docum
 The [Built-in commands](3-BuiltIn-Commands.md) page describes the exact meaning of error codes returned by built-in commands and commands from built-in modules.
 
 | No. | Error Name                   | Description                                                      |
-| --- | ---------------------------- | ---------------------------------------------------------------- |
+|-----|------------------------------|------------------------------------------------------------------|
 | 0   | None                         | Error was not specified                                          |
 | 1   | ParsingFailure               | Error occurred while parsing the command                         |
 | 2   | ExternalStartFail            | Failed to start external program                                 |
@@ -24,6 +24,8 @@ The [Built-in commands](3-BuiltIn-Commands.md) page describes the exact meaning 
 | 13  | FileExists                   | File already exists (when command requires it to be absent)      |
 | 14  | DirectoryExists              | Directory already exists (when commands require it to be absent) |
 | 15  | WriteUnauthorized            | Writing to destination is not authorized                         |
+| 16  | RequiresPipelineInput        | Command requires pipeline input                                  |
+| 17  | BadCommand                   | Command not found                                                |
 
 ---
 

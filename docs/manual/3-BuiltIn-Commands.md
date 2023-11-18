@@ -110,7 +110,7 @@ Returns zero on success and non-zero on failure. For detailed error information,
 Lists the contents of the current or specified directory.
 
 ```cmd
-dir [directory] [/d:date-format] [/t:time-format] [/h]
+dir [directory] [/d:date-format] [/t:time-format] [/h] [/L|/U] [/B] [/S]
 ```
 
 ### Arguments
@@ -122,6 +122,10 @@ dir [directory] [/d:date-format] [/t:time-format] [/h]
 - `/d`: Specifies the date format. If unspecified, uses the default format (`YYYY/mm/dd`). 
 - `/t`: Specifies the time format. If unspecified, uses the default format (`HH:mm:ss`).
 - `/h`: If specified, displays hidden files and directories. On Windows, hidden means being attributed with "hidden" attribute, while on *NIX systems, are ones with name starting with a dot `.`.
+- `/L`: If specified, all file names will be presented in lower case. Cannot be specified together with `/U`.
+- `/U`: If specified, all file names will be presented in upper case. Cannot be specified together with `/L`.
+- `/B`: If specified, only file names will be displayed and the grid formatting will be disabled.
+- `/S`: If specified on Windows, the DOS-compatibility short name format will be used.
 
 ### Exit Code
 
@@ -244,6 +248,22 @@ Returns `0` if the command succeeds, non-zero otherwise. Check the error code fo
 
 <!-- ======================================= -->
 
+## MORE
+
+Displays a long chunk of text across multiple pages. The dimensions of each page is determined based on the text buffer size.
+
+This command requires pipeline input.
+
+### Errors
+
+- **16 - RequiresPipelineInput**: Pipeline input is required but not supplied.
+
+### Exit Code
+
+Returns `0` if the command succeeds, non-zero otherwise. Check the error code for detailed error.
+
+<!-- ======================================= -->
+
 ## MOVE
 
 Move or rename one or more files.
@@ -288,18 +308,18 @@ PROMPT [prompt]
 
 The prompt template is a string with placeholders:
 
-| Placeholder | Value |
-| ----------- | ----- |
-| `$Q` | The equal sign (`=`) |
-| `$$` | The dollar sign (`$`) |
-| `$T` | The current time in short time format |
-| `$D` | The current date in short date format |
-| `$P` | The path to the current working directory |
-| `$V` | The version of IceShell application |
-| `$G` | The greater than sign (`>`) |
-| `$L` | The lesser than sign (`<`) |
-| `$B` | The pipe sign (`|`) |
-| `$_` | System new-line sequence |
+| Placeholder | Value                                     |
+|-------------|-------------------------------------------|
+| `$Q`        | The equal sign (`=`)                      |
+| `$$`        | The dollar sign (`$`)                     |
+| `$T`        | The current time in short time format     |
+| `$D`        | The current date in short date format     |
+| `$P`        | The path to the current working directory |
+| `$V`        | The version of IceShell application       |
+| `$G`        | The greater than sign (`>`)               |
+| `$L`        | The lesser than sign (`<`)                |
+| `$B`        | The pipe sign (`                          |`) |
+| `$_`        | System new-line sequence                  |
 
 ### Errors
 
@@ -394,6 +414,11 @@ Displays the IceShell version along with some Operating System information.
 ```bat
 VER
 ```
+
+### Options
+
+- `/C`: Shows the copyright notice.
+- `/S`: Shows basic system information.
 
 ### Exit Code
 
