@@ -241,23 +241,9 @@ public static class PathSearcher
     {
         EnsureFileName(name);
 
-        foreach (var path in PATHS)
-        {
-            if (!Directory.Exists(path))
-            {
-                continue;
-            }
-
-            var possible = GetSystemExecutableName(Path.Combine(path, name));
-
-            if (!File.Exists(possible) || !FileUtility.IsExecutable(possible))
-            {
-                continue;
-            }
-
-            return possible;
-        }
-
-        return null;
+        return (from path in PATHS where Directory.Exists(path)
+            select GetSystemExecutableName(Path.Combine(path, name)))
+            .FirstOrDefault(possible => File.Exists(possible)
+                                        && FileUtility.IsExecutable(possible));
     }
 }

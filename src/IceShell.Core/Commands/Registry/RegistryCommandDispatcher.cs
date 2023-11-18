@@ -121,7 +121,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
         var statements = new LineParser().ParseLine(line);
 
         var rawCompound = CommandParser.ParseCompound(statements, HasAlias);
-        var sysCompound = rawCompound.Select(ParseSection).ToList();
+        var sysCompound = rawCompound.Select(ParseSection);
 
         return new CommandSectionCompound(sysCompound);
     }

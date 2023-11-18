@@ -92,7 +92,7 @@ public class LineParser
     /// </summary>
     /// <param name="line">The line to parse.</param>
     /// <returns>The statements parsed from the line.</returns>
-    public SyntaxStatement[] ParseLine(ReadOnlySpan<char> line)
+    public IReadOnlyList<SyntaxStatement> ParseLine(ReadOnlySpan<char> line)
     {
         if (line.IsEmpty || line.IsWhiteSpace())
         {
@@ -188,9 +188,7 @@ public class LineParser
                 }
             }
         }
-
-        var retVal = _statements.ToArray();
-        _statements.Clear();
-        return retVal;
+        
+        return _statements.AsReadOnly();
     }
 }

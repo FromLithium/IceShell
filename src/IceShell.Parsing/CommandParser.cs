@@ -88,7 +88,7 @@ public static class CommandParser
     /// <param name="statements">The list of statements that constitutes of a command.</param>
     /// <returns>The parsed command.</returns>
     /// <exception cref="FormatException">The command syntax is invalid.</exception>
-    public static SyntaxCommandInvocation ParseSingleCommand(IList<SyntaxStatement> statements)
+    public static SyntaxCommandInvocation ParseSingleCommand(IReadOnlyList<SyntaxStatement> statements)
     {
         var options = new HashSet<SyntaxOption>();
         var values = new List<SyntaxStatement>();

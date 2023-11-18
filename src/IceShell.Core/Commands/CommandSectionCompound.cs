@@ -16,7 +16,7 @@ public class CommandSectionCompound : IEnumerable<CommandSection>
     /// Initializes a new instance of the <see cref="CommandSectionCompound"/> class.
     /// </summary>
     /// <param name="lines">A list containing the batch line instances.</param>
-    public CommandSectionCompound(IList<CommandSection> lines)
+    public CommandSectionCompound(IEnumerable<CommandSection> lines)
     {
         Lines = lines;
     }
@@ -24,7 +24,7 @@ public class CommandSectionCompound : IEnumerable<CommandSection>
     /// <summary>
     /// Gets a list containing the batch line instances.
     /// </summary>
-    public IList<CommandSection> Lines { get; }
+    public IEnumerable<CommandSection> Lines { get; }
 
     /// <inheritdoc />
     public IEnumerator<CommandSection> GetEnumerator()

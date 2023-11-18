@@ -1,10 +1,11 @@
 <!-- If you forgot the ID it may not render correctly -->
 
-<div id="iceshell-readme-centre-logo" align="center">
-<img src="assets/logo_with_bg.png" />
+<!--suppress HtmlDeprecatedAttribute -->
+<div id="ice-shell-readme-centre-logo" align="center">
+<img alt="IceShell logo" src="assets/logo_with_bg.png" />
 </div>
 
-<div id="iceshell-readme-centre-description" align="center">
+<div id="ice-shell-readme-centre-description" align="center">
 
 <h1>IceShell</h1>
 
@@ -21,8 +22,7 @@ See the [IceShell Reference](docs/manual/README.md). Alternatively, type `help` 
 
 ### Release builds
 
-Before you download a release build, please do note that this project is in early development, and thus developer builds are much
-newer than release builds.
+Before you download a release build, please do note that this project is in rapid development stage. This means the source code in the repository is much more newer than the release versions.
 
 Releases can be found at the release page. See [release change-logs](CHANGELOG.md).
 
@@ -37,6 +37,10 @@ See [BUILDING](BUILDING.md) file.
 ## Contributing
 
 This project welcomes contributions! See the [Contributing Guide](CONTRIBUTING.md) for more information.
+
+## Thanks
+
+- Thanks [JetBrains](https://jetbrains.com/) for providing a free licence of their tools for the development of the IceShell project. Their .NET tools like Rider IDE have really helped me develop this project, and I really appreciate that.
 
 ## License
 
