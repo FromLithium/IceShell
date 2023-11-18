@@ -1,6 +1,7 @@
 namespace IceShell.Tests;
 
 using IceShell.Core.Exceptions;
+using IceShell.Core.FileSystem;
 using NexusKrop.IceShell.Core.FileSystem;
 
 public class PathSearcherTests
@@ -49,5 +50,11 @@ public class PathSearcherTests
         Environment.SetEnvironmentVariable("IceShell002Test", null);
 
         Assert.Throws<CommandFormatException>(() => PathSearcher.ExpandVariables("%IceShell002Test%", false));
+    }
+
+    [Test]
+    public void CheckPath_Windows()
+    {
+        Assert.Throws<CommandFormatException>(() => PathSearcher.CheckPath("path?"));
     }
 }

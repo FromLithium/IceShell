@@ -9,6 +9,7 @@ using global::IceShell.Core.Commands;
 using global::IceShell.Core.Commands.Attributes;
 using global::IceShell.Core.Exceptions;
 using global::IceShell.Core.Api;
+using global::IceShell.Core.FileSystem;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using NexusKrop.IceCube.Util.Enumerables;

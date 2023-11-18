@@ -12,6 +12,7 @@ using NexusKrop.IceCube.Exceptions;
 using NexusKrop.IceShell.Core.Commands.Complex;
 using NexusKrop.IceShell.Core.FileSystem;
 using System;
+using global::IceShell.Core.FileSystem;
 
 /// <summary>
 /// Defines a command that creates an empty file.

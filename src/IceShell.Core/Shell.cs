@@ -1,29 +1,24 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
-using System.Runtime.CompilerServices;
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("IceShell.Tests")]
 
-[assembly: InternalsVisibleTo("IceShell.Tests")]
+namespace IceShell.Core;
 
-namespace NexusKrop.IceShell.Core;
-
-using global::IceShell.Core;
-using global::IceShell.Core.Api;
-using global::IceShell.Core.CLI.Languages;
-using global::IceShell.Core.Commands;
-using global::IceShell.Core.Exceptions;
-using global::IceShell.Settings;
-using NexusKrop.IceCube.Util.Enumerables;
-using NexusKrop.IceShell.Core.CLI;
-using NexusKrop.IceShell.Core.Completion;
-using NexusKrop.IceShell.Core.FileSystem;
-using ReadLineReboot;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
-using System.ComponentModel;
-using global::IceShell.Core.Api.Commands;
-using global::IceShell.Core.Commands.Registry;
+using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.CLI.Languages;
+using IceShell.Core.Commands;
+using IceShell.Core.Commands.Registry;
+using IceShell.Core.Exceptions;
+using IceShell.Settings;
+using NexusKrop.IceShell.Core.CLI;
+using NexusKrop.IceShell.Core.Completion;
+using ReadLineReboot;
 
 /// <summary>
 /// Provides the shell experience of IceShell.
@@ -59,11 +54,12 @@ public class Shell : IShell
     /// Initializes a new instance of the <see cref="Shell"/> class.
     /// </summary>
     /// <param name="settings">The settings.</param>
-    public Shell(ShellSettings settings)
+    /// <param name="dispatcher">The dispatcher to use. If <see langword="null"/>, a default one is used.</param>
+    public Shell(ShellSettings settings, IRegistryCommandDispatcher? dispatcher = null)
     {
         _settings = settings;
         Prompt = DefaultPrompt;
-        Dispatcher = new RegistryCommandDispatcher();
+        Dispatcher = dispatcher ?? new RegistryCommandDispatcher();
         ModuleManager = new ModuleManager(Dispatcher);
     }
 
@@ -94,85 +90,13 @@ public class Shell : IShell
     }
 
     /// <summary>
-    /// Executes an executable located in <c>PATH</c>.
-    /// </summary>
-    /// <param name="fileName">The name of the executable. Subdirectories are prohibited.</param>
-    /// <param name="args">The arguments to pass to the executable.</param>
-    /// <returns><see langword="true"/> if a valid executable was found; otherwise, <see langword="false"/>.</returns>
-    public static int ExecuteOnPath(string fileName, IEnumerable<string>? args)
-    {
-        var actual = PathSearcher.SearchExecutable(fileName);
-
-        if (actual == null)
-        {
-            return -255;
-        }
-
-        var startInfo = new ProcessStartInfo(fileName)
-        {
-            WorkingDirectory = Environment.CurrentDirectory
-        };
-
-        args?.ForEach(startInfo.ArgumentList.Add);
-
-        var proc = Process.Start(startInfo);
-
-        if (proc == null)
-        {
-            return -500;
-        }
-
-        proc.WaitForExit();
-        return proc.ExitCode;
-    }
-
-    /// <summary>
-    /// Executes an executable located in <c>PATH</c>.
-    /// </summary>
-    /// <param name="fileName">The name of the executable. Subdirectories are prohibited.</param>
-    /// <param name="args">The arguments to pass to the executable.</param>
-    /// <param name="reader">The reader to read the output.</param>
-    /// <returns><see langword="true"/> if a valid executable was found; otherwise, <see langword="false"/>.</returns>
-    public static int ExecuteOnPathRedirect(string fileName, IEnumerable<string>? args, out TextReader? reader)
-    {
-        var actual = PathSearcher.SearchExecutable(fileName);
-
-        if (actual == null)
-        {
-            reader = null;
-            return -255;
-        }
-
-        var startInfo = new ProcessStartInfo(fileName)
-        {
-            WorkingDirectory = Environment.CurrentDirectory,
-            RedirectStandardOutput = true
-        };
-
-        args?.ForEach(startInfo.ArgumentList.Add);
-
-        var proc = Process.Start(startInfo);
-
-        if (proc == null)
-        {
-            reader = null;
-            return -500;
-        }
-
-        proc.WaitForExit();
-
-        reader = proc.StandardOutput;
-        return proc.ExitCode;
-    }
-
-    /// <summary>
     /// Parses and then executes the specified user input.
     /// </summary>
     /// <param name="line">The input.</param>
     /// <param name="actualExecutor">The executor to pass to commands (or have this instance to act on behalf of). If <see langword="null"/>, the Shell will run commands on its own behalf.</param>
     public CommandResult Execute(string line, ICommandExecutor? actualExecutor = null)
     {
-        CommandResult cmdResult = CommandResult.WithError(CommandErrorCode.GenericCommandFail);
+        CommandResult cmdResult;
 
         try
         {
@@ -254,7 +178,7 @@ public class Shell : IShell
                 continue;
             }
 
-            var execResult = Execute(input, null);
+            var execResult = Execute(input);
 
             // Command failure handling
             if (execResult.ExitCode != 0 && execResult.ErrorCode != CommandErrorCode.None)

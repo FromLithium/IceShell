@@ -1,16 +1,17 @@
 // Copyright (C) NexusKrop & contributors 2023
 // See "COPYING.txt" for licence
 
-namespace NexusKrop.IceShell.Core.FileSystem;
+namespace IceShell.Core.FileSystem;
 
-using global::IceShell.Core.CLI.Languages;
-using global::IceShell.Core.Exceptions;
-using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Text;
+using IceShell.Core.CLI.Languages;
+using IceShell.Core.Exceptions;
+using NexusKrop.IceShell.Core.FileSystem;
+using Spectre.Console;
 
 /// <summary>
 /// Provides utilities for a custom path system.

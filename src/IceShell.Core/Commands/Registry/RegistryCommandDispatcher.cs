@@ -24,6 +24,7 @@ using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Parsing;
 using IceShell.Core.Exceptions;
+using IceShell.Core.FileSystem;
 using IceShell.Parsing;
 using NexusKrop.IceShell.Core.CLI;
 using NexusKrop.IceShell.Core.FileSystem;

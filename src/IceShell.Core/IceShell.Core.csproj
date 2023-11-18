@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
+    <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
     <PackageReference Include="Kajabity.Tools.Java" Version="0.3.8607.38728" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="7.0.0" />
     <PackageReference Include="Microsoft.SourceLink.Gitea" Version="1.1.1">

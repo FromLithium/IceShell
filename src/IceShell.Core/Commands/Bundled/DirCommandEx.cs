@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using global::IceShell.Core.Api.Native;
+using global::IceShell.Core.FileSystem;
 
 /// <summary>
 /// Displays a list of files and subdirectories in a directory.

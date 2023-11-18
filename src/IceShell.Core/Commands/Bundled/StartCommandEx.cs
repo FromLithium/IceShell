@@ -13,6 +13,7 @@ using NexusKrop.IceCube.Exceptions;
 using NexusKrop.IceShell.Core.Commands.Complex;
 using NexusKrop.IceShell.Core.FileSystem;
 using System.ComponentModel;
+using global::IceShell.Core.FileSystem;
 
 /// <summary>
 /// Starts the specified file or executable program.

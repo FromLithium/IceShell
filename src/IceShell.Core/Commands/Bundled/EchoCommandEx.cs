@@ -10,6 +10,7 @@ using global::IceShell.Core.Commands.Attributes;
 using NexusKrop.IceShell.Core.Commands.Complex;
 using NexusKrop.IceShell.Core.FileSystem;
 using System;
+using global::IceShell.Core.FileSystem;
 
 /// <summary>
 /// Displays messages.

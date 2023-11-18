@@ -1,4 +1,4 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Core;
@@ -7,13 +7,13 @@ using IceShell.Core.Commands;
 using IceShell.Settings;
 using NexusKrop.IceCube;
 using NexusKrop.IceCube.Util.Enumerables;
-using NexusKrop.IceShell.Core;
 using NexusKrop.IceShell.Core.Completion.Cache;
 using NexusKrop.IceShell.Core.FileSystem;
 using ReadLineReboot;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using IceShell.Core.FileSystem;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
@@ -33,18 +33,10 @@ public static class Executive
             section.Statements?.Select(x => x.Content) ?? Enumerable.Empty<string>());
     }
 
-    internal static ProcessStartInfo CreateStartInfo(string relativeFile, bool searchInPath, IEnumerable<string>? args)
+    private static ProcessStartInfo CreateStartInfo(string relativeFile, bool searchInPath, IEnumerable<string>? args)
     {
-        string? actual = null;
-
-        if (searchInPath)
-        {
-            actual = PathSearcher.SearchExecutable(relativeFile);
-        }
-        else
-        {
-            actual = Path.GetFullPath(relativeFile, Directory.GetCurrentDirectory());
-        }
+        var actual = searchInPath ? PathSearcher.SearchExecutable(relativeFile)
+            : Path.GetFullPath(relativeFile, Directory.GetCurrentDirectory());
 
         if (actual == null || !File.Exists(actual))
         {
@@ -62,7 +54,7 @@ public static class Executive
     }
     #endregion
 
-    internal static Process? WatchingProcess { get; private set; }
+    private static Process? WatchingProcess { get; set; }
 
     internal static bool Interrupt { get; private set; }
 
@@ -87,6 +79,7 @@ public static class Executive
     {
         if (process == null)
         {
+            Debug.WriteLine("Warning: WatchProcess will no longer accept null processes starting from v0.3.1.");
             return;
         }
 
@@ -114,11 +107,11 @@ public static class Executive
     {
         if (WatchingProcess?.HasExited == false)
         {
-            WatchingProcess?.Kill();
+            WatchingProcess.Kill();
         }
 
         Interrupt = true;
-        Exit(0);
+        Exit();
     }
 
     private static void LoadHistory()
@@ -162,10 +155,8 @@ public static class Executive
         {
             var stream = File.Create(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".iceShell", "history.txt"));
 
-            using (var writer = new StreamWriter(stream))
-            {
-                ReadLine.GetHistory().ForEach(writer.WriteLine);
-            }
+            using var writer = new StreamWriter(stream);
+            ReadLine.GetHistory().ForEach(writer.WriteLine);
         }
         catch (Exception ex)
         {
@@ -180,7 +171,7 @@ public static class Executive
         {
             // This is only a provisional solution because we cannot break out of ReadLine.
 
-            Exit(0);
+            Exit();
             return;
         }
 
@@ -276,10 +267,8 @@ public static class Executive
             { '_', Environment.NewLine }
         };
 
-        for (int i = 0; i < template.Length; i++)
+        foreach (var ch in template)
         {
-            var ch = template[i];
-
             if (!insidePlaceholder)
             {
                 // If not in variable

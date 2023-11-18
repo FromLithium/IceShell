@@ -36,6 +36,9 @@ This version is to be the Anniversary Preview version.
 #### API
 
 - Added support for `SByte`, `Byte`, `Int16`, `Int32` and `Int64` arguments.
+- Moved the following classes to their `IceShell` namespaces:
+  - `Shell`
+  - `PathSearcher`
 
 #### Shell
 

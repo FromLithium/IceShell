@@ -10,6 +10,7 @@ using Microsoft.Extensions.FileSystemGlobbing;
 using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.FileSystem;
 using System.Collections.Generic;
+using IceShell.Core.FileSystem;
 
 /// <summary>
 /// Provides a base class for file operation commands that involves multiple sources and a single destination.

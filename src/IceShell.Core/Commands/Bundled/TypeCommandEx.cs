@@ -8,6 +8,7 @@ using global::IceShell.Core.Api;
 using global::IceShell.Core.Commands;
 using global::IceShell.Core.Commands.Attributes;
 using global::IceShell.Core.Exceptions;
+using global::IceShell.Core.FileSystem;
 using NexusKrop.IceShell.Core.Commands.Complex;
 using NexusKrop.IceShell.Core.FileSystem;
 

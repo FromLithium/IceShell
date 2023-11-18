@@ -5,10 +5,12 @@ namespace IceShell.Settings;
 
 using IniParser;
 using IniParser.Model;
+using JetBrains.Annotations;
 
 /// <summary>
 /// Configuration of a standard IceShell interpreter.
 /// </summary>
+[PublicAPI]
 public class ShellSettings
 {
     /// <summary>
