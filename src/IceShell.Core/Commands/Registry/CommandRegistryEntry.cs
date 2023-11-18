@@ -71,11 +71,38 @@ public class CommandRegistryEntry
     }
 
     /// <summary>
+    /// Creates a new value parameter and registers it to this entry.
+    /// </summary>
+    /// <param name="referenceName">The reference name of the value parameter.</param>
+    /// <param name="position">The position of the value parameter.</param>
+    /// <param name="required">If <see langword="true"/>, the value is required.</param>
+    /// <returns>The created command value parameter definition.</returns>
+    public CommandValueInfo AddValue(string referenceName, int position, bool required = false)
+    {
+        var result = new CommandValueInfo(referenceName, position, required);
+        AddValue(result);
+        return result;
+    }
+
+    /// <summary>
     /// Registers a new option parameter.
     /// </summary>
     /// <param name="info">The option info.</param>
     public void AddOption(CommandOptionInfo info)
     {
         Options[info.Identifier] = info;
+    }
+
+    /// <summary>
+    /// Creates a new option parameter and registers it to this entry.
+    /// </summary>
+    /// <param name="identifier">The identifier of the option.</param>
+    /// <param name="isSwitch">If <see langword="true"/>, this option represents a boolean value which represents whether the option was specified.</param>
+    /// <returns>The created command option parameter.</returns>
+    public CommandOptionInfo AddOption(char identifier, bool isSwitch)
+    {
+        var result = new CommandOptionInfo(identifier, isSwitch);
+        AddOption(result);
+        return result;
     }
 }

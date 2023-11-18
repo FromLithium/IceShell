@@ -10,6 +10,7 @@ using IceShell.Core.Exceptions;
 /// <summary>
 /// Represents a command dispatcher.
 /// </summary>
+[Obsolete("Use ICommandRegistryDispatcher.")]
 public interface ICommandDispatcher
 {
     /// <summary>

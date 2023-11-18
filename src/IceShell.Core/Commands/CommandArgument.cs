@@ -13,6 +13,7 @@ using System.Text;
 /// <summary>
 /// Provides model and parsing services for the modern command parsing routine.
 /// </summary>
+[Obsolete("Use related services via CommandParsingProvider.")]
 public class CommandArgument
 {
     private readonly SyntaxCommandInvocation _command;

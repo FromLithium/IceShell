@@ -74,14 +74,7 @@ public class AnnotatedCommandRegistry
                     // Register values first
                     case ValueAttribute valAttr:
                     {
-                        var valInfo = new CommandValueInfo
-                        {
-                            Position = valAttr.Position,
-                            ReferenceName = valAttr.Name,
-                            Required = valAttr.Required
-                        };
-                    
-                        entry.AddValue(valInfo);
+                        var valInfo = entry.AddValue(valAttr.Name, valAttr.Position, valAttr.Required);
                         outProvider.AddValue(valInfo, property);
                         break;
                     }
@@ -90,8 +83,7 @@ public class AnnotatedCommandRegistry
                     case OptionAttribute optAttr:
                     {
                         Debug.WriteLine($"  [Option] {optAttr.Character} (hasValue: {optAttr.HasValue}) -> {property.Name}");                        
-                        var optInfo = new CommandOptionInfo(optAttr.Character, !optAttr.HasValue);
-                        entry.AddOption(optInfo);
+                        var optInfo = entry.AddOption(optAttr.Character, !optAttr.HasValue);
                         outProvider.AddOption(optInfo, property);
                         break;
                     }
@@ -112,7 +104,7 @@ public class AnnotatedCommandRegistry
         return result;
     }
 
-    internal CommandResult ExecuteAnnotatedCommand(CommandRegistryEntry entry,
+    private CommandResult ExecuteAnnotatedCommand(CommandRegistryEntry entry,
         CommandContext context,
         IShell shell,
         ICommandExecutor executor)

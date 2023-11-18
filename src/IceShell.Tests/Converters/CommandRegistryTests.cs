@@ -45,6 +45,21 @@ public class CommandRegistryTests
             Assert.That(dispatcher.HasAlias("test"));
         });
     }
+    
+    [Test]
+    public void Registry_IdentifierCaseSensitive()
+    {
+        var dispatcher = new RegistryCommandDispatcher();
+        var registry = new AnnotatedCommandRegistry(dispatcher);
+        
+        registry.Register(typeof(TestCommand));
+        Assert.Multiple(() =>
+        {
+            Assert.That(dispatcher.AnyCommand("TEST"), Is.False);
+            Assert.That(dispatcher.AnyCommand("TeSt"), Is.False);
+            Assert.That(dispatcher.AnyCommand("test"), Is.True);
+        });
+    }
 
     [Test]
     public void ResolveAnnotatedCommand_Simple()

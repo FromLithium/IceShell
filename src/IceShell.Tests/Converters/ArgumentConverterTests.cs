@@ -10,8 +10,9 @@ public class ArgumentConverterTests
     public void TryConvert_Enum()
     {
         var converter = new ArgumentConvertService();
-        Assert.That(converter.TryConvert("ParsingFailure", typeof(CommandErrorCode), out var result) 
-                    && result?.Equals(CommandErrorCode.ParsingFailure) == true);
+        converter.AddDefaultConverters();
+        Assert.That(converter.TryConvert("ParsingFailure", typeof(CommandErrorCode), out var result));
+        Assert.That(result, Is.EqualTo(CommandErrorCode.ParsingFailure));
     }
 
     [Test]
@@ -34,7 +35,7 @@ public class ArgumentConverterTests
     public void UInt8Converter_Convert()
     {
         var converter = new ByteArgumentConverter();
-        Assert.That(converter.TryConvert("255", typeof(CommandErrorCode), out var result) 
+        Assert.That(converter.TryConvert("255", typeof(byte), out var result) 
                     && object.Equals(result, (byte)255));
     }
     
@@ -42,7 +43,15 @@ public class ArgumentConverterTests
     public void Int16Converter_Convert()
     {
         var converter = new Int16ArgumentConverter();
-        Assert.That(converter.TryConvert("255", typeof(CommandErrorCode), out var result) 
-                    && object.Equals(result, (byte)255));
+        Assert.That(converter.TryConvert("32767", typeof(short), out var result) 
+                    && object.Equals(result, (short)32767));
+    }
+    
+    [Test]
+    public void Int32Converter_Convert()
+    {
+        var converter = new Int32ArgumentConverter();
+        Assert.That(converter.TryConvert("255555", typeof(int), out var result) 
+                    && object.Equals(result, 255555));
     }
 }

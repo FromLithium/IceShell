@@ -10,6 +10,7 @@ using IceShell.Core.Commands;
 /// Represents a command manager that provides registration services.
 /// </summary>
 /// <seealso cref="NexusKrop.IceShell.Core.Commands.CommandManager"/>
+[Obsolete("Use IRegistryCommandDispatcher instead.")]
 public interface ICommandManager
 {
     /// <summary>

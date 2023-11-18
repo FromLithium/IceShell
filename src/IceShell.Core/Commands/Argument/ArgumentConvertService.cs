@@ -10,8 +10,8 @@ using IceShell.Core.Api.Commands;
 internal class ArgumentConvertService : ICommandArgumentConverter
 {
     private readonly Dictionary<Type, IArgumentConverter> _converters = new();
-
-    internal ArgumentConvertService RegisterConverter(Type type, IArgumentConverter converter)
+    
+    public ICommandArgumentConverter RegisterConverter(Type type, IArgumentConverter converter)
     {
         _converters.Add(type, converter);
         return this;

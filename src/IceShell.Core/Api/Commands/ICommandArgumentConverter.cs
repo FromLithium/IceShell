@@ -12,6 +12,14 @@ using IceShell.Core.Commands.Argument;
 public interface ICommandArgumentConverter : IArgumentConverter
 {
     /// <summary>
+    /// Registers the specified converter and associates it to the specified type.
+    /// </summary>
+    /// <param name="type">The type to register converter to.</param>
+    /// <param name="converter">The converter to register.</param>
+    /// <returns>This instance, for chaining.</returns>
+    ICommandArgumentConverter RegisterConverter(Type type, IArgumentConverter converter);
+    
+    /// <summary>
     /// Determines whether a string argument value can be converted to the specified
     /// <paramref name="type"/>.
     /// </summary>
