@@ -17,6 +17,17 @@ internal class ArgumentConvertService : ICommandArgumentConverter
         return this;
     }
 
+    internal void AddDefaultConverters()
+    {
+        RegisterConverter(typeof(Enum), new EnumArgumentConverter())
+            .RegisterConverter(typeof(byte), new ByteArgumentConverter())
+            .RegisterConverter(typeof(sbyte), new SByteArgumentConverter())
+            .RegisterConverter(typeof(short), new Int16ArgumentConverter())
+            .RegisterConverter(typeof(int), new Int32ArgumentConverter())
+            .RegisterConverter(typeof(long), new Int64ArgumentConverter())
+            .RegisterConverter(typeof(string), new StringArgumentConverter());
+    }
+
     internal void UnregisterConverter(Type type)
     {
         _converters.Remove(type);

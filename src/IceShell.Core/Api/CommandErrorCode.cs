@@ -75,5 +75,9 @@ public enum CommandErrorCode
     /// <summary>
     /// Requires pipeline input.
     /// </summary>
-    RequiresPipelineInput
+    RequiresPipelineInput,
+    /// <summary>
+    /// Command not found.
+    /// </summary>
+    BadCommand
 }

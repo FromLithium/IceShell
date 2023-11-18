@@ -3,6 +3,7 @@
 
 namespace IceShell.Core.Commands.Registry;
 
+using System.Diagnostics;
 using System.Reflection;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
@@ -59,6 +60,8 @@ public class AnnotatedCommandRegistry
             entry.VariableValues = true;
         }
 
+        Debug.WriteLine($"Command registry: {entry.Identifier} -> {type.FullName}");
+        
         foreach (var property in type.GetProperties())
         {
             property.GetCustomAttributes().ForEach(x =>
@@ -86,6 +89,7 @@ public class AnnotatedCommandRegistry
                         throw new InvalidOperationException($"Attempting to register property {property.Name} without value and property is not boolean");
                     case OptionAttribute optAttr:
                     {
+                        Debug.WriteLine($"  [Option] {optAttr.Character} (hasValue: {optAttr.HasValue}) -> {property.Name}");                        
                         var optInfo = new CommandOptionInfo(optAttr.Character, !optAttr.HasValue);
                         entry.AddOption(optInfo);
                         outProvider.AddOption(optInfo, property);

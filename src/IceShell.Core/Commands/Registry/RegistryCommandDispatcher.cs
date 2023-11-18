@@ -25,23 +25,29 @@ using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Parsing;
 using IceShell.Core.Exceptions;
 using IceShell.Parsing;
-using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.CLI;
 using NexusKrop.IceShell.Core.FileSystem;
 
-internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
+/// <summary>
+/// Provides the default implementation for the <see cref="IRegistryCommandDispatcher"/> interface. Do not use the API directly;
+/// rather, store and pass this instance as <see cref="IRegistryCommandDispatcher"/>.
+/// </summary>
+public class RegistryCommandDispatcher : IRegistryCommandDispatcher
 {
     private readonly Dictionary<string, CommandRegistryEntry> _commandRegistry = new();
     private readonly Dictionary<string, string> _aliases = new();
     private readonly Dictionary<CommandRegistryEntry, CommandDelegate> _commandDelegates = new();
 
+    /// <inheritdoc />
     public int AliasCount => _aliases.Count;
 
+    /// <inheritdoc />
     public IEnumerable<string> EnumerateAliases()
     {
         return _aliases.Keys;
     }
 
+    /// <inheritdoc />
     public IEnumerable<string> EnumerateAliases(string commandId)
     {
         if (!_commandRegistry.ContainsKey(commandId))
@@ -52,16 +58,19 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
         return _aliases.Where(x => x.Value == commandId).Select(x => x.Key);
     }
 
+    /// <inheritdoc />
     public bool AnyCommand()
     {
         return _commandRegistry.Count > 0;
     }
 
+    /// <inheritdoc />
     public bool AnyCommand(string id)
     {
         return _commandRegistry.ContainsKey(id);
     }
 
+    /// <inheritdoc />
     public void Register(CommandRegistryEntry command, CommandDelegate routine)
     {
         _commandRegistry[command.Identifier] = command;
@@ -69,6 +78,7 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
         PutAlias(command.Identifier, command.Identifier);
     }
 
+    /// <inheritdoc />
     public bool SearchInfoByAlias(string alias, out CommandRegistryEntry? result)
     {
         if (!_aliases.TryGetValue(alias.ToUpperInvariant(), out var id))
@@ -87,11 +97,13 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
         return true;
     }
 
+    /// <inheritdoc />
     public bool HasAlias(string alias)
     {
         return _aliases.ContainsKey(alias.ToUpperInvariant());
     }
 
+    /// <inheritdoc />
     public void PutAlias(string alias, string id)
     {
         if (!_commandRegistry.ContainsKey(id))
@@ -102,6 +114,7 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
         _aliases.Add(alias.ToUpperInvariant(), id);
     }
 
+    /// <inheritdoc />
     public CommandSectionCompound Parse(string line)
     {
         var statements = new LineParser().ParseLine(line);
@@ -112,6 +125,7 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
         return new CommandSectionCompound(sysCompound);
     }
 
+    /// <inheritdoc />
     public CommandSection ParseSection(SyntaxSegment segment)
     {
         if (segment.Type == SegmentType.ExternalCommand)
@@ -143,11 +157,13 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
         return parsingProvider.Parse();
     }
 
+    /// <inheritdoc />
     public CommandResult Execute(IShell shell, ICommandExecutor executor, string line)
     {
         return Execute(shell, executor, Parse(line));
     }
 
+    /// <inheritdoc />
     public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context, RegistryCommandParseResult parseResult)
     {
         if (!_commandRegistry.TryGetValue(parseResult.CommandId, out var command) ||
@@ -167,6 +183,7 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
         }
     }
 
+    /// <inheritdoc />
     public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context, CommandSection section)
     {
         if (string.IsNullOrWhiteSpace(section.Name))
@@ -223,6 +240,7 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
         }
     }
 
+    /// <inheritdoc />
     public CommandResult Execute(IShell shell, ICommandExecutor executor, CommandSectionCompound compound)
     {
         var inAction = false;
@@ -241,6 +259,9 @@ internal class RegistryCommandDispatcher : IRegistryCommandDispatcher
             if (nextAction == SyntaxNextAction.Redirect)
             {
                 context.Retrieval = lastOutStream;
+                
+                // Justification: this is a fail-safe measure.
+                // ReSharper disable once RedundantAssignment
                 lastOutStream = null;
             }
 

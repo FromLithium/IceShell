@@ -33,12 +33,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
-using global::IceShell.Core.Api.Commands;
-using global::IceShell.Core.Commands.Registry;
 
 /// <summary>
 /// Provides services for the registration and lookup for the registered commands.
 /// </summary>
+[Obsolete("Use RegistryCommandDispatcher.")]
 public class CommandManager : ICommandManager
 {
     private static readonly Type[] DefaultCommands = new Type[]

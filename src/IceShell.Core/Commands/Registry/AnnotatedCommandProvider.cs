@@ -3,6 +3,7 @@
 
 namespace IceShell.Core.Commands.Registry;
 
+using System.Diagnostics;
 using System.Reflection;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
@@ -17,11 +18,16 @@ internal class AnnotatedCommandProvider
     private readonly Dictionary<CommandValueInfo, PropertyInfo> _values = new();
     private readonly ArgumentConvertService _converter = new();
 
-    internal AnnotatedCommandProvider(IRegistryCommandDispatcher dispatcher, Type type, PropertyInfo? variableBuffer = null)
+    internal AnnotatedCommandProvider(IRegistryCommandDispatcher dispatcher, Type type, PropertyInfo? variableBuffer = null, bool addDefaultConverters = true)
     {
         _dispatcher = dispatcher;
         this.Type = type;
         VariableBuffer = variableBuffer;
+
+        if (addDefaultConverters)
+        {
+            _converter.AddDefaultConverters();
+        }
     }
 
     internal Type Type { get; }
@@ -72,6 +78,8 @@ internal class AnnotatedCommandProvider
     
     internal void AddOption(CommandOptionInfo option, PropertyInfo property)
     {
+        Debug.WriteLine($"Command option '/{option.Identifier}', switch: {option.IsSwitch}");
+        
         if (option.IsSwitch)
         {
             AddSwitch(option, property);
