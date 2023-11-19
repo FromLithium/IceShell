@@ -280,7 +280,13 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
             }
             else
             {
-                var startInfo = Executive.CreateStartInfo(line);
+                // If no such external command is found, then we can declare that the command does not exist
+                // and we should report bad command rather than throwing an exception.
+                if (!Executive.TryCreateStartInfo(line, out var startInfo))
+                {
+                    return CommandResult.WithError(CommandErrorCode.BadCommand,
+                        LangMessage.GetFormat("shell.bad_command", line.Name));
+                }
 
                 // RedirectTo: Redirect from last section to this section.
                 var redirectTo = inAction && nextAction == SyntaxNextAction.Redirect && context.Retrieval != null;

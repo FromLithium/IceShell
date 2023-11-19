@@ -32,7 +32,7 @@ public static class Executive
             !(section.Name.StartsWith('.') || Path.IsPathFullyQualified(section.Name)),
             section.Statements?.Select(x => x.Content) ?? Enumerable.Empty<string>());
     }
-
+    
     private static ProcessStartInfo CreateStartInfo(string relativeFile, bool searchInPath, IEnumerable<string>? args)
     {
         var actual = searchInPath ? PathSearcher.SearchExecutable(relativeFile)
@@ -51,6 +51,36 @@ public static class Executive
         args?.ForEach(result.ArgumentList.Add);
 
         return result;
+    }
+
+    internal static bool TryCreateStartInfo(CommandSection section, out ProcessStartInfo? result)
+    {
+        return TryCreateStartInfo(section.Name,
+            !(section.Name.StartsWith('.') || Path.IsPathFullyQualified(section.Name)),
+            section.Statements?.Select(x => x.Content) ?? Enumerable.Empty<string>(),
+            out result);
+    }
+
+    private static bool TryCreateStartInfo(string relativeFile, bool searchInPath, IEnumerable<string>? args,
+        out ProcessStartInfo? result)
+    {
+        var actual = searchInPath ? PathSearcher.SearchExecutable(relativeFile)
+            : Path.GetFullPath(relativeFile, Directory.GetCurrentDirectory());
+
+        if (actual == null || !File.Exists(actual))
+        {
+            result = null;
+            return false;
+        }
+
+        result = new ProcessStartInfo(actual)
+        {
+            UseShellExecute = false
+        };
+
+        args?.ForEach(result.ArgumentList.Add);
+
+        return true;
     }
     #endregion
 
