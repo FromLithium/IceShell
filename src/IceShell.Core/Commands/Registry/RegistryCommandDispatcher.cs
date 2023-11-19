@@ -282,7 +282,8 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
             {
                 // If no such external command is found, then we can declare that the command does not exist
                 // and we should report bad command rather than throwing an exception.
-                if (!Executive.TryCreateStartInfo(line, out var startInfo))
+                if (!Executive.TryCreateStartInfo(line, out var startInfo)
+                    || startInfo == null)
                 {
                     return CommandResult.WithError(CommandErrorCode.BadCommand,
                         LangMessage.GetFormat("shell.bad_command", line.Name));
@@ -309,6 +310,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
 
                 Executive.WatchProcess(process);
                 process.WaitForExit();
+                exitCode = CommandResult.WithCode(process.ExitCode);
 
                 // The redirection of the standard output from this command.
                 if (redirectFrom)
