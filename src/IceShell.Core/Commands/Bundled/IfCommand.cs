@@ -31,7 +31,15 @@ public class IfCommand : IShellCommand
         /// <summary>
         /// Matches an environment variable.
         /// </summary>
-        Variable
+        Variable,
+        /// <summary>
+        /// Determines whether a file exists.
+        /// </summary>
+        FileExists,
+        /// <summary>
+        /// Determines whether a directory exists.
+        /// </summary>
+        DirectoryExists
     }
 
     /// <summary>
@@ -116,6 +124,24 @@ public class IfCommand : IShellCommand
                 }
 
                 matchOk = checkVal.Equals(shell.LastError);
+                break;
+            case IfConditionType.FileExists:
+                if (!string.IsNullOrWhiteSpace(MatchValue))
+                {
+                    return CommandResult.WithError(CommandErrorCode.BadArgument,
+                        LangMessage.Get("command.if.match_existence_but_value"));
+                }
+
+                matchOk = File.Exists(MatchName);
+                break;
+            case IfConditionType.DirectoryExists:
+                if (!string.IsNullOrWhiteSpace(MatchValue))
+                {
+                    return CommandResult.WithError(CommandErrorCode.BadArgument,
+                        LangMessage.Get("command.if.match_existence_but_value"));
+                }
+
+                matchOk = Directory.Exists(MatchName);
                 break;
         }
 

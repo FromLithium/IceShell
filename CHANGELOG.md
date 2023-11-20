@@ -54,6 +54,8 @@ This version is to be the Anniversary Preview version.
     - Introduced a new `CommandInfo` attribute for the API that replaces the prior `ComplexCommand` attribute.
     - Command registration now longer holds the command and argument descriptions.
 - `PROMPT` command will check the syntax of the prompt template.
+- `IF` command now supports `FileExists` and `DirectoryExists` existence check conditions.
+- Tilde symbol (`~`) at the beginning of a path will now be expanded to the executing user's profile (otherwise known as `HOME`) directory.
 
 #### Shell
 
