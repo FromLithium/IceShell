@@ -64,6 +64,7 @@ This version is to be the Anniversary Preview version.
 
 - Fixed an issue resulted in pipeline redirection stopped working.
 - Fixed an issue resulted in `FileNotFoundException` displayed when an unrecognised command was typed in rather than an unknown command error.
+- Fixed an issue where error code 2 (`ExternalStartFail`) is always returned for external commands regardless of the exit code of that command.
 - Fixed an issue where the notations for options with and without a value in help descriptions were reversed.
 
 ## [v0.2.0-alpha] - 2023/10/18

@@ -82,17 +82,36 @@ public static class PathSearcher
     /// </summary>
     /// <param name="path">The path to expand.</param>
     /// <param name="lenient">If <see langword="true"/>, unknown or malformed environment variables will not cause <see cref="CommandFormatException"/> to be thrown.</param>
+    /// <param name="expandHome">If <see langword="true"/>, expands the home directory (by <c>~</c> symbol).</param>
     /// <returns>The expanded path.</returns>
-    public static string ExpandVariables(ReadOnlySpan<char> path, bool lenient = false)
+    public static string ExpandVariables(ReadOnlySpan<char> path, bool lenient = false, bool expandHome = true)
     {
         var inVariable = false;
+
+        // If it is solely "~" symbol then do not bother do the rest of the processing and
+        // return the HOME.
+        if (expandHome && path.Length == 1 && path[0] == '~')
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+        
         var builder = new StringBuilder();
         var varBuilder = new StringBuilder();
+        var firstChara = true;
 
-        for (int i = 0; i < path.Length; i++)
+        foreach (var x in path)
         {
-            var x = path[i];
-
+            // If it is the first character first check if it is "~".
+            if (firstChara && expandHome)
+            {
+                firstChara = false;
+                if (x == '~')
+                {
+                    builder.Append(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+                    continue;
+                }
+            }
+            
             if (x == '%')
             {
                 if (!inVariable)
@@ -101,30 +120,28 @@ public static class PathSearcher
                     inVariable = true;
                     continue;
                 }
-                else
+
+                // End an environment variable.
+                inVariable = false;
+
+                // Get variable name and clear builder to reuse.
+                var variableName = varBuilder.ToString();
+                varBuilder.Clear();
+
+                if (!string.IsNullOrEmpty(variableName))
                 {
-                    // End an environment variable.
-                    inVariable = false;
+                    var envVar = Environment.GetEnvironmentVariable(variableName);
 
-                    // Get variable name and clear builder to reuse.
-                    var variableName = varBuilder.ToString();
-                    varBuilder.Clear();
-
-                    if (!string.IsNullOrEmpty(variableName))
+                    if (envVar == null && !lenient)
                     {
-                        var envVar = Environment.GetEnvironmentVariable(variableName);
-
-                        if (envVar == null && !lenient)
-                        {
-                            throw ExceptionHelper.UnknownEnvironmentVariable(variableName);
-                        }
-
-                        builder.Append(envVar ?? string.Empty);
-                        continue;
+                        throw ExceptionHelper.UnknownEnvironmentVariable(variableName);
                     }
 
-                    // If otherwise, this is hereby escaped.
+                    builder.Append(envVar ?? string.Empty);
+                    continue;
                 }
+
+                // If otherwise, this is hereby escaped.
             }
 
             if (inVariable)

@@ -1,4 +1,4 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace NexusKrop.IceShell.Core.Commands.Bundled;
@@ -38,6 +38,12 @@ public class EchoCommandEx : IShellCommand
     /// </summary>
     [Option('E', false)]
     public bool ExpandVariables { get; set; }
+    
+    /// <summary>
+    /// Whether to expand like a real path.
+    /// </summary>
+    [Option('P', false)]
+    public bool ExpandLikePath { get; set; }
 
     /// <inheritdoc/>
     public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
@@ -46,9 +52,9 @@ public class EchoCommandEx : IShellCommand
         {
             var finalText = Message;
 
-            if (ExpandVariables && Message != null)
+            if ((ExpandVariables || ExpandLikePath) && Message != null)
             {
-                finalText = PathSearcher.ExpandVariables(Message, true);
+                finalText = PathSearcher.ExpandVariables(Message, true, ExpandLikePath);
             }
 
             Console.WriteLine(finalText ?? Environment.NewLine);
