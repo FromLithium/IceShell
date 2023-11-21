@@ -263,4 +263,9 @@ public static class PathSearcher
             .FirstOrDefault(possible => File.Exists(possible)
                                         && FileUtility.IsExecutable(possible));
     }
+
+    // public static string? SearchExecuteItem(string name, out bool isExecutable)
+    // {
+    //     EnsureFileName(name);
+    // }
 }

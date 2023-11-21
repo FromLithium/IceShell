@@ -79,5 +79,9 @@ public enum CommandErrorCode
     /// <summary>
     /// Command not found.
     /// </summary>
-    BadCommand
+    BadCommand,
+    /// <summary>
+    /// Pipe redirection to the current command is not supported.
+    /// </summary>
+    PipelineToNotSupported
 }

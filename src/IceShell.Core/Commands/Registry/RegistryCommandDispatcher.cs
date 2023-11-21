@@ -27,7 +27,6 @@ using IceShell.Core.Exceptions;
 using IceShell.Core.FileSystem;
 using IceShell.Parsing;
 using NexusKrop.IceShell.Core.CLI;
-using NexusKrop.IceShell.Core.FileSystem;
 
 /// <summary>
 /// Provides the default implementation for the <see cref="IRegistryCommandDispatcher"/> interface. Do not use the API directly;
@@ -266,7 +265,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
                 lastOutStream = null;
             }
 
-            var exitCode = CommandResult.WithError(CommandErrorCode.ExternalStartFail);
+            CommandResult exitCode;
             TextReader? pipeStream = null;
 
             if (line.IsCommand)
@@ -282,7 +281,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
             {
                 // If no such external command is found, then we can declare that the command does not exist
                 // and we should report bad command rather than throwing an exception.
-                if (!Executive.TryCreateStartInfo(line, out var startInfo)
+                if (!Executive.TryCreateStartInfo(line, out var startInfo, out var isExecutable)
                     || startInfo == null)
                 {
                     return CommandResult.WithError(CommandErrorCode.BadCommand,
@@ -298,19 +297,38 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
                 startInfo.RedirectStandardOutput = redirectFrom;
                 startInfo.RedirectStandardInput = redirectTo;
 
-                var process = Process.Start(startInfo)
-                    ?? throw new InvalidOperationException("Failed to create process.");
+                var process = Process.Start(startInfo);
+
+                // No process is started thus the startup is failed.
+                if (process == null)
+                {
+                    return CommandResult.WithError(CommandErrorCode.ExternalStartFail);
+                }
 
                 // The redirection of the standard input from last command.
                 if (redirectTo)
                 {
+                    if (!isExecutable)
+                    {
+                        return CommandResult.WithError(CommandErrorCode.PipelineToNotSupported);
+                    }
+                    
                     process.StandardInput.Write(context.Retrieval!.ReadToEnd());
                     context.Retrieval.Dispose();
                 }
 
                 Executive.WatchProcess(process);
-                process.WaitForExit();
-                exitCode = CommandResult.WithCode(process.ExitCode);
+
+                if (isExecutable)
+                {
+                    process.WaitForExit();
+                }
+
+                // If it is not executable, we start the app, its running, and we are OK.
+                // If it is, because we waited for its exit, we get its exit code.
+                exitCode = isExecutable ?
+                    CommandResult.WithCode(process.ExitCode) :
+                    CommandResult.Ok();
 
                 // The redirection of the standard output from this command.
                 if (redirectFrom)
