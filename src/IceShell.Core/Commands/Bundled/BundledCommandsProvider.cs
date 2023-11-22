@@ -19,7 +19,6 @@ public sealed class BundledCommandsProvider
     {
         typeof(DirCommandEx),
         typeof(EchoCommandEx),
-        typeof(ExitCommandEx),
         typeof(CdCommandEx),
         typeof(CopyCommandEx),
         typeof(ShellVersionCommand),

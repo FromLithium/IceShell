@@ -37,6 +37,7 @@ public class DateCommand : IShellCommand
     [Option('U', false)]
     public bool UniversalTime { get; set; }
 
+    /// <inheritdoc />
     public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
     {
         var now = UniversalTime ? DateTime.UtcNow : DateTime.Now;

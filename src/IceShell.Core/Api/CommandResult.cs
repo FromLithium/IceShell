@@ -53,6 +53,18 @@ public record struct CommandResult
     public string? Message { get; set; }
 
     /// <summary>
+    /// Determines whether the specified command result is of a successful status.
+    /// </summary>
+    /// <param name="result">The result to determine.</param>
+    /// <returns><see langword="true"/> if the result represents successful status; otherwise, <see langword="false"/>.</returns>
+    public static bool IsSuccess(CommandResult result)
+    {
+        return result.Exception == null
+               && result.ErrorCode == CommandErrorCode.None
+               && result.ExitCode == 0;
+    }
+    
+    /// <summary>
     /// Creates a new instance of <see cref="CommandResult"/> with successful exit code, and optionally
     /// with a redirection output.
     /// </summary>

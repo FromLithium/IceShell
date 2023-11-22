@@ -78,9 +78,7 @@ if (sh.AddPlatformModules)
     }
 }
 
-// Create default commands.
-var bundledProvider = new BundledCommandsProvider(shell.Dispatcher);
-bundledProvider.Register();
+DefaultCommands.Register(shell.Dispatcher);
 
 var retCode = -255;
 
