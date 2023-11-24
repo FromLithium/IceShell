@@ -137,10 +137,17 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
         {
             throw new InvalidOperationException("The segment is invalid.");
         }
-                
-        if (!_commandRegistry.TryGetValue(segment.InternalCommand.Name, out var definition))
+
+        if (!_aliases.TryGetValue(segment.InternalCommand.Name.ToUpperInvariant(),
+            out var id))
         {
             throw new ArgumentException("The specified command is not associated with this dispatcher.",
+                nameof(segment));
+        }
+        
+        if (!_commandRegistry.TryGetValue(id, out var definition))
+        {
+            throw new ArgumentException("The specified command that the aliases is pointing to is not associated with this dispatcher.",
                 nameof(segment));
         }
 
