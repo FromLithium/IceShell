@@ -5,6 +5,7 @@ namespace NexusKrop.IceShell.Core.Completion;
 
 using global::IceShell.Core.Api;
 using global::IceShell.Core.Api.Commands;
+using global::IceShell.Parsing;
 using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.Completion.Cache;
 using ReadLineReboot;
@@ -24,14 +25,21 @@ internal class ShellCompletionHandler : IAutoCompleteHandler
 
     public string[] GetSuggestions(string text, int index)
     {
-        var commands = CompleteCommand(text);
+        var parser = new LineParser();
+        var statements = parser.ParseLine(text);
 
-        if (commands?.IsEmpty() != false)
+        if (statements.Count == 1)
         {
-            return _cache.Complete(text);
+            var commands = CompleteCommandNames(statements[0].Content);
+
+            return commands?.IsEmpty() != false ? _cache.Complete(text) : commands;
+        }
+        else
+        {
+            // TODO implement this
         }
 
-        return commands;
+        return Array.Empty<string>();
     }
 
     /// <summary>
@@ -39,7 +47,7 @@ internal class ShellCompletionHandler : IAutoCompleteHandler
     /// </summary>
     /// <param name="begin">The characters to search for completion.</param>
     /// <returns>The list of command names.</returns>
-    public string[] CompleteCommand(string begin)
+    private string[] CompleteCommandNames(string begin)
     {
         if (string.IsNullOrWhiteSpace(begin))
         {
@@ -50,13 +58,15 @@ internal class ShellCompletionHandler : IAutoCompleteHandler
 
         foreach (var command in _manager.EnumerateAliases())
         {
-            if (command.Equals(begin))
+            var upper = begin.ToUpperInvariant();
+            
+            if (command.Equals(upper))
             {
                 list.Add(command);
                 break;
             }
 
-            if (command.StartsWith(begin))
+            if (command.StartsWith(upper))
             {
                 list.Add(command);
             }
