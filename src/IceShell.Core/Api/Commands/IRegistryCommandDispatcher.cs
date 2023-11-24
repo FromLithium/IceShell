@@ -78,7 +78,17 @@ public interface IRegistryCommandDispatcher
     /// </summary>
     /// <param name="line">The line to parse.</param>
     /// <returns>The parse result.</returns>
-    CommandSectionCompound Parse(string line);
+    CommandSectionCompound Parse(string line)
+    {
+        return Parse((ReadOnlySpan<char>)line);
+    }
+
+    /// <summary>
+    /// Parses the specified command line for execution at a later time.
+    /// </summary>
+    /// <param name="line">The line to parse.</param>
+    /// <returns>The parse result.</returns>
+    CommandSectionCompound Parse(ReadOnlySpan<char> line);
 
     /// <summary>
     /// Parses the specified segment to its internal command equivalent.

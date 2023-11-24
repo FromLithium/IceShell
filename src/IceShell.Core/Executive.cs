@@ -56,7 +56,7 @@ public static class Executive
     internal static bool TryCreateStartInfo(CommandSection section, out ProcessStartInfo? result, out bool isExecutable)
     {
         return TryCreateStartInfo(section.Name,
-            !(section.Name.StartsWith('.') || Path.IsPathFullyQualified(section.Name)),
+            !PathSearcher.IsQualifiedPath(section.Name),
             section.Statements?.Select(x => x.Content) ?? Enumerable.Empty<string>(),
             out result,
             out isExecutable);

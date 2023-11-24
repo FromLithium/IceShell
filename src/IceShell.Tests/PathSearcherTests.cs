@@ -20,6 +20,37 @@ public class PathSearcherTests
     }
 
     [Test]
+    public void ExpandHome_Basic()
+    {
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var separator = Path.DirectorySeparatorChar;
+        var basePath = $"{separator}Documents{separator}Test.txt";
+        var combined = Path.Combine(home, basePath);
+        
+        Assert.That(PathSearcher.ExpandHome($"~{basePath}"),
+            Is.EqualTo(combined));
+    }
+
+    [Test]
+    public void ExpandHome_NoExpandMiddle()
+    {
+        var separator = Path.DirectorySeparatorChar;
+        var testPath = $"{separator}~{separator}test";
+        
+        Assert.That(PathSearcher.ExpandHome(testPath),
+            Is.EqualTo(testPath));
+    }
+
+    [Test]
+    public void ExpandHome_JustHome()
+    {
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        
+        Assert.That(PathSearcher.ExpandHome("~"),
+            Is.EqualTo(home));
+    }
+
+    [Test]
     public void ExpandPath_Escape()
     {
         Assert.That(PathSearcher.ExpandVariables("%%"),

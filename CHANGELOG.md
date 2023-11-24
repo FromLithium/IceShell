@@ -32,6 +32,9 @@ This version is to be the Anniversary Preview version.
 #### Syntax
 
 - Added support for single AND symbol operator (`&`) which executes the next command regardless of the result of the last command.
+- Added further cross-platform support for using `~` (tilde) symbol to represent user profile path.
+  - Tilde symbol (`~`) at the beginning of a path will now be expanded to the executing user's profile (otherwise known as `HOME`) directory.
+  - Paths begin with tilde symbol will be counted as a fully qualified path by the execution engine.
 
 #### API
 
@@ -57,7 +60,6 @@ This version is to be the Anniversary Preview version.
     - Command registration now longer holds the command and argument descriptions.
 - `PROMPT` command will check the syntax of the prompt template.
 - `IF` command now supports `FileExists` and `DirectoryExists` existence check conditions.
-- Tilde symbol (`~`) at the beginning of a path will now be expanded to the executing user's profile (otherwise known as `HOME`) directory.
 
 #### Shell
 

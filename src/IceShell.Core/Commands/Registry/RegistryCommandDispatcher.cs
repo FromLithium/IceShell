@@ -115,11 +115,11 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     }
 
     /// <inheritdoc />
-    public CommandSectionCompound Parse(string line)
+    public CommandSectionCompound Parse(ReadOnlySpan<char> line)
     {
         var statements = new LineParser().ParseLine(line);
 
-        var rawCompound = CommandParser.ParseCompound(statements, HasAlias);
+        var rawCompound = CommandParser.ParseCompound(statements, HasAlias, x => PathSearcher.ExpandHome(x));
         var sysCompound = rawCompound.Select(ParseSection);
 
         return new CommandSectionCompound(sysCompound);

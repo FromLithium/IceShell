@@ -20,8 +20,11 @@ public static class CommandParser
     /// </summary>
     /// <param name="statements">The statements.</param>
     /// <param name="isCommandName">A predicate to check if the name provided is a valid command.</param>
+    /// <param name="handleHomePath">A function to convert home path.</param>
     /// <returns>The parsed compound.</returns>
-    public static SyntaxCompound ParseCompound(IReadOnlyList<SyntaxStatement> statements, Predicate<string> isCommandName)
+    public static SyntaxCompound ParseCompound(IReadOnlyList<SyntaxStatement> statements,
+        Predicate<string> isCommandName,
+        Func<string, string>? handleHomePath)
     {
         var thisCompound = new List<SyntaxSegment>();
         var currentSegment = new List<SyntaxStatement>();
@@ -55,6 +58,11 @@ public static class CommandParser
         {
             var fileName = currentSegment![0].Content;
 
+            if (handleHomePath != null && fileName.StartsWith('~'))
+            {
+                fileName = handleHomePath(fileName);
+            }
+            
             if (!fileName.StartsWith('.') && isCommandName(fileName))
             {
                 thisCompound.Add(new SyntaxSegment(ParseSingleCommand(currentSegment),

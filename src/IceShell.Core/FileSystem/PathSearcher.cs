@@ -1,4 +1,4 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Core.FileSystem;
@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Exceptions;
+using JetBrains.Annotations;
 using NexusKrop.IceShell.Core.FileSystem;
 using Spectre.Console;
 
@@ -18,17 +19,10 @@ using Spectre.Console;
 /// </summary>
 public static class PathSearcher
 {
-    /// <summary>
-    /// The shell path separator.
-    /// </summary>
-    public const char SHELL_SEPARATOR = '\\';
+    private const string ComFileExtensionFormat = "{0}.com";
+    private const string ExeFileExtensionFormat = "{0}.exe";
 
-    internal const string ComFileExtensionFormat = "{0}.com";
-    internal const string ExeFileExtensionFormat = "{0}.exe";
-
-    private static readonly IEnumerable<string> PATHS;
-
-    internal const bool UseCustomPathSystem = false;
+    private static readonly IEnumerable<string> Paths;
 
 #pragma warning disable S3963
     // This is a big chunk of complex code that SonarLint is too dumb to detect.
@@ -49,7 +43,7 @@ public static class PathSearcher
 
             // Set PATHS to an empty string enumerable.
 
-            PATHS = Enumerable.Empty<string>();
+            Paths = Enumerable.Empty<string>();
         }
         else
         {
@@ -59,11 +53,11 @@ public static class PathSearcher
             }
         }
 
-        PATHS = result.ToImmutableHashSet();
+        Paths = result.ToImmutableHashSet();
     }
 
     /// <summary>
-    /// Ensures that the specified path is invalid.
+    /// Ensures that the specified path is valid.
     /// </summary>
     /// <param name="path">The path to check.</param>
     /// <exception cref="FormatException">The path is invalid.</exception>
@@ -77,6 +71,75 @@ public static class PathSearcher
         }
     }
 
+    /// <summary>
+    /// Ensures that the specified path is valid.
+    /// </summary>
+    /// <param name="path">The path to check.</param>
+    /// <exception cref="FormatException">The path is invalid.</exception>
+    [PublicAPI]
+    public static void CheckPath(ReadOnlySpan<char> path)
+    {
+        if (!IsPathValid(path))
+        {
+            throw ExceptionHelper.InvalidPath();
+        }
+    }
+
+    /// <summary>
+    /// Determines that whether the specified path contains any of the invalid path characters as
+    /// set out by the operating system.
+    /// </summary>
+    /// <param name="path">The path to check.</param>
+    /// <returns><see langword="true"/> if the path is valid; otherwise, <see langword="false"/>.</returns>
+    [PublicAPI]
+    public static bool IsPathValid(ReadOnlySpan<char> path)
+    {
+        var invalidPathChars = Path.GetInvalidPathChars();
+
+        foreach (var ch in path)
+        {
+            if (invalidPathChars.Contains(ch))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Expands the home directory section of the specified path.
+    /// </summary>
+    /// <param name="path">The path to expand.</param>
+    /// <returns>The expanded path.</returns>
+    public static string ExpandHome(ReadOnlySpan<char> path)
+    {
+        // If it is solely "~" symbol then do not bother do the rest of the processing and
+        // return the HOME.
+        if (path.Length == 1 && path[0] == '~')
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+
+        if (path[0] != '~')
+        {
+            return new string(path);
+        }
+
+        var livePath = path[1..];
+        if (livePath[0] == Path.DirectorySeparatorChar)
+        {
+            livePath = path[2..];
+        }
+        
+        var nextPath = new string(livePath);
+        
+        var profile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+        var result = Path.Combine(profile, nextPath);
+        return result;
+    }
+    
     /// <summary>
     /// Evaluate a path and expands all environment variables within.
     /// </summary>
@@ -191,6 +254,7 @@ public static class PathSearcher
     /// </summary>
     /// <param name="path">The path to check.</param>
     /// <exception cref="CommandFormatException">The specified path is invalid.</exception>
+    [PublicAPI]
     public static void EnsureFileName(string path)
     {
         CheckPath(path);
@@ -258,10 +322,20 @@ public static class PathSearcher
     {
         EnsureFileName(name);
 
-        return (from path in PATHS where Directory.Exists(path)
+        return (from path in Paths where Directory.Exists(path)
             select GetSystemExecutableName(Path.Combine(path, name)))
             .FirstOrDefault(possible => File.Exists(possible)
                                         && FileUtility.IsExecutable(possible));
+    }
+
+    /// <summary>
+    /// Determines whether the specified path is qualified.
+    /// </summary>
+    /// <param name="path">The path to check.</param>
+    /// <returns><see langword="true"/> if the specified path points to a full path; otherwise, <see langword="false"/>.</returns>
+    public static bool IsQualifiedPath(string path)
+    {
+        return path.StartsWith('~') || path.StartsWith('.') || Path.IsPathFullyQualified(path);
     }
 
     // public static string? SearchExecuteItem(string name, out bool isExecutable)
