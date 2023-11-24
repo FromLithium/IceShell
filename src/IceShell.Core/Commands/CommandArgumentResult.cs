@@ -12,58 +12,59 @@ using NexusKrop.IceCube.Collections;
 /// </summary>
 public class CommandArgumentResult
 {
-    private readonly Dictionary<CommandOptionInfo, bool> _switches = new();
-    private readonly Dictionary<CommandOptionInfo, string> _valueOptions = new();
-    private readonly Dictionary<CommandValueInfo, string> _values = new();
-    private readonly bool _final;
+    private readonly Dictionary<char, bool> _switches = new();
+    private readonly Dictionary<char, string> _valueOptions = new();
+    private readonly Dictionary<string, string> _values = new();
+    private readonly List<string> _variableValues = new();
+    private bool _final;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandArgumentResult"/> class.
     /// </summary>
     public CommandArgumentResult()
     {
-        Switches = new ReadOnlyDictionary<CommandOptionInfo, bool>(_switches);
-        ValueOptions = new ReadOnlyDictionary<CommandOptionInfo, string>(_valueOptions);
-        Values = new ReadOnlyDictionary<CommandValueInfo, string>(_values);
-        VariableValues = new List<string>();
+        Switches = new ReadOnlyDictionary<char, bool>(_switches);
+        ValueOptions = new ReadOnlyDictionary<char, string>(_valueOptions);
+        Values = new ReadOnlyDictionary<string, string>(_values);
+        VariableValues = _variableValues;
     }
     
     /// <summary>The switches.</summary>
-    public IReadOnlyDictionary<CommandOptionInfo, bool> Switches { get; }
+    public IReadOnlyDictionary<char, bool> Switches { get; }
 
     /// <summary>The value options.</summary>
-    public IReadOnlyDictionary<CommandOptionInfo, string> ValueOptions { get; }
+    public IReadOnlyDictionary<char, string> ValueOptions { get; }
 
     /// <summary>The values.</summary>
-    public IReadOnlyDictionary<CommandValueInfo, string> Values { get; }
+    public IReadOnlyDictionary<string, string> Values { get; }
 
     /// <summary>
     /// Gets the variable values.
     /// </summary>
-    public IList<string> VariableValues { get; }
+    public IReadOnlyList<string> VariableValues { get; }
 
     /// <summary>
     /// Adds a switch to the parsing result.
     /// </summary>
-    /// <param name="info">The option definition.</param>
+    /// <param name="id">The option definition.</param>
     /// <param name="value">The value.</param>
-    public void AddSwitch(CommandOptionInfo info, bool value = true)
+    public void AddSwitch(char id, bool value = true)
     {
         ThrowIfFinal();
         
-        _switches.Add(info, value);
+        _switches.Add(id, value);
     }
 
     /// <summary>
     /// Adds a value option to the parsing result.
     /// </summary>
-    /// <param name="info">The option definition.</param>
+    /// <param name="id">The option definition.</param>
     /// <param name="value">The value.</param>
-    public void AddValueOption(CommandOptionInfo info, string value)
+    public void AddValueOption(char id, string value)
     {
         ThrowIfFinal();
         
-        _valueOptions.Add(info, value);
+        _valueOptions.Add(id, value);
     }
 
     /// <summary>
@@ -75,7 +76,7 @@ public class CommandArgumentResult
     {
         ThrowIfFinal();
         
-        _values.Add(info, value);
+        _values.Add(info.ReferenceName, value);
     }
 
     /// <summary>
@@ -84,7 +85,17 @@ public class CommandArgumentResult
     /// <param name="value">The value to add.</param>
     public void AddVariable(string value)
     {
-        VariableValues.Add(value);
+        ThrowIfFinal();
+        
+        _variableValues.Add(value);
+    }
+
+    /// <summary>
+    /// Renders this instance immutable after this method call. Any further attempts will result in exceptions.
+    /// </summary>
+    public void MakeFinal()
+    {
+        _final = true;
     }
     
     private void ThrowIfFinal()

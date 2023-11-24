@@ -154,7 +154,11 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     private static CommandArgumentResult InternalParseArgument(SyntaxCommandInvocation invocation, CommandRegistryEntry entry)
     {
         var parsingProvider = new CommandParsingProvider(invocation, entry);
-        return parsingProvider.Parse();
+        
+        // TODO optimise this by separating all value options with switches.
+        return parsingProvider.Parse(entry.Options.Where(x => x.Value.IsSwitch)
+            .Select(x => x.Key)
+            .ToHashSet());
     }
 
     /// <inheritdoc />

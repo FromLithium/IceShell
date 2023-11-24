@@ -75,7 +75,7 @@ public class AnnotatedCommandRegistry
                     case ValueAttribute valAttr:
                     {
                         var valInfo = entry.AddValue(valAttr.Name, valAttr.Position, valAttr.Required);
-                        outProvider.AddValue(valInfo, property);
+                        outProvider.AddValue(valInfo.ReferenceName, property);
                         break;
                     }
                     case OptionAttribute { HasValue: false } when property.PropertyType != typeof(bool):
@@ -84,7 +84,15 @@ public class AnnotatedCommandRegistry
                     {
                         Debug.WriteLine($"  [Option] {optAttr.Character} (hasValue: {optAttr.HasValue}) -> {property.Name}");                        
                         var optInfo = entry.AddOption(optAttr.Character, !optAttr.HasValue);
-                        outProvider.AddOption(optInfo, property);
+
+                        if (optAttr.HasValue)
+                        {
+                            outProvider.AddValueOption(optInfo.Identifier, property);
+                        }
+                        else
+                        {
+                            outProvider.AddSwitch(optInfo.Identifier, property);
+                        }
                         break;
                     }
                 }
@@ -124,12 +132,12 @@ public class AnnotatedCommandRegistry
         
         foreach (var switchVal in args.Switches.Where(x => x.Value))
         {
-            provider.SetSwitchProperty(switchVal.Key, instance);
+            provider.SetSwitchOption(switchVal.Key, switchVal.Value, instance);
         }
 
         foreach (var optionVal in args.ValueOptions)
         {
-            provider.SetProperty(optionVal.Key, optionVal.Value, instance);
+            provider.SetValueOption(optionVal.Key, optionVal.Value, instance);
         }
 
         foreach (var valueVal in args.Values)

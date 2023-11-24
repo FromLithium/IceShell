@@ -35,7 +35,9 @@ This version is to be the Anniversary Preview version.
 
 #### API
 
+- The API surface for value and options acquiring now uses option identifier character and value reference names as the keys of the parameters.
 - Added support for `SByte`, `Byte`, `Int16`, `Int32` and `Int64` arguments.
+- Added support for checking for if a command have succeeded by `bool CommandResult.IsSuccess(CommandResult)`.
 - Moved the following classes to their `IceShell` namespaces:
   - `Shell`
   - `PathSearcher`

@@ -8,6 +8,7 @@ using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Registry;
 using IceShell.Core.Exceptions;
 using IceShell.Parsing;
+using NexusKrop.IceCube.Util.Enumerables;
 
 /// <summary>
 /// Provides registry command parsing services.
@@ -31,8 +32,9 @@ public class CommandParsingProvider
     /// <summary>
     /// Parses all value and option arguments.
     /// </summary>
+    /// <param name="allSwitches">The switches that will be checked for.</param>
     /// <returns>The parse result.</returns>
-    public CommandArgumentResult Parse()
+    public CommandArgumentResult Parse(ISet<char>? allSwitches)
     {
         var result = new CommandArgumentResult();
         
@@ -45,13 +47,16 @@ public class CommandParsingProvider
             ParseStandardValues(result);
         }
 
-        ParseOptions(result);
+        ParseOptions(result, allSwitches);
 
+        result.MakeFinal();
         return result;
     }
 
-    private void ParseOptions(CommandArgumentResult result)
+    private void ParseOptions(CommandArgumentResult result, ISet<char>? allSwitches)
     {
+        var setSwitches = new HashSet<char>();
+        
         foreach (var option in _command.Options)
         {
             if (!_definition.Options.TryGetValue(option.Identifier, out var optionDef))
@@ -66,7 +71,8 @@ public class CommandParsingProvider
                     throw ExceptionHelper.WithName(LangMessage.Get("argument_option_no_value"), option.Identifier);
                 }
                 
-                result.AddSwitch(optionDef, true);
+                result.AddSwitch(optionDef.Identifier, true);
+                setSwitches.Add(optionDef.Identifier);
             }
             else
             {
@@ -75,9 +81,12 @@ public class CommandParsingProvider
                     throw ExceptionHelper.WithName(LangMessage.Get("argument_value_required"), option.Identifier);
                 }
                 
-                result.AddValueOption(optionDef, option.Value);
+                result.AddValueOption(optionDef.Identifier, option.Value);
             }
         }
+
+        allSwitches?.Where(x => !setSwitches.Contains(x))
+            .ForEach(x => result.AddSwitch(x, false));
     }
 
     private void ParseVariableValues(CommandArgumentResult result)

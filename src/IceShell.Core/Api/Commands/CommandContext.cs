@@ -10,7 +10,7 @@ using IceShell.Parsing;
 /// <summary>
 /// Represents a command execution context.
 /// </summary>
-public struct CommandContext
+public readonly struct CommandContext
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandContext"/> structure.
@@ -39,20 +39,39 @@ public struct CommandContext
     /// Gets the arguments supplied to this command.
     /// </summary>
     public CommandArgumentResult Arguments { get; }
-
+    
     /// <summary>
     /// Gets the state of the specified switch option.
     /// </summary>
     /// <param name="option">The option.</param>
     /// <returns><see langword="true" /> if the switch is set; otherwise, <see langword="false" />.</returns>
-    /// <exception cref="ArgumentException">The supplied option is not a switch.</exception>
-    public bool GetSwitch(CommandOptionInfo option)
+    public bool GetSwitch(char option)
     {
-        if (!option.IsSwitch)
+        return Arguments.Switches.ContainsKey(option) && Arguments.Switches[option];
+    }
+
+    /// <summary>
+    /// Gets the value of the specified value option.
+    /// </summary>
+    /// <param name="option">The option.</param>
+    /// <returns>The value of the specified value option.</returns>
+    public string GetOptionValue(char option)
+    {
+        return Arguments.ValueOptions[option];
+    }
+
+    /// <summary>
+    /// Gets the value of the specified value parameter.
+    /// </summary>
+    /// <param name="refName">The reference name of the value parameter.</param>
+    /// <returns>The value of the specified value parameter.</returns>
+    public string? GetValue(string refName)
+    {
+        if (!Arguments.Values.TryGetValue(refName, out var result))
         {
-            throw new ArgumentException("The supplied option is not a switch.", nameof(option));
+            return null;
         }
 
-        return Arguments.Switches.ContainsKey(option) && Arguments.Switches[option];
+        return result;
     }
 }

@@ -21,10 +21,6 @@
     </PackageReference>
     <PackageReference Include="NexusKrop.IceCube" Version="0.4.0-alpha" />
     <PackageReference Include="ReadLine.Reboot" Version="3.4.1" />
-    <PackageReference Include="Roslynator.Analyzers" Version="4.5.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Spectre.Console" Version="0.47.0" />
     <PackageReference Include="Tmds.LibC" Version="0.5.0" />
   </ItemGroup>
