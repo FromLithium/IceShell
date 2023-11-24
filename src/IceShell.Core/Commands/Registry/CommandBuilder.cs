@@ -60,6 +60,16 @@ public class CommandBuilder
     }
 
     /// <summary>
+    /// Registers the command as a greedy string command.
+    /// </summary>
+    /// <returns>This instance, for chaining.</returns>
+    public CommandBuilder GreedyString()
+    {
+        _entry.GreedyString = true;
+        return this;
+    }
+    
+    /// <summary>
     /// Constructs the command and register it to the dispatcher.
     /// </summary>
     /// <param name="dispatcher">The dispatcher to register the command to.</param>

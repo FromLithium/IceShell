@@ -53,8 +53,9 @@ public class PathSearcherTests
     }
 
     [Test]
+    [Platform("Win")]
     public void CheckPath_Windows()
     {
-        Assert.Throws<CommandFormatException>(() => PathSearcher.CheckPath("path?"));
+        Assert.Throws<CommandFormatException>(() => PathSearcher.CheckPath("path|"));
     }
 }

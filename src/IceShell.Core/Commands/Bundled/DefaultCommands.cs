@@ -19,6 +19,7 @@ public static class DefaultCommands
         var provider = new BundledCommandsProvider(dispatcher);
         provider.Register();
 
+        EchoCommand.RegisterTo(dispatcher);
         ExitCommand.RegisterTo(dispatcher);
     }
 }

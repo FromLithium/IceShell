@@ -18,7 +18,6 @@ public sealed class BundledCommandsProvider
     private static readonly Type[] BundledCommands =
     {
         typeof(DirCommandEx),
-        typeof(EchoCommandEx),
         typeof(CdCommandEx),
         typeof(CopyCommandEx),
         typeof(ShellVersionCommand),

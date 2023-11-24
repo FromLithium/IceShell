@@ -71,7 +71,7 @@ public static class PathSearcher
     {
         var invalidPathChars = Path.GetInvalidPathChars();
 
-        if (path.Any(x => invalidPathChars.Contains(x)))
+        if (invalidPathChars.Any(path.Contains))
         {
             throw ExceptionHelper.InvalidPath();
         }
