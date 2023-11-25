@@ -3,6 +3,7 @@
 
 namespace IceShell.Parsing;
 
+using IceShell.Parsing.Util;
 using JetBrains.Annotations;
 
 /// <summary>
@@ -15,7 +16,7 @@ public record SyntaxWord
     /// </summary>
     /// <param name="content">The string content.</param>
     /// <param name="wasQuoted">Whether the statement was specified via a quoted string.</param>
-    [PublicAPI]
+    [Obsolete("Use SyntaxWord(string, WordQuoteType, int) instead.")]
     public SyntaxWord(string content, bool wasQuoted) : this(content, wasQuoted, -1)
     {
     }
@@ -26,10 +27,23 @@ public record SyntaxWord
     /// <param name="content">The string content.</param>
     /// <param name="wasQuoted">Whether the statement was specified via a quoted string.</param>
     /// <param name="startsFrom">The position immediately before the first character of this word from the original string.</param>
-    public SyntaxWord(string content, bool wasQuoted, int startsFrom)
+    [Obsolete("Use SyntaxWord(string, WordQuoteType, int) instead.")]
+    public SyntaxWord(string content, bool wasQuoted, int startsFrom) : this(content,
+        wasQuoted ? WordQuoteType.Quotes : WordQuoteType.None,
+        startsFrom)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SyntaxWord"/> class.
+    /// </summary>
+    /// <param name="content">The string content.</param>
+    /// <param name="quoteType">The type of the quote.</param>
+    /// <param name="startsFrom">The position immediately before the first character of this word from the original string.</param>
+    public SyntaxWord(string content, WordQuoteType quoteType = WordQuoteType.None, int startsFrom = -1)
     {
         Content = content;
-        WasQuoted = wasQuoted;
+        QuoteType = quoteType;
         StartsFrom = startsFrom;
     }
 
@@ -41,7 +55,13 @@ public record SyntaxWord
     /// <summary>
     /// Gets or sets whether this word was quoted to contain multiple words.
     /// </summary>
-    public bool WasQuoted { get; }
+    [Obsolete("Use QuoteType instead. The correspondence to true value is WordQuoteType.Quotes.")]
+    public bool WasQuoted => QuoteType == WordQuoteType.Quotes;
+    
+    /// <summary>
+    /// Gets the quote type of this word.
+    /// </summary>
+    public WordQuoteType QuoteType { get; }
     
     /// <summary>
     /// Gets or sets the position right before the first character of this word in the original string.
@@ -58,12 +78,7 @@ public record SyntaxWord
     /// <returns>A new list of unquoted statements.</returns>
     public static IReadOnlyList<SyntaxWord> Of(params string[] contents)
     {
-        var list = new List<SyntaxWord>();
-
-        foreach (var item in contents)
-        {
-            list.Add(new(item, false, -1));
-        }
+        var list = contents.Select(item => new SyntaxWord(item)).ToList();
 
         return list.AsReadOnly();
     }

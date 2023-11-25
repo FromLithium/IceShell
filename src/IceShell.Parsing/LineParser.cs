@@ -5,6 +5,7 @@ namespace IceShell.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using IceShell.Parsing.Util;
 
 /// <summary>
 /// Provides services for extracting statements from a line.
@@ -44,7 +45,7 @@ public class LineParser
     /// <summary>
     /// This variable determines if the parsing routine is in a middle of quote.
     /// </summary>
-    private bool _currentQuote;
+    private WordQuoteType _currentQuoteType;
 
     /// <summary>
     /// This variable controls if the next character needs to be escaped (ignore its special usage
@@ -56,20 +57,22 @@ public class LineParser
     /// This variable controls if the current character should not be included into the statement.
     /// </summary>
     private bool _currentBlock;
-
-    /// <summary>
-    /// This variable controls if the last statement was quoted.
-    /// </summary>
-    private bool _wasQuoted;
-
+    
     /// <summary>
     /// This variable stores the beginning of the current statement.
     /// </summary>
     private int _currentBeginStatement = -1;
 
+    /// <summary>
+    /// This variable stores the last quote type.
+    /// </summary>
+    private WordQuoteType _wasQuoteType;
+
+    private bool IsCurrentQuote() => _currentQuoteType != WordQuoteType.None;
+    
     private void EndOfQuote()
     {
-        _currentQuote = false;
+        _currentQuoteType = WordQuoteType.None;
 
         EndOfStatement();
     }
@@ -77,16 +80,13 @@ public class LineParser
     private void SkipStatement()
     {
         _currentStatement = false;
-        _statements.Add(new SyntaxWord(_builder.ToString(), _wasQuoted, _currentBeginStatement));
-
-        if (_wasQuoted)
-        {
-            _wasQuoted = false;
-        }
+        _statements.Add(new SyntaxWord(_builder.ToString(), _wasQuoteType, _currentBeginStatement));
+        _wasQuoteType = WordQuoteType.None;
 
         _currentBeginStatement = -1;
         _builder.Clear();
     }
+    
 
     private void EndOfStatement()
     {
@@ -117,7 +117,7 @@ public class LineParser
                 // It is double quote?
                 if (ch == DoubleQuote)
                 {
-                    if (_currentQuote)
+                    if (_currentQuoteType != WordQuoteType.None)
                     {
                         // If currently in quote, closes the quote.
 
@@ -126,8 +126,8 @@ public class LineParser
                     else
                     {
                         // If not, begins the quote.
-                        _currentQuote = true;
-                        _currentBeginStatement = i;
+                        _currentQuoteType = WordQuoteType.Quotes;
+                        _currentBeginStatement = i - 1;
                     }
                     
                     continue;
@@ -139,33 +139,33 @@ public class LineParser
 
             // Middle of statement.
 
-            if (ch == DoubleQuote && !_currentQuote)
+            if (ch == DoubleQuote && _currentQuoteType != WordQuoteType.Quotes)
             {
                 SkipStatement();
-                _currentQuote = true;
-                _currentBeginStatement = i;
+                _currentQuoteType = WordQuoteType.Quotes;
+                _currentBeginStatement = i - 1;
                 continue;
             }
 
             if (!_currentEscape)
             {
                 // Escape character.
-                if (ch == EscapeChar && _currentQuote)
+                if (ch == EscapeChar && _currentQuoteType != WordQuoteType.None)
                 {
                     _currentEscape = true;
                     continue;
                 }
 
-                if (_currentQuote && ch == DoubleQuote)
+                if (IsCurrentQuote() && ch == DoubleQuote)
                 {
-                    _currentQuote = false;
-                    _wasQuoted = true;
+                    _currentQuoteType = WordQuoteType.None;
+                    _wasQuoteType = WordQuoteType.Quotes;
                     _currentBlock = true;
                 }
             }
 
             // The end of statement without a quote.
-            if (!_currentQuote
+            if (!IsCurrentQuote()
                 && _currentStatement
                 && ch == Whitespace)
             {
@@ -184,7 +184,7 @@ public class LineParser
             // The end of the string.
             if (line.Length <= i + 1)
             {
-                if (_currentQuote)
+                if (IsCurrentQuote())
                 {
                     throw new FormatException("Quoted string never ends.");
                 }

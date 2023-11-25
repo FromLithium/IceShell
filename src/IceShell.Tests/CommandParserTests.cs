@@ -4,6 +4,7 @@
 namespace IceShell.Tests;
 
 using IceShell.Parsing;
+using IceShell.Parsing.Util;
 
 public class CommandParserTests
 {
@@ -75,7 +76,7 @@ public class CommandParserTests
     [Test]
     public void ParseOption_NoValueOption()
     {
-        var statement = new SyntaxWord("/T", false);
+        var statement = new SyntaxWord("/T");
         var retVal = CommandParser.ParseOption(statement, null, out _);
 
         Assert.That(retVal, Is.EqualTo(new SyntaxOption('T', null)));
@@ -84,7 +85,7 @@ public class CommandParserTests
     [Test]
     public void ParseOption_SimpleOption()
     {
-        var statement = new SyntaxWord("/T:test_value", false);
+        var statement = new SyntaxWord("/T:test_value");
         var retVal = CommandParser.ParseOption(statement, null, out _);
 
         Assert.That(retVal, Is.EqualTo(new SyntaxOption('T', "test_value")));
@@ -93,8 +94,8 @@ public class CommandParserTests
     [Test]
     public void ParseOption_CompoundOption()
     {
-        var statementFirst = new SyntaxWord("/T:", false);
-        var statementSecond = new SyntaxWord("Test text", true);
+        var statementFirst = new SyntaxWord("/T:");
+        var statementSecond = new SyntaxWord("Test text", WordQuoteType.Quotes);
 
         var retVal = CommandParser.ParseOption(statementFirst, statementSecond, out _);
 
@@ -105,23 +106,23 @@ public class CommandParserTests
     public void ParseOption_OptionAndUnixPath()
     {
         var statements = new SyntaxWord[]{
-            new SyntaxWord("command", false),
-            new SyntaxWord("/O", false),
-            new SyntaxWord("/bin/bash", false) };
+            new("command"),
+            new("/O"),
+            new("/bin/bash") };
 
         var retVal = CommandParser.ParseSingleCommand(statements);
         Assert.Multiple(() =>
         {
             Assert.That(retVal.Name, Is.EqualTo("command"));
 
-            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>()
+            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>
             {
-                new SyntaxWord("/bin/bash", false)
+                new("/bin/bash")
             }));
 
-            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>()
+            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>
             {
-                new SyntaxOption('O', null)
+                new('O', null)
             }));
         });
     }
@@ -166,10 +167,10 @@ public class CommandParserTests
         Assert.Multiple(() =>
         {
             Assert.That(retVal.Name, Is.EqualTo("command"));
-            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>()
+            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>
             {
-                new SyntaxWord("quoted value", true),
-                new SyntaxWord("simple_value", false)
+                new("quoted value", WordQuoteType.Quotes, 9),
+                new("simple_value", WordQuoteType.None, 23)
             }));
             Assert.That(!retVal.Options.Any());
         });
@@ -184,13 +185,13 @@ public class CommandParserTests
         Assert.Multiple(() =>
         {
             Assert.That(retVal.Name, Is.EqualTo("command"));
-            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>()
+            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>
             {
-                new SyntaxWord("/X", true)
+                new("/X", WordQuoteType.Quotes, 9)
             }));
-            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>()
+            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>
             {
-                new SyntaxOption('M', null)
+                new('M', null)
             }));
         });
     }
@@ -204,14 +205,14 @@ public class CommandParserTests
         Assert.Multiple(() =>
         {
             Assert.That(retVal.Name, Is.EqualTo("command"));
-            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>()
+            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>
             {
-                new SyntaxOption('A', null),
-                new SyntaxOption('B', null)
+                new('A', null),
+                new('B', null)
             }));
-            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>()
+            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>
             {
-                new SyntaxWord("/C", false)
+                new("/C", startsFrom: 17)
             }));
         });
     }

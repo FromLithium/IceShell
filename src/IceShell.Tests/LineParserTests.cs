@@ -4,6 +4,7 @@
 namespace IceShell.Tests;
 
 using IceShell.Parsing;
+using IceShell.Parsing.Util;
 
 public class LineParserTests
 {
@@ -15,13 +16,13 @@ public class LineParserTests
 
         Assert.That(retVal, Is.EqualTo(new SyntaxWord[]
         {
-            new("command", false, -1),
-            new("/F", false, -1),
-            new("/V:", false, -1),
-            new("value in prop", true, -1),
-            new("/Q:varr", false, -1),
-            new("normal_value", false, -1),
-            new("quoted value", true, -1)
+            new("command", startsFrom: 0),
+            new("/F", startsFrom: 8),
+            new("/V:", startsFrom: 11),
+            new("value in prop", WordQuoteType.Quotes, startsFrom: 15),
+            new("/Q:varr", startsFrom: 30),
+            new("normal_value", startsFrom: 38),
+            new("quoted value", WordQuoteType.Quotes, startsFrom: 52)
         }));
     }
 
@@ -40,7 +41,7 @@ public class LineParserTests
         var parser = new LineParser();
         var retVal = parser.ParseLine("Hey\\Hey");
 
-        Assert.That(retVal[0], Is.EqualTo(new SyntaxWord("Hey\\Hey", false, -1)));
+        Assert.That(retVal[0], Is.EqualTo(new SyntaxWord("Hey\\Hey", startsFrom: 0)));
     }
 
     [Test]
@@ -51,8 +52,24 @@ public class LineParserTests
         Assert.Multiple(() =>
         {
             Assert.That(retVal, Has.Count.EqualTo(2));
-            Assert.That(retVal[0], Is.EqualTo(new SyntaxWord("Hello", false, 0)));
-            Assert.That(retVal[1], Is.EqualTo(new SyntaxWord("World", false, 6)));
+            Assert.That(retVal[0], Is.EqualTo(new SyntaxWord("Hello", startsFrom: 0)));
+            Assert.That(retVal[1], Is.EqualTo(new SyntaxWord("World", startsFrom: 6)));
         });
+    }
+
+    [Test]
+    public void Parser_DoubleQuote_Quote()
+    {
+        var parser = new LineParser();
+        var retVal = parser.ParseLine("\"Hello World!\"");
+        Assert.That(retVal, Has.One.EqualTo(new SyntaxWord("Hello World!", WordQuoteType.Quotes, 1)));
+    }
+    
+    [Test]
+    public void Parser_Parentheses_Quote()
+    {
+        var parser = new LineParser();
+        var retVal = parser.ParseLine("(say Hello World)");
+        Assert.That(retVal, Has.One.EqualTo(new SyntaxWord("say Hello World", WordQuoteType.Parentheses, 1)));
     }
 }

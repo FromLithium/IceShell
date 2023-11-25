@@ -24,7 +24,7 @@ public class PathSearcherTests
     {
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var separator = Path.DirectorySeparatorChar;
-        var basePath = $"{separator}Documents{separator}Test.txt";
+        var basePath = $"Documents{separator}Test.txt";
         var combined = Path.Combine(home, basePath);
         
         Assert.That(PathSearcher.ExpandHome($"~{basePath}"),
