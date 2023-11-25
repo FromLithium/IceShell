@@ -15,7 +15,7 @@ public record SyntaxCommandInvocation
     /// <param name="name">The name of the command.</param>
     /// <param name="options">The list of options.</param>
     /// <param name="values">The list of values.</param>
-    public SyntaxCommandInvocation(string name, ICollection<SyntaxOption> options, IList<SyntaxStatement> values)
+    public SyntaxCommandInvocation(string name, ICollection<SyntaxOption> options, IList<SyntaxWord> values)
     {
         Name = name;
         Options = options;
@@ -35,5 +35,5 @@ public record SyntaxCommandInvocation
     /// <summary>
     /// Gets the list of users that were specified by the user.
     /// </summary>
-    public IList<SyntaxStatement> Values { get; }
+    public IList<SyntaxWord> Values { get; }
 }

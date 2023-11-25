@@ -34,7 +34,7 @@ public class LineParser
     /// <summary>
     /// The end list of statements.
     /// </summary>
-    private readonly List<SyntaxStatement> _statements = new();
+    private readonly List<SyntaxWord> _statements = new();
 
     /// <summary>
     /// This variable determines if the parsing routine is in a middle of statement.
@@ -77,7 +77,7 @@ public class LineParser
     private void SkipStatement()
     {
         _currentStatement = false;
-        _statements.Add(new SyntaxStatement(_builder.ToString(), _wasQuoted, _currentBeginStatement));
+        _statements.Add(new SyntaxWord(_builder.ToString(), _wasQuoted, _currentBeginStatement));
 
         if (_wasQuoted)
         {
@@ -99,11 +99,11 @@ public class LineParser
     /// </summary>
     /// <param name="line">The line to parse.</param>
     /// <returns>The statements parsed from the line.</returns>
-    public IReadOnlyList<SyntaxStatement> ParseLine(ReadOnlySpan<char> line)
+    public IReadOnlyList<SyntaxWord> ParseLine(ReadOnlySpan<char> line)
     {
         if (line.IsEmpty || line.IsWhiteSpace())
         {
-            return Array.Empty<SyntaxStatement>();
+            return Array.Empty<SyntaxWord>();
         }
 
         // Go through every character.

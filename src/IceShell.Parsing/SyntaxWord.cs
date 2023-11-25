@@ -6,27 +6,27 @@ namespace IceShell.Parsing;
 using JetBrains.Annotations;
 
 /// <summary>
-/// Represents a command syntax statement, the basis for all command arguments (options, values, etc.).
+/// Represents a word in a command line, the basis for all command arguments (options, values, etc.).
 /// </summary>
-public record SyntaxStatement
+public record SyntaxWord
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="SyntaxStatement"/> class.
+    /// Initializes a new instance of the <see cref="SyntaxWord"/> class.
     /// </summary>
     /// <param name="content">The string content.</param>
     /// <param name="wasQuoted">Whether the statement was specified via a quoted string.</param>
     [PublicAPI]
-    public SyntaxStatement(string content, bool wasQuoted) : this(content, wasQuoted, -1)
+    public SyntaxWord(string content, bool wasQuoted) : this(content, wasQuoted, -1)
     {
     }
     
     /// <summary>
-    /// Initializes a new instance of the <see cref="SyntaxStatement"/> class.
+    /// Initializes a new instance of the <see cref="SyntaxWord"/> class.
     /// </summary>
     /// <param name="content">The string content.</param>
     /// <param name="wasQuoted">Whether the statement was specified via a quoted string.</param>
     /// <param name="startsFrom">The position immediately before the first character of this word from the original string.</param>
-    public SyntaxStatement(string content, bool wasQuoted, int startsFrom)
+    public SyntaxWord(string content, bool wasQuoted, int startsFrom)
     {
         Content = content;
         WasQuoted = wasQuoted;
@@ -34,12 +34,12 @@ public record SyntaxStatement
     }
 
     /// <summary>
-    /// Gets or sets the content of this statement.
+    /// Gets or sets the text content of this word.
     /// </summary>
     public string Content { get; }
 
     /// <summary>
-    /// Gets or sets whether this statement was quoted.
+    /// Gets or sets whether this word was quoted to contain multiple words.
     /// </summary>
     public bool WasQuoted { get; }
     
@@ -56,9 +56,9 @@ public record SyntaxStatement
     /// </summary>
     /// <param name="contents">The contents.</param>
     /// <returns>A new list of unquoted statements.</returns>
-    public static IReadOnlyList<SyntaxStatement> Of(params string[] contents)
+    public static IReadOnlyList<SyntaxWord> Of(params string[] contents)
     {
-        var list = new List<SyntaxStatement>();
+        var list = new List<SyntaxWord>();
 
         foreach (var item in contents)
         {

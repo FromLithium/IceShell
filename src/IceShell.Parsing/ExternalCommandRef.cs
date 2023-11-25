@@ -10,7 +10,7 @@ public record struct ExternalCommandRef
     /// </summary>
     /// <param name="refName">The reference name of the command.</param>
     /// <param name="arguments">The arguments to pass to the command.</param>
-    public ExternalCommandRef(string? refName, IEnumerable<SyntaxStatement>? arguments)
+    public ExternalCommandRef(string? refName, IEnumerable<SyntaxWord>? arguments)
     {
         ReferenceName = refName;
         Arguments = arguments;
@@ -24,7 +24,7 @@ public record struct ExternalCommandRef
     /// <summary>
     /// Gets or sets the arguments to pass to the external command.
     /// </summary>
-    public IEnumerable<SyntaxStatement>? Arguments { get; set; }
+    public IEnumerable<SyntaxWord>? Arguments { get; set; }
 
     /// <summary>
     /// Determines whether this instance is empty.

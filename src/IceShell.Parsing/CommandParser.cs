@@ -22,12 +22,12 @@ public static class CommandParser
     /// <param name="isCommandName">A predicate to check if the name provided is a valid command.</param>
     /// <param name="handleHomePath">A function to convert home path.</param>
     /// <returns>The parsed compound.</returns>
-    public static SyntaxCompound ParseCompound(IReadOnlyList<SyntaxStatement> statements,
+    public static SyntaxCompound ParseCompound(IReadOnlyList<SyntaxWord> statements,
         Predicate<string> isCommandName,
         Func<string, string>? handleHomePath)
     {
         var thisCompound = new List<SyntaxSegment>();
-        var currentSegment = new List<SyntaxStatement>();
+        var currentSegment = new List<SyntaxWord>();
 
         foreach (var statement in statements)
         {
@@ -70,15 +70,15 @@ public static class CommandParser
             }
             else
             {
-                SyntaxStatement[] array;
+                SyntaxWord[] array;
 
                 if (currentSegment.Count == 1)
                 {
-                    array = Array.Empty<SyntaxStatement>();
+                    array = Array.Empty<SyntaxWord>();
                 }
                 else
                 {
-                    array = new SyntaxStatement[currentSegment.Count - 1];
+                    array = new SyntaxWord[currentSegment.Count - 1];
                     currentSegment.CopyTo(1, array, 0, currentSegment.Count - 1);
                 }
 
@@ -96,10 +96,10 @@ public static class CommandParser
     /// <param name="statements">The list of statements that constitutes of a command.</param>
     /// <returns>The parsed command.</returns>
     /// <exception cref="FormatException">The command syntax is invalid.</exception>
-    public static SyntaxCommandInvocation ParseSingleCommand(IReadOnlyList<SyntaxStatement> statements)
+    public static SyntaxCommandInvocation ParseSingleCommand(IReadOnlyList<SyntaxWord> statements)
     {
         var options = new HashSet<SyntaxOption>();
-        var values = new List<SyntaxStatement>();
+        var values = new List<SyntaxWord>();
         var name = "<pending>";
         var ignoreNextValue = false;
         var endOfOptions = false;
@@ -146,7 +146,7 @@ public static class CommandParser
                 continue;
             }
 
-            SyntaxStatement? next = null;
+            SyntaxWord? next = null;
 
             if (statements.Count > i + 1)
             {
@@ -169,14 +169,14 @@ public static class CommandParser
     /// <summary>
     /// Parses a single option.
     /// </summary>
-    /// <param name="statement">The first statement.</param>
+    /// <param name="word">The first statement.</param>
     /// <param name="next">The statement directly after the first statement.</param>
     /// <param name="extended">Whether the next value is used to parse the option. The output value of this parameter should be used to tell the parser to skip the next value, if needed.</param>
     /// <returns>The parsed option.</returns>
     /// <exception cref="FormatException">The option syntax is invalid.</exception>
-    public static SyntaxOption ParseOption(SyntaxStatement statement, SyntaxStatement? next, out bool extended)
+    public static SyntaxOption ParseOption(SyntaxWord word, SyntaxWord? next, out bool extended)
     {
-        var content = statement.Content;
+        var content = word.Content;
         string? value;
 
         var delimiter = content[1];
@@ -210,11 +210,11 @@ public static class CommandParser
         return new(delimiter, value);
     }
 
-    internal static bool IsOption(SyntaxStatement statement)
+    internal static bool IsOption(SyntaxWord word)
     {
-        var content = statement.Content;
+        var content = word.Content;
 
-        if (statement.WasQuoted)
+        if (word.WasQuoted)
         {
             return false;
         }

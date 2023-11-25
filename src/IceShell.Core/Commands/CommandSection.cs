@@ -62,7 +62,7 @@ public record CommandSection
     /// <summary>
     /// Gets a list of statements.
     /// </summary>
-    public IEnumerable<SyntaxStatement>? Statements { get; }
+    public IEnumerable<SyntaxWord>? Statements { get; }
 
     /// <summary>
     /// Gets the parsed command.
