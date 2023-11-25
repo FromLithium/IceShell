@@ -15,13 +15,13 @@ public class LineParserTests
 
         Assert.That(retVal, Is.EqualTo(new SyntaxStatement[]
         {
-            new("command", false),
-            new("/F", false),
-            new("/V:", false),
-            new("value in prop", true),
-            new("/Q:varr", false),
-            new("normal_value", false),
-            new("quoted value", true)
+            new("command", false, -1),
+            new("/F", false, -1),
+            new("/V:", false, -1),
+            new("value in prop", true, -1),
+            new("/Q:varr", false, -1),
+            new("normal_value", false, -1),
+            new("quoted value", true, -1)
         }));
     }
 
@@ -40,6 +40,19 @@ public class LineParserTests
         var parser = new LineParser();
         var retVal = parser.ParseLine("Hey\\Hey");
 
-        Assert.That(retVal[0], Is.EqualTo(new SyntaxStatement("Hey\\Hey", false)));
+        Assert.That(retVal[0], Is.EqualTo(new SyntaxStatement("Hey\\Hey", false, -1)));
+    }
+
+    [Test]
+    public void Parser_LinePosition()
+    {
+        var parser = new LineParser();
+        var retVal = parser.ParseLine("Hello World");
+        Assert.Multiple(() =>
+        {
+            Assert.That(retVal.Count, Is.EqualTo(2));
+            Assert.That(retVal[0], Is.EqualTo(new SyntaxStatement("Hello", false, 0)));
+            Assert.That(retVal[1], Is.EqualTo(new SyntaxStatement("World", false, 6)));
+        });
     }
 }

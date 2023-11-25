@@ -62,6 +62,11 @@ public class LineParser
     /// </summary>
     private bool _wasQuoted;
 
+    /// <summary>
+    /// This variable stores the beginning of the current statement.
+    /// </summary>
+    private int _currentBeginStatement = -1;
+
     private void EndOfQuote()
     {
         _currentQuote = false;
@@ -72,12 +77,14 @@ public class LineParser
     private void SkipStatement()
     {
         _currentStatement = false;
-        _statements.Add(new SyntaxStatement(_builder.ToString(), _wasQuoted));
+        _statements.Add(new SyntaxStatement(_builder.ToString(), _wasQuoted, _currentBeginStatement));
 
         if (_wasQuoted)
         {
             _wasQuoted = false;
         }
+
+        _currentBeginStatement = -1;
         _builder.Clear();
     }
 
@@ -115,17 +122,18 @@ public class LineParser
                         // If currently in quote, closes the quote.
 
                         EndOfQuote();
-                        continue;
                     }
                     else
                     {
                         // If not, begins the quote.
-
                         _currentQuote = true;
-                        continue;
+                        _currentBeginStatement = i;
                     }
+                    
+                    continue;
                 }
 
+                _currentBeginStatement = i;
                 _currentStatement = true;
             }
 
@@ -135,6 +143,7 @@ public class LineParser
             {
                 SkipStatement();
                 _currentQuote = true;
+                _currentBeginStatement = i;
                 continue;
             }
 

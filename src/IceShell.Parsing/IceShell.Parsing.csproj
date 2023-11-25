@@ -9,4 +9,8 @@
     <Description>IceShell parsing service</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
+  </ItemGroup>
+
 </Project>
