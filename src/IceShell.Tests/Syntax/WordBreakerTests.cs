@@ -31,6 +31,20 @@ public class WordBreakerTests
         Assert.That(breaker.RunParse(""), Is.Empty);
     }
 
+    [Test]
+    public void RunParse_ValuedQuoteOptionTest()
+    {
+        var breaker = new CommandWordBreaker(true);
+        var result = breaker.RunParse("/X:\"value\"");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Has.Count.EqualTo(2));
+            Assert.That(result[0], Is.EqualTo(new SyntaxWord("/X:", WordQuoteType.None, 0)));
+            Assert.That(result[1], Is.EqualTo(new SyntaxWord("value", WordQuoteType.Quotes, 3)));
+        });
+    }
+    
     #region Pair Quotes
     [Test]
     public void RunParse_OnePairQuote_Quote()

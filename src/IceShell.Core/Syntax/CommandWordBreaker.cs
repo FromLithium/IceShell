@@ -16,10 +16,12 @@ public class CommandWordBreaker
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandWordBreaker"/> class.
     /// </summary>
-    public CommandWordBreaker()
+    public CommandWordBreaker(bool allowQuotePairBeginFromUnquotedWord = false)
     {
         _wordBuilder = new StringBuilder();
         _resultList = new List<SyntaxWord>();
+
+        AllowQuotePairBeginFromUnquotedWord = allowQuotePairBeginFromUnquotedWord;
     }
     
     #region Constant Characters
@@ -29,6 +31,15 @@ public class CommandWordBreaker
     private const char RightRoundBracket = ')';
     private const char WhiteSpace = ' ';
     private const char Backslash = '\\';
+    
+    #endregion
+    
+    #region Settings
+    
+    /// <summary>
+    /// Gets or sets a value indicating whether to allow a pair of quotes begin from an unquoted word.
+    /// </summary>
+    public bool AllowQuotePairBeginFromUnquotedWord { get; set; }
     
     #endregion
     
@@ -167,21 +178,21 @@ public class CommandWordBreaker
         }
 
         // For non-quoted words, break word when whitespace.
-        if (_currentQuoteType == WordQuoteType.None
-            && current == WhiteSpace)
+        if (_currentQuoteType == WordQuoteType.None)
         {
-            BreakWord();
-            
-            // If the next character is a quote begin character, then immediately push the cursor
-            // to the next character.
-            
-            // If cursor will be running out then the 'next' should be 0x00 (null) which certainly is not
-            // DoubleQuote or LeftRoundBracket.
-            if (next is DoubleQuote or LeftRoundBracket)
+            switch (current)
             {
-                // _cursor++;
+                case WhiteSpace:
+                    BreakWord();
+                    return;
+                
+                case DoubleQuote when AllowQuotePairBeginFromUnquotedWord:
+                    BreakWord();
+                    _currentQuoteType = WordQuoteType.Quotes;
+                    _currentStatementBegin = _cursor;
+                    _currentInsideStatement = true;
+                    return;
             }
-            return;
         }
 
         if (!_escaping && current == Backslash)
