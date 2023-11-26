@@ -5,6 +5,7 @@ namespace NexusKrop.IceShell.Core.Completion;
 
 using global::IceShell.Core.Api;
 using global::IceShell.Core.Api.Commands;
+using global::IceShell.Core.Syntax;
 using global::IceShell.Parsing;
 using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.Completion.Cache;
@@ -25,8 +26,8 @@ internal class ShellCompletionHandler : IAutoCompleteHandler
 
     public string[] GetSuggestions(string text, int index)
     {
-        var parser = new LineParser();
-        var statements = parser.ParseLine(text);
+        var parser = new CommandWordBreaker();
+        var statements = parser.RunParse(text);
 
         if (statements.Count == 1)
         {

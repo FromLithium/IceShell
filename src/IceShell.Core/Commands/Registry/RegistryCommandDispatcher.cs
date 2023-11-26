@@ -25,6 +25,7 @@ using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Parsing;
 using IceShell.Core.Exceptions;
 using IceShell.Core.FileSystem;
+using IceShell.Core.Syntax;
 using IceShell.Parsing;
 using NexusKrop.IceShell.Core.CLI;
 
@@ -117,7 +118,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     /// <inheritdoc />
     public CommandSectionCompound Parse(ReadOnlySpan<char> line)
     {
-        var statements = new LineParser().ParseLine(line);
+        var statements = new CommandWordBreaker().RunParse(line);
 
         var rawCompound = CommandParser.ParseCompound(statements, HasAlias, x => PathSearcher.ExpandHome(x));
         var sysCompound = rawCompound.Select(ParseSection);

@@ -1,8 +1,9 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Tests;
 
+using IceShell.Core.Syntax;
 using IceShell.Parsing;
 using IceShell.Parsing.Util;
 
@@ -50,7 +51,7 @@ public class CommandParserTests
     {
         var statements = SyntaxWord.Of("test", "argument", ">", "test1", "arg2");
 
-        var parsed = CommandParser.ParseCompound(statements, x => true, null);
+        var parsed = CommandParser.ParseCompound(statements, _ => true, null);
 
         Assert.Multiple(() =>
         {
@@ -142,7 +143,7 @@ public class CommandParserTests
     [Test]
     public void ParseCommand_OptionsOnly()
     {
-        var statements = new LineParser().ParseLine("command /T:test_value /Q:\"test value\" /X");
+        var statements = new CommandWordBreaker().RunParse("command /T:test_value /Q:\"test value\" /X");
         var retVal = CommandParser.ParseSingleCommand(statements);
 
         Assert.Multiple(() =>
@@ -161,7 +162,7 @@ public class CommandParserTests
     [Test]
     public void ParseCommand_ValuesOnly()
     {
-        var statements = new LineParser().ParseLine("command \"quoted value\" simple_value");
+        var statements = new CommandWordBreaker().RunParse("command \"quoted value\" simple_value");
         var retVal = CommandParser.ParseSingleCommand(statements);
 
         Assert.Multiple(() =>
@@ -179,7 +180,7 @@ public class CommandParserTests
     [Test]
     public void ParseCommand_QuotedOptions()
     {
-        var statements = new LineParser().ParseLine("command \"/X\" /M");
+        var statements = new CommandWordBreaker().RunParse("command \"/X\" /M");
         var retVal = CommandParser.ParseSingleCommand(statements);
 
         Assert.Multiple(() =>
@@ -199,7 +200,7 @@ public class CommandParserTests
     [Test]
     public void ParseCommand_EndOfOptions()
     {
-        var statements = new LineParser().ParseLine("command /A /B -- /C");
+        var statements = new CommandWordBreaker().RunParse("command /A /B -- /C");
         var retVal = CommandParser.ParseSingleCommand(statements);
 
         Assert.Multiple(() =>
