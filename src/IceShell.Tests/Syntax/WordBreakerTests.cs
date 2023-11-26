@@ -32,6 +32,39 @@ public class WordBreakerTests
     }
 
     [Test]
+    public void RunParse_Final()
+    {
+        var breaker = new CommandWordBreaker();
+        _ = breaker.RunParse("Hello World!");
+        
+        Assert.Throws<InvalidOperationException>(() => breaker.RunParse("Hello Again!"));
+    }
+
+    [Test]
+    public void RunParse_Error_QuoteNeverEnd()
+    {
+        var breaker = new CommandWordBreaker();
+        
+        Assert.Throws<FormatException>(() => breaker.RunParse("\"Hello World!"));
+    }
+    
+    [Test]
+    public void RunParse_Error_WrongRightRoundBracketInQuotePair()
+    {
+        var breaker = new CommandWordBreaker();
+        
+        Assert.Throws<FormatException>(() => breaker.RunParse("\"Hello World!)"));
+    }
+    
+    [Test]
+    public void RunParse_ShouldPass_EscapedRightRoundBracketInQuotePair()
+    {
+        var breaker = new CommandWordBreaker();
+        
+        Assert.DoesNotThrow(() => breaker.RunParse("\"Hello World!\\)\""));
+    }
+
+    [Test]
     public void RunParse_ValuedQuoteOptionTest()
     {
         var breaker = new CommandWordBreaker(true);
@@ -146,6 +179,22 @@ public class WordBreakerTests
             Assert.That(result[3], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Quotes, 22)));
             Assert.That(result[4], Is.EqualTo(new SyntaxWord("after", WordQuoteType.None, 30)));
         });
+    }
+
+    [Test]
+    public void RunParse_Error_DoubleQuoteToEndParentheses_Quote()
+    {
+        var breaker = new CommandWordBreaker();
+        
+        Assert.Throws<FormatException>(() => breaker.RunParse("(Hello World!\""));
+    }
+    
+    [Test]
+    public void RunParse_ShouldPass_EscapedDoubleQuoteInParentheses_Quote()
+    {
+        var breaker = new CommandWordBreaker();
+        
+        Assert.DoesNotThrow(() => breaker.RunParse("(Hello World!\\\")"));
     }
     #endregion
     
