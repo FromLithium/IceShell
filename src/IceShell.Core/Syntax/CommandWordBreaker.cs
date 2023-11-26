@@ -28,6 +28,7 @@ public class CommandWordBreaker
     private const char LeftRoundBracket = '(';
     private const char RightRoundBracket = ')';
     private const char WhiteSpace = ' ';
+    private const char Backslash = '\\';
     
     #endregion
     
@@ -180,6 +181,12 @@ public class CommandWordBreaker
             {
                 // _cursor++;
             }
+            return;
+        }
+
+        if (!_escaping && current == Backslash)
+        {
+            _escaping = true;
             return;
         }
 

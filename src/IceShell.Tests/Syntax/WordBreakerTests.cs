@@ -255,4 +255,12 @@ public class WordBreakerTests
             Assert.That(result[4], Is.EqualTo(new SyntaxWord("after", WordQuoteType.None, 30)));
         });
     }
+
+    [Test]
+    public void RunParse_PairQuoteEscape_Quote()
+    {
+        var breaker = new CommandWordBreaker();
+        Assert.That(breaker.RunParse("\"\\\"Hello World!\\\"\""),
+            Has.One.EqualTo(new SyntaxWord("\"Hello World!\"", WordQuoteType.Quotes, 0)));
+    }
 }
