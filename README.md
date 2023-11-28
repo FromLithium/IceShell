@@ -9,14 +9,15 @@
 
 <h1>IceShell</h1>
 
+**English** | [中文](docs/README-zh.md)
+
 A cross-platform shell interpreter written in C#, and is inspired by Windows Command Prompt and
 MS-DOS `command.com`.
 
+[![Gitmoji](https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square)](https://gitmoji.dev)
 [![Discord](https://img.shields.io/discord/1178887806286823424?style=flat-square&logo=discord&logoColor=white&label=%20&color=blue)](https://discord.gg/UFfWb9Rj)
 
 </div>
-
-[中文](docs/README-zh.md)
 
 ## Usage
 

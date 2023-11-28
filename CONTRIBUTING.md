@@ -77,3 +77,26 @@ contributing code to keep this project tidy:
 - Make sure all existing unit tests pass, and new features are tested promptly.
 - Follow the code styles of the project.
 
+#### Commit styles
+
+This repository adopts the [Gitmoji](https://gitmoji.dev) commit message standard, with some minor variations.
+
+The commit message format is as belows:
+
+```text
+<type-emoji> (<scope>) <message> [(issue)]
+```
+
+* `type-emoji`: A Gitmoji emoji depicting the type of the changes made by that commit.
+* `scope`: The commit scope. Described below.
+* `message`: A brief description of the changes made by the commit.
+* `issue`: Optional. Reference to the issue or PR related to.
+
+#### Commit scope
+
+* `general`: Project configurations, `README`, `CHANGELOG` etc. as well as general refactors, etc. overall changes.
+* `docs`: `CONTRIBUTING`, the manual, etc.
+* `command`: Commands and command execution and parsing engine (the dispatcher, registry, etc.). `IceShell.Core.Commands` namespace.
+* `shell`: The shell interactive frontend, and the executive.
+* `syntax`: `IceShell.Core.Syntax` namespace, and `IceShell.Parsing` namespace.
+* `locale`: Localisation engine, and localisation and internationalisation.

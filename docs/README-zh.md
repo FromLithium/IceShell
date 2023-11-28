@@ -3,14 +3,18 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <div id="ice-shell-readme-centre-logo" align="center">
 <img alt="IceShell logo" src="../assets/logo_with_bg.png" />
+
 </div>
 
 <div id="ice-shell-readme-centre-description" align="center">
 
 <h1>IceShell</h1>
 
+[English](../README.md) | **中文**
+
 一个用 C# 编写的，启发于 Windows 命令提示符和 MS-DOS `command.com` 的跨平台命令解释器
 
+[![Gitmoji](https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square)](https://gitmoji.dev)
 [![Discord](https://img.shields.io/discord/1178887806286823424?style=flat-square&logo=discord&logoColor=white&label=%20&color=blue)](https://discord.gg/UFfWb9Rj)
 
 </div>
