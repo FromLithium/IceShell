@@ -1,19 +1,10 @@
 # The IceShell Reference
 
-This is the October 2023 edition of the IceShell Reference documentation.
+This is the November 2023 edition of the IceShell Reference documentation. This documentation is incomplete; everyone is welcome to improve it via the usual code contributions procedure.
 
-0. [Introduction](0-Introduction.md)
+* [English](en/README.md)
 
-1. [Definitions](1-Definitions.md)
-
-2. [Syntax](2-Syntax.md)
-
-3. [Built-in Commands](3-BuiltIn-Commands.md)
-
-4. [Error Codes](4-Error-Codes.md)
-
-5. [API](5-API.md)
-- [Appendix A: Security](Appendix-A-Security.md)
+* [中文](zh/README.md)
 
 ---
 
