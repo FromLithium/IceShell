@@ -7,24 +7,19 @@ IceShell is an experimental shell interpreter written in C#. Its syntax and form
 
 This shell interpreter is mostly a hobby project, and should not be used for remote or advanced system administration. For more information, see this [page](Appendix-A-Security.md).
 
+You can join the Discord server: [![Discord](https://img.shields.io/discord/1178887806286823424?style=flat-square&logo=discord&logoColor=white&label=%20&color=blue)](https://discord.gg/UFfWb9Rj)
+
 ## Getting Started
 
 ### Installation
 
 You can download IceShell via any of the methods below:
 
-#### GitHub Releases
+#### Releases
 
-You can download release builds from [GitHub releases](https://github.com/NexusKrop/IceShell/releases). These builds are usually provided for Windows and GNU/Linux.
+You can download release builds from [Codeberg repository releases page](https://codeberg.org/WithLithum/IceShell/releases). These builds are usually provided for Windows and GNU/Linux.
 
 macOS users can use `dotnet iceshell.dll` instead of `iceshell.exe` to start the program.
-
-#### GitHub Actions Artefacts
-
-You can download unstable builds via [CI Artefacts](https://github.com/NexusKrop/IceShell/actions). An unstable build is automatically created for each code change, and thus
-are not verified and can contain many bugs. Use them only for testing.
-
-Only builds with GNU/Linux launcher are provided, but you can use `dotnet iceshell.dll` to start IceShell on other systems.
 
 ### Usage
 

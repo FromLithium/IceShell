@@ -12,6 +12,8 @@
 A cross-platform shell interpreter written in C#, and is inspired by Windows Command Prompt and
 MS-DOS `command.com`.
 
+[![Discord](https://img.shields.io/discord/1178887806286823424?style=flat-square&logo=discord&logoColor=white&label=%20&color=blue)](https://discord.gg/UFfWb9Rj)
+
 </div>
 
 ## Usage
