@@ -68,6 +68,16 @@ public class CommandBuilder
         _entry.GreedyString = true;
         return this;
     }
+
+    /// <summary>
+    /// Registers the command as a variable values command.
+    /// </summary>
+    /// <returns>This instance, for chaining.</returns>
+    public CommandBuilder VariableValues()
+    {
+        _entry.VariableValues = true;
+        return this;
+    }
     
     /// <summary>
     /// Constructs the command and register it to the dispatcher.

@@ -20,6 +20,14 @@ If available, a command dispatcher will register your command identifier as the 
 
 You can use `AnyCommand(string)` to check if a command with the specified identifier exists, and use `HasAlias(string)` to check the same but for aliases.
 
+### Variable value commands
+
+Variable value commands does not declare a specification that is bound by the command processing engine; instead, the command processor only splits up the words and feeds them to your command.
+
+This means the command processor will not provide any parsing and validation (other than those of for options and switches), and you will have to parse arguments yourself.
+
+You can make a command use variable values by setting `VariableValues` property to true for `CommandRegistryEntry`, or by calling `VariableValues()` for `CommandBuilder`.
+
 * * *
 
 Copyright (C) 2023 IceShell contributors.

@@ -41,7 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Localisation", "Localisatio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Additional Tests", "Additional Tests", "{8DB4B34F-1C1D-4FFB-864A-0494FA0AD783}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IceShell.Tests.Languages", "IceShell.Tests.Languages\IceShell.Tests.Languages.csproj", "{DCCD7374-A9D0-448C-A96C-39807F6B7D2A}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "IceShell.LanguageFiles", "IceShell.LanguageFiles\IceShell.LanguageFiles.shproj", "{5F748564-6DB9-4EC8-B93B-921C98CC29F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +95,7 @@ Global
 		{8B5211CB-06CC-499A-AD7E-43433D7598F4} = {1CE0255F-ED95-4E2C-A691-C92B8FDFF642}
 		{B7A9E28D-5E77-4FF2-BC57-E2CF9D49885F} = {1CE0255F-ED95-4E2C-A691-C92B8FDFF642}
 		{DCCD7374-A9D0-448C-A96C-39807F6B7D2A} = {8DB4B34F-1C1D-4FFB-864A-0494FA0AD783}
+		{5F748564-6DB9-4EC8-B93B-921C98CC29F5} = {5CE019A4-92ED-4034-9BE8-0ECEF66BF51B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22F2D783-56E2-4268-B860-ED731EBD0D97}
