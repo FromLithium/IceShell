@@ -10,6 +10,7 @@ using IceShell.Parsing.Util;
 /// <summary>
 /// Provides services for extracting statements from a line.
 /// </summary>
+[Obsolete("Use IceShell.Core.Syntax.CommandWordBreaker instead.")]
 public class LineParser
 {
     /// <summary>

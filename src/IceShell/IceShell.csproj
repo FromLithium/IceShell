@@ -38,6 +38,4 @@
     <ProjectReference Include="..\IceShell.Platform.Windows\IceShell.Platform.Windows.csproj" />
   </ItemGroup>
 
-  <Import Project="..\IceShell.LanguageFiles\IceShell.LanguageFiels.projitems" Label="Shared" />
-
 </Project>
