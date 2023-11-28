@@ -13,6 +13,9 @@ public static class NewIfCommand
 {
     private const string IfNot = "NOT";
     private const string IfElse = "ELSE";
+    private const string IfExists = "EXISTS";
+    private const string IfFile = "FILE";
+    private const string IfDir = "DIR";
     private const string IfErrorLevelSyntax = "ERRORLEVEL";
     
     public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
@@ -66,6 +69,48 @@ public static class NewIfCommand
             }
 
             condition = result.Result;
+        }
+        // File or directory exists.
+        else if (UnquotedIs(words[startAtIndex], IfExists))
+        {
+            if (words.Count <= startAtIndex + 1)
+            {
+                // Too less arguments.
+                return CommandResult.WithError(CommandErrorCode.BadArgument);
+            }
+
+            var content = words[startAtIndex + 1].Content;
+            condition = File.Exists(content) || Directory.Exists(content);
+            // Push the start index once more because we used 2 words here.
+            startAtIndex++;
+        }
+        
+        // File exists.
+        else if (UnquotedIs(words[startAtIndex], IfFile))
+        {
+            if (words.Count <= startAtIndex + 1)
+            {
+                // Too less arguments.
+                return CommandResult.WithError(CommandErrorCode.BadArgument);
+            }
+
+            condition = File.Exists(words[startAtIndex + 1].Content);
+            // Push the start index once more because we used 2 words here.
+            startAtIndex++;
+        }
+
+        // Directory exists.
+        else if (UnquotedIs(words[startAtIndex], IfFile))
+        {
+            if (words.Count <= startAtIndex + 1)
+            {
+                // Too less arguments.
+                return CommandResult.WithError(CommandErrorCode.BadArgument);
+            }
+
+            condition = Directory.Exists(words[startAtIndex + 1].Content);
+            // Push the start index once more because we used 2 words here.
+            startAtIndex++;
         }
         
         // Last exit code (error level).
