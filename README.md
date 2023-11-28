@@ -16,6 +16,8 @@ MS-DOS `command.com`.
 
 </div>
 
+[中文](docs/README-zh.md)
+
 ## Usage
 
 See the [IceShell Reference](docs/manual/README.md). Alternatively, type `help` in the IceShell.

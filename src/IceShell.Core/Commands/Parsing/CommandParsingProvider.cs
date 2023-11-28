@@ -40,7 +40,7 @@ public class CommandParsingProvider
         
         if (_definition.VariableValues)
         {
-            ParseVariableValues(result);
+            AddOriginalWords(result);
         }
         else
         {
@@ -88,17 +88,16 @@ public class CommandParsingProvider
         allSwitches?.Where(x => !setSwitches.Contains(x))
             .ForEach(x => result.AddSwitch(x, false));
     }
-
-    private void ParseVariableValues(CommandArgumentResult result)
+    
+    private void AddOriginalWords(CommandArgumentResult result)
     {
-        foreach (var value in _command.Values)
-        {
-            result.AddVariable(value.Content);
-        }
+        _command.Values.ForEach(result.AddWord);
     }
 
     private void ParseStandardValues(CommandArgumentResult result)
     {
+        AddOriginalWords(result);
+        
         var requiredArgCount = _definition.Values.Count(x => x.Required);
 
         if (_command.Values.Count < requiredArgCount)

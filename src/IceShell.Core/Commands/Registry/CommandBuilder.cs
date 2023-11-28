@@ -77,4 +77,15 @@ public class CommandBuilder
     {
         dispatcher.Register(_entry, _routine);
     }
+
+    /// <summary>
+    /// Constructs the command and returns the results.
+    /// </summary>
+    /// <param name="entry">The entry.</param>
+    /// <param name="routine">The command routine.</param>
+    public void Build(out CommandRegistryEntry entry, out CommandDelegate routine)
+    {
+        entry = _entry;
+        routine = _routine;
+    }
 }

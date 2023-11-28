@@ -5,6 +5,7 @@ namespace IceShell.Core.Commands;
 
 using System.Collections.ObjectModel;
 using IceShell.Core.Commands.Registry;
+using IceShell.Parsing;
 using NexusKrop.IceCube.Collections;
 
 /// <summary>
@@ -16,6 +17,7 @@ public class CommandArgumentResult
     private readonly Dictionary<char, string> _valueOptions = new();
     private readonly Dictionary<string, string> _values = new();
     private readonly List<string> _variableValues = new();
+    private readonly List<SyntaxWord> _words = new();
     private bool _final;
 
     /// <summary>
@@ -27,6 +29,7 @@ public class CommandArgumentResult
         ValueOptions = new ReadOnlyDictionary<char, string>(_valueOptions);
         Values = new ReadOnlyDictionary<string, string>(_values);
         VariableValues = _variableValues;
+        OriginalWords = _words;
     }
     
     /// <summary>The switches.</summary>
@@ -41,7 +44,13 @@ public class CommandArgumentResult
     /// <summary>
     /// Gets the variable values.
     /// </summary>
+    [Obsolete("Use OriginalWords instead.")]
     public IReadOnlyList<string> VariableValues { get; }
+    
+    /// <summary>
+    /// Gets the split up words in the original command line.
+    /// </summary>
+    public IReadOnlyList<SyntaxWord> OriginalWords { get; }
 
     /// <summary>
     /// Adds a switch to the parsing result.
@@ -83,6 +92,7 @@ public class CommandArgumentResult
     /// Adds a variable value to the parsing result.
     /// </summary>
     /// <param name="value">The value to add.</param>
+    [Obsolete("Use AddWord instead.")]
     public void AddVariable(string value)
     {
         ThrowIfFinal();
@@ -91,11 +101,24 @@ public class CommandArgumentResult
     }
 
     /// <summary>
+    /// Adds a word from the original command line to the parsing result.
+    /// </summary>
+    /// <param name="word">The word to add.</param>
+    public void AddWord(SyntaxWord word)
+    {
+        ThrowIfFinal();
+        
+        _words.Add(word);
+    }
+
+    /// <summary>
     /// Renders this instance immutable after this method call. Any further attempts will result in exceptions.
     /// </summary>
     public void MakeFinal()
     {
         _final = true;
+        
+        _variableValues.AddRange(_words.Select(x => x.Content));
     }
     
     private void ThrowIfFinal()
