@@ -31,7 +31,6 @@ public sealed class BundledCommandsProvider
         typeof(PromptCommandEx),
         typeof(HelpCommandEx),
         typeof(SetCommand),
-        typeof(IfCommand),
         typeof(FindCommand),
         typeof(RemarksCommand),
         typeof(MoreCommand),

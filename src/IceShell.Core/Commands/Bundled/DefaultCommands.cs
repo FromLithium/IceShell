@@ -21,5 +21,6 @@ public static class DefaultCommands
 
         EchoCommand.RegisterTo(dispatcher);
         ExitCommand.RegisterTo(dispatcher);
+        NewIfCommand.RegisterTo(dispatcher);
     }
 }
