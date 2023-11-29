@@ -78,6 +78,17 @@ public class CommandBuilder
         _entry.VariableValues = true;
         return this;
     }
+
+    /// <summary>
+    /// Registers a custom usage line to the command.
+    /// </summary>
+    /// <param name="usage">The custom usage line.</param>
+    /// <returns>This instance, for chaining.</returns>
+    public CommandBuilder CustomUsage(string usage)
+    {
+        _entry.CustomUsage = usage;
+        return this;
+    }
     
     /// <summary>
     /// Constructs the command and register it to the dispatcher.

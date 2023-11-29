@@ -13,9 +13,6 @@ This version is to be the Anniversary Preview version.
 
 #### Commands
 
-- Overhauled the API interface and the internal system of the command dispatching and registration system.
-  - Annotated commands now is registered by a separate service connected to the new dispatcher service.
-  - Now is possible to register "regular" commands without the use of any command classes at all.
 - Added several options for the `DIR` command.
     - Added `/U` option which displays all entries in upper-case.
     - Added `/L` option which displays all entries in lower-case.
@@ -41,7 +38,8 @@ This version is to be the Anniversary Preview version.
 - The API surface for value and options acquiring now uses option identifier character and value reference names as the keys of the parameters.
 - Added support for `SByte`, `Byte`, `Int16`, `Int32` and `Int64` arguments.
 - Added support for checking for if a command have succeeded by `bool CommandResult.IsSuccess(CommandResult)`.
-- Moved the following classes to their `IceShell` namespaces:
+- Added a new structure, `CommandRoutineResult`, to aid in using intermediate routines in command routines.
+- Moved the following classes to their `IceShell.Core` namespaces:
   - `Shell`
   - `PathSearcher`
 
@@ -53,13 +51,25 @@ This version is to be the Anniversary Preview version.
 
 #### Commands
 
+- Overhauled the API interface and the internal system of the command dispatching and registration system.
+    - Annotated commands now is registered by a separate service connected to the new dispatcher service.
+    - Now is possible (and is preferred) to register "regular" commands without the use of any command classes at all.
 - Overhauled the command help description system and registration entry system for better internationalisation.
     - Commands are now registered by IDs, and aliases are now registered in a separate registry. 
     - Now command and argument descriptions are automatically internationalised.
     - Introduced a new `CommandInfo` attribute for the API that replaces the prior `ComplexCommand` attribute.
     - Command registration now longer holds the command and argument descriptions.
 - `PROMPT` command will check the syntax of the prompt template.
-- `IF` command now supports `FileExists` and `DirectoryExists` existence check conditions.
+- Overhauled the `IF` command.
+  - Remade the conditions logic.
+    - `Variable` condition is removed and replaced with `name==value` variable condition.
+    - `FileExists` condition is removed and replaced with `FILE` condition.
+    - `DirectoryExists` condition is removed and replaced with `DIR` conditions.
+    - Added a new condition, `EXISTS`, to check either file or directory exists.
+    - You can specify `NOT` as the first command to invert the condition.
+  - Added support for executing commands without using `&&` operators.
+    - Now you can append a command surrounded with parentheses right after the condition expression, and it will be executed if condition matches.
+    - You can further this by append `ELSE` and another command surrounded with parentheses right after it, and it will be executed if the condition does not match. 
 
 #### Shell
 

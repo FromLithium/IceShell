@@ -5,6 +5,7 @@ namespace IceShell.Core.Commands.Bundled;
 
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
+using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Registry;
 using IceShell.Parsing;
 using IceShell.Parsing.Util;
@@ -22,6 +23,7 @@ public static class NewIfCommand
     {
         new CommandBuilder("if", Routine)
             .VariableValues()
+            .CustomUsage("[NOT] <condition...> (<then-command>) [ELSE (<else-command>)]")
             .Build(dispatcher);
     }
 
@@ -44,6 +46,7 @@ public static class NewIfCommand
         // The condition result.
         var condition = false;
         
+        // Checks for the NOT condition.
         if (UnquotedIs(words[0], IfNot))
         {
             not = true;
@@ -65,7 +68,8 @@ public static class NewIfCommand
             if (result.ErrorCode != CommandErrorCode.None)
             {
                 // Parsing failure.
-                return CommandResult.WithError(result.ErrorCode);
+                return CommandResult.WithError(result.ErrorCode,
+                    LangMessage.Get("command.if.condition.variable.invalid_format"));
             }
 
             condition = result.Result;
@@ -76,7 +80,8 @@ public static class NewIfCommand
             if (words.Count <= startAtIndex + 1)
             {
                 // Too less arguments.
-                return CommandResult.WithError(CommandErrorCode.BadArgument);
+                return CommandResult.WithError(CommandErrorCode.BadArgument,
+                    LangMessage.Get("command.if.condition.exists.name_required"));
             }
 
             var content = words[startAtIndex + 1].Content;
@@ -91,7 +96,8 @@ public static class NewIfCommand
             if (words.Count <= startAtIndex + 1)
             {
                 // Too less arguments.
-                return CommandResult.WithError(CommandErrorCode.BadArgument);
+                return CommandResult.WithError(CommandErrorCode.BadArgument,
+                    LangMessage.Get("command.if.condition.file.name_required"));
             }
 
             condition = File.Exists(words[startAtIndex + 1].Content);
@@ -100,12 +106,13 @@ public static class NewIfCommand
         }
 
         // Directory exists.
-        else if (UnquotedIs(words[startAtIndex], IfFile))
+        else if (UnquotedIs(words[startAtIndex], IfDir))
         {
             if (words.Count <= startAtIndex + 1)
             {
                 // Too less arguments.
-                return CommandResult.WithError(CommandErrorCode.BadArgument);
+                return CommandResult.WithError(CommandErrorCode.BadArgument,
+                    LangMessage.Get("command.if.condition.dir.name_required"));
             }
 
             condition = Directory.Exists(words[startAtIndex + 1].Content);
@@ -119,19 +126,28 @@ public static class NewIfCommand
             if (words.Count <= startAtIndex + 1)
             {
                 // Too less arguments.
-                return CommandResult.WithError(CommandErrorCode.BadArgument);
+                return CommandResult.WithError(CommandErrorCode.BadArgument,
+                    LangMessage.Get("command.if.condition.error_level.required"));
             }
             
             var result = RunConditionErrorLevel(shell, words[startAtIndex + 1]);
             if (result.ErrorCode != CommandErrorCode.None)
             {
                 // Parsing failure.
-                return CommandResult.WithError(result.ErrorCode);
+                return CommandResult.WithError(result.ErrorCode,
+                    LangMessage.Get("command.if.condition.error_level.not_number"));
             }
 
             condition = result.Result;
             // Push the start index once more because we used 2 words here.
             startAtIndex++;
+        }
+
+        // None applies.
+        else
+        {
+            return CommandResult.WithError(CommandErrorCode.BadArgument,
+                LangMessage.Get("command.if.no_such_condition"));
         }
 
         // Push the start index to the next then command.
@@ -157,7 +173,8 @@ public static class NewIfCommand
             if (words.Count <= startAtIndex + 2)
             {
                 // If ELSE is specified then the ELSE command must also be specified.
-                return CommandResult.WithError(CommandErrorCode.BadArgument);
+                return CommandResult.WithError(CommandErrorCode.BadArgument,
+                    LangMessage.Get("command.if.else.command_required"));
             }
             
             elseCommand = words[startAtIndex + 2];
@@ -167,7 +184,13 @@ public static class NewIfCommand
         || (elseCommand != null && elseCommand.QuoteType != WordQuoteType.Parentheses))
         {
             // The THEN and ELSE commands must be surrounded by parentheses.
-            return CommandResult.WithError(CommandErrorCode.BadArgument);
+            return CommandResult.WithError(CommandErrorCode.BadArgument,
+                LangMessage.Get("command.if.subcommand_not_in_parentheses"));
+        }
+
+        if (not)
+        {
+            condition = !condition;
         }
 
         // If the condition matches.

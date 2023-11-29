@@ -13,6 +13,7 @@ using System;
 /// Checks for a condition.
 /// </summary>
 [CommandInfo("if")]
+[Obsolete("Use NewIfCommand instead.")]
 public class IfCommand : IShellCommand
 {
     /// <summary>
