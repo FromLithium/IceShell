@@ -20,7 +20,7 @@ public static class EchoCommand
     public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
         new CommandBuilder("echo", Routine)
-            .ValueParameter("message", 0, required: true)
+            .ValueParameter("message", 0, required: false)
             .SwitchOption('E')
             .SwitchOption('P')
             .GreedyString()
@@ -35,14 +35,22 @@ public static class EchoCommand
         
         if (context.Retrieval == null)
         {
+            // If the message is empty, add an empty line.
+            if (message == null)
+            {
+                Console.WriteLine();
+                return CommandResult.Ok();
+            }
+            
             var finalText = message;
 
-            if ((expandVariables || expandLikePath) && message != null)
+            // Expand variables and home directory.
+            if ((expandVariables || expandLikePath))
             {
                 finalText = PathSearcher.ExpandVariables(message, true, expandLikePath);
             }
 
-            Console.WriteLine(finalText ?? Environment.NewLine);
+            Console.WriteLine(finalText);
         }
         else
         {
