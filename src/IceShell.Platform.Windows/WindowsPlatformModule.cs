@@ -20,5 +20,7 @@ public class WindowsPlatformModule : IModule
 
         registry.Register(typeof(VolumeInfoCommand));
         registry.Register(typeof(MemoryInfoCommand));
+        
+        WindowsClipCommand.RegisterTo(dispatcher);
     }
 }
