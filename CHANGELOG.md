@@ -49,6 +49,10 @@ This version is to be the Anniversary Preview version.
 
 ### Changed
 
+#### Overall
+
+- Upgraded the project runtime version to .NET 8.
+
 #### Commands
 
 - Overhauled the API interface and the internal system of the command dispatching and registration system.

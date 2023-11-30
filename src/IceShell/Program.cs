@@ -8,8 +8,6 @@ using IceShell.Core.Commands.Bundled;
 using IceShell.Platform.Linux;
 using IceShell.Platform.Windows;
 using IceShell.Settings;
-using NexusKrop.IceShell.Core;
-using ReadLineReboot;
 using Spectre.Console;
 
 if (args.Length > 1)
@@ -53,7 +51,7 @@ if (sh == null)
     {
         AnsiConsole.WriteLine("[red]Unable to create configuration![/]");
         AnsiConsole.WriteException(ex);
-        sh = new();
+        sh = new ShellSettings();
     }
 }
 
