@@ -129,7 +129,7 @@ public class HelpCommandEx : IShellCommand
         return string.Format(DescriptionMessageFormat, commandId);
     }
 
-    private static void PrintHelp(CommandRegistryEntry definition, IRegistryCommandDispatcher manager)
+    internal static void PrintHelp(CommandRegistryEntry definition, IRegistryCommandDispatcher manager)
     {
         Console.WriteLine(LangMessage.Get(string.Format(DescriptionMessageFormat, definition.Identifier)));
         Console.WriteLine();

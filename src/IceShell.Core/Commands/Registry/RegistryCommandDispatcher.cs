@@ -28,6 +28,7 @@ using IceShell.Core.FileSystem;
 using IceShell.Core.Syntax;
 using IceShell.Parsing;
 using NexusKrop.IceShell.Core.CLI;
+using NexusKrop.IceShell.Core.Commands.Bundled;
 
 /// <summary>
 /// Provides the default implementation for the <see cref="IRegistryCommandDispatcher"/> interface. Do not use the API directly;
@@ -183,6 +184,12 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
         {
             throw new ArgumentException("The specified command is not associated with this dispatcher.",
                 nameof(parseResult));
+        }
+
+        if (parseResult.Arguments.IsHelpInformationRequested)
+        {
+            HelpCommandEx.PrintHelp(command, this);
+            return CommandResult.Ok();
         }
 
         try

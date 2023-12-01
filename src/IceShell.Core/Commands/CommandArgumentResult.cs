@@ -51,6 +51,11 @@ public class CommandArgumentResult
     /// Gets the split up words in the original command line.
     /// </summary>
     public IReadOnlyList<SyntaxWord> OriginalWords { get; }
+    
+    /// <summary>
+    /// Gets a value indicating whether the help information is requested, rather than an execution of the command.
+    /// </summary>
+    public bool IsHelpInformationRequested { get; private set; }
 
     /// <summary>
     /// Adds a switch to the parsing result.
@@ -127,5 +132,20 @@ public class CommandArgumentResult
         {
             throw new InvalidOperationException("The parsing result is already finalised.");
         }
+    }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="CommandArgumentResult"/> that requests the help information about a command
+    /// rather than the execution of such command.
+    /// </summary>
+    /// <returns>The created <see cref="CommandArgumentResult"/>.</returns>
+    public static CommandArgumentResult HelpRequested()
+    {
+        var result = new CommandArgumentResult()
+        {
+            IsHelpInformationRequested = true
+        };
+        result.MakeFinal();
+        return result;
     }
 }

@@ -37,6 +37,12 @@ public class CommandParsingProvider
     public CommandArgumentResult Parse(ISet<char>? allSwitches)
     {
         var result = new CommandArgumentResult();
+
+        if (!_definition.Options.ContainsKey('?')
+            && _command.Options.Contains(new SyntaxOption('?', null)))
+        {
+            return CommandArgumentResult.HelpRequested();
+        }
         
         if (_definition.VariableValues)
         {
