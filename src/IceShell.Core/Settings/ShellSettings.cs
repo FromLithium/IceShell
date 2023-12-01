@@ -28,6 +28,11 @@ public class ShellSettings
     /// killing it whenever possible.
     /// </summary>
     public bool TerminateUponInterrupt { get; set; }
+    
+    /// <summary>
+    /// Gets or sets a value indicating whether to expand variables for all value arguments.
+    /// </summary>
+    public bool ExpandVariablesForAllValues { get; set; }
 
     /// <summary>
     /// Gets or sets the language file to use.
@@ -53,7 +58,9 @@ public class ShellSettings
             {
                 ["DisplayDateTimeOnStartup"] = DisplayDateTimeOnStartUp.ToString(),
                 [nameof(DisplayShellInfoOnStartUp)] = DisplayShellInfoOnStartUp.ToString(),
-                [nameof(Language)] = Language
+                [nameof(Language)] = Language,
+                [nameof(TerminateUponInterrupt)] = TerminateUponInterrupt.ToString(),
+                [nameof(ExpandVariablesForAllValues)] = ExpandVariablesForAllValues.ToString()
             },
             ["Launcher"] =
             {
@@ -91,7 +98,9 @@ public class ShellSettings
             DisplayDateTimeOnStartUp = bool.Parse(GetSettingSafe(data, "Shell", "DisplayDateTimeOnStartup", "false")),
             Language = GetSettingSafe(data, "Shell", nameof(Language), "en"),
             DisplayShellInfoOnStartUp = bool.Parse(GetSettingSafe(data, "Shell", nameof(DisplayShellInfoOnStartUp), "false")),
-            AddPlatformModules = GetBoolSettingSafe(data, "Launcher", nameof(GetBoolSettingSafe), true)
+            AddPlatformModules = GetBoolSettingSafe(data, "Launcher", nameof(AddPlatformModules), true),
+            TerminateUponInterrupt = GetBoolSettingSafe(data, "Shell", nameof(TerminateUponInterrupt)),
+            ExpandVariablesForAllValues = GetBoolSettingSafe(data, "Shell", nameof(ExpandVariablesForAllValues), true)
         };
     }
 

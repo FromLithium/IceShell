@@ -7,6 +7,7 @@ using System.Text;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Registry;
 using IceShell.Core.Exceptions;
+using IceShell.Core.FileSystem;
 using IceShell.Parsing;
 using NexusKrop.IceCube.Util.Enumerables;
 
@@ -17,16 +18,20 @@ public class CommandParsingProvider
 {
     private readonly CommandRegistryEntry _definition;
     private readonly SyntaxCommandInvocation _command;
+    private readonly bool _expandAllVariables;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandArgument"/> command.
     /// </summary>
     /// <param name="command">The command syntax to parse.</param>
     /// <param name="definition">The definition of the command.</param>
-    public CommandParsingProvider(SyntaxCommandInvocation command, CommandRegistryEntry definition)
+    /// <param name="expandAllVariables">If <see langword="true"/>, then all variables are expanded accordingly.</param>
+    public CommandParsingProvider(SyntaxCommandInvocation command, CommandRegistryEntry definition,
+        bool expandAllVariables = false)
     {
         _command = command;
         _definition = definition;
+        _expandAllVariables = expandAllVariables;
     }
 
     /// <summary>
@@ -122,6 +127,15 @@ public class CommandParsingProvider
                 throw new CommandFormatException(LangMessage.MsgTooManyArguments(index + 1, _definition.Values.Count));
             }
 
+            var actualStr = x.Content;
+            
+            // Configuration option shall control whether to expand all variables.
+            if (_expandAllVariables)
+            {
+                actualStr = PathSearcher.ExpandVariables(actualStr, true);
+            }
+
+            // If greedy string is on and we are at the last value as defined...
             if (_definition.GreedyString && index == _definition.Values.Count - 1)
             {
                 startGreedy = true;
@@ -130,7 +144,7 @@ public class CommandParsingProvider
             else
             {
                 var valueDef = _definition.Values[index];
-                result.AddValue(valueDef, x.Content);
+                result.AddValue(valueDef, actualStr);
 
                 index++;
             }
@@ -161,7 +175,15 @@ public class CommandParsingProvider
             }
 
             var valueDef = _definition.Values[index];
-            result.AddValue(valueDef, sb.ToString());
+
+            var actualStr = sb.ToString();
+            
+            if (_expandAllVariables)
+            {
+                actualStr = PathSearcher.ExpandVariables(actualStr, true);
+            }
+            
+            result.AddValue(valueDef, actualStr);
         }
     }
 }

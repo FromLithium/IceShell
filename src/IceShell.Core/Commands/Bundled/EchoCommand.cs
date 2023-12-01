@@ -21,7 +21,6 @@ public static class EchoCommand
     {
         new CommandBuilder("echo", Routine)
             .ValueParameter("message", 0, required: false)
-            .SwitchOption('E')
             .SwitchOption('P')
             .GreedyString()
             .Build(dispatcher);
@@ -30,7 +29,6 @@ public static class EchoCommand
     private static CommandResult Routine(IShell shell, ICommandExecutor executor, CommandContext context)
     {
         var message = context.GetValue("message");
-        var expandVariables = context.GetSwitch('E');
         var expandLikePath = context.GetSwitch('P');
         
         if (context.Retrieval == null)
@@ -45,7 +43,7 @@ public static class EchoCommand
             var finalText = message;
 
             // Expand variables and home directory.
-            if ((expandVariables || expandLikePath))
+            if (expandLikePath)
             {
                 finalText = PathSearcher.ExpandVariables(message, true, expandLikePath);
             }

@@ -59,7 +59,7 @@ public class Shell : IShell
     {
         _settings = settings;
         Prompt = DefaultPrompt;
-        Dispatcher = dispatcher ?? new RegistryCommandDispatcher();
+        Dispatcher = dispatcher ?? new RegistryCommandDispatcher(settings.ExpandVariablesForAllValues);
         ModuleManager = new ModuleManager(Dispatcher);
     }
 

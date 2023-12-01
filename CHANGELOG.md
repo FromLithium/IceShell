@@ -73,7 +73,8 @@ This version is to be the Anniversary Preview version.
     - You can specify `NOT` as the first command to invert the condition.
   - Added support for executing commands without using `&&` operators.
     - Now you can append a command surrounded with parentheses right after the condition expression, and it will be executed if condition matches.
-    - You can further this by append `ELSE` and another command surrounded with parentheses right after it, and it will be executed if the condition does not match. 
+    - You can further this by append `ELSE` and another command surrounded with parentheses right after it, and it will be executed if the condition does not match.
+- Added configuration option `ExpandVariablesForAllValues` to expand all variables in value arguments.
 
 #### Shell
 

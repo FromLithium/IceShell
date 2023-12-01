@@ -39,7 +39,13 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     private readonly Dictionary<string, CommandRegistryEntry> _commandRegistry = new();
     private readonly Dictionary<string, string> _aliases = new();
     private readonly Dictionary<CommandRegistryEntry, CommandDelegate> _commandDelegates = new();
-
+    private readonly bool _parseArgumentVariables;
+    
+    internal RegistryCommandDispatcher(bool parseArgumentVariables = false)
+    {
+        _parseArgumentVariables = parseArgumentVariables;
+    }
+    
     /// <inheritdoc />
     public int AliasCount => _aliases.Count;
 
@@ -160,9 +166,9 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
         return new CommandSection(cmdInfo, segment.InternalCommand!.Name, segment.NextAction);
     }
 
-    private static CommandArgumentResult InternalParseArgument(SyntaxCommandInvocation invocation, CommandRegistryEntry entry)
+    private CommandArgumentResult InternalParseArgument(SyntaxCommandInvocation invocation, CommandRegistryEntry entry)
     {
-        var parsingProvider = new CommandParsingProvider(invocation, entry);
+        var parsingProvider = new CommandParsingProvider(invocation, entry, _parseArgumentVariables);
         
         // TODO optimise this by separating all value options with switches.
         return parsingProvider.Parse(entry.Options.Where(x => x.Value.IsSwitch)
@@ -211,7 +217,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
             return CommandResult.Ok();
         }
 
-        if (section.IsCommand && section.Command != null)
+        if (section is { IsCommand: true, Command: not null })
         {
             var cmd = section.Command.Value;
             
@@ -219,10 +225,12 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
         }
         else if (section.Statements != null)
         {
+            // Execute external command.
+            
             var args = section.Statements.Select(x => x.Content);
 
-            var enumerable = args.ToList();
-            if (!enumerable.Any())
+            var argList = args.ToList();
+            if (argList.Count == 0)
             {
                 // This also indicates a blank line.
                 return CommandResult.Ok();
@@ -231,13 +239,26 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
             var cmdName = section.Name;
             var searchResult = PathSearcher.GetSystemExecutableName(Path.Combine(Environment.CurrentDirectory, cmdName));
 
+            // If unable to find file...
             if (searchResult == null || !File.Exists(searchResult))
             {
                 throw new CommandFormatException(LangMessage.MsgUnknownCommand(cmdName));
             }
 
             var processInfo = new ProcessStartInfo(searchResult);
-            enumerable.ForEach(processInfo.ArgumentList.Add);
+            
+            argList.ForEach(x =>
+            {
+                // If this dispatcher is configured to expand variables,
+                // then expand variables.
+                if (_parseArgumentVariables)
+                {
+                    x = PathSearcher.ExpandVariables(x, true);
+                }
+                
+                processInfo.ArgumentList.Add(x);
+            });
+            
             processInfo.UseShellExecute = false;
             processInfo.WorkingDirectory = Environment.CurrentDirectory;
 
