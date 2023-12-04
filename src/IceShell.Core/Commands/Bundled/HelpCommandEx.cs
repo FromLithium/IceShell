@@ -23,6 +23,9 @@ public class HelpCommandEx : IShellCommand
     private const string DescriptionMessageFormat = "command.{0}.description";
     private const string OptionMessageFormat = "command.{0}.option_{1}.description";
     private const string ValueMessageFormat = "command.{0}.value_{1}.description";
+    private const string LiteralValues = "command.help.detailed.values";
+    private const string LiteralSwitches = "command.help.detailed.switches";
+    private const string LiteralOptions = "command.help.detailed.options";
 
     /// <summary>
     /// Gets or sets the name of the command that the user wants help information.
@@ -145,7 +148,7 @@ public class HelpCommandEx : IShellCommand
             Console.WriteLine();
 
             // Values
-            Console.WriteLine("Values: ");
+            Console.WriteLine(LangMessage.Get(LiteralValues));
             Console.WriteLine();
 
             var grid = new Grid();
@@ -166,19 +169,42 @@ public class HelpCommandEx : IShellCommand
             AnsiConsole.Write(grid);
         }
 
-        if (definition.Options.Any())
+        if (definition.Options.Any(x => !x.Value.IsSwitch))
         {
             Console.WriteLine();
 
             // Options
-            Console.WriteLine("Options: ");
+            Console.WriteLine(LangMessage.Get(LiteralOptions));
             Console.WriteLine();
 
             var grid = new Grid();
             grid.AddColumn();
             grid.AddColumn();
 
-            foreach (var option in definition.Options)
+            foreach (var option in 
+                definition.Options.Where(x => !x.Value.IsSwitch))
+            {
+                grid.AddRow(Markup.Escape(!option.Value.IsSwitch ? $"/{option.Key}:<value>" : $"/{option.Key}"),
+                    Markup.Escape(LangMessage.Get(string.Format(OptionMessageFormat, definition.Identifier, option.Key))));
+            }
+
+            AnsiConsole.Write(grid);
+        }
+
+        if (definition.Options.Any(x => x.Value.IsSwitch))
+        {
+            Console.WriteLine();
+
+            // Switches
+            Console.WriteLine(LangMessage.Get(LiteralSwitches));
+            Console.WriteLine();
+
+            var grid = new Grid();
+            grid.AddColumn();
+            grid.AddColumn();
+
+            foreach (var option in 
+                definition.Options.Where(x => x.Value.IsSwitch))
             {
                 grid.AddRow(Markup.Escape(!option.Value.IsSwitch ? $"/{option.Key}:<value>" : $"/{option.Key}"),
                     Markup.Escape(LangMessage.Get(string.Format(OptionMessageFormat, definition.Identifier, option.Key))));
