@@ -3,7 +3,9 @@
 
 namespace IceShell.Core.CLI.Languages;
 
+using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Text.Json;
 using Kajabity.Tools.Java;
 using global::IceShell.Settings;
 
@@ -83,16 +85,21 @@ public class LanguageService
         var targetPath = Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
             "lang"));
 
-        foreach (var file in targetPath.EnumerateFiles("*.properties"))
+        foreach (var file in targetPath.EnumerateFiles("*.json"))
         {
-            var propFile = new JavaProperties();
-
+            Dictionary<string, string>? jsonFile;
+            
             using (var stream = file.OpenRead())
             {
-                propFile.Load(stream);
+                jsonFile = JsonSerializer.Deserialize<Dictionary<string, string>>(stream);
             }
 
-            _languageFiles.Add(Path.GetFileNameWithoutExtension(file.Name), new(propFile));
+            if (jsonFile == null)
+            {
+                continue;
+            }
+
+            _languageFiles.Add(Path.GetFileNameWithoutExtension(file.Name), new LanguageFile(new ReadOnlyDictionary<string, string>(jsonFile)));
         }
     }
 }

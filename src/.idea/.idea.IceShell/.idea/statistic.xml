@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Statistic">
+    <option name="fileTypes" value="class;svn-base;svn-work;Extra;gif;png;jpg;jpeg;bmp;tga;tiff;ear;war;zip;jar;iml;iws;ipr;bz2;gz;pyc;exe;bin;dll;cache;csproj;copycomplete;json;md;pack;pdb;projitems;properties;shproj;sln;so;targets;config;dotsettings;dylib" />
+    <option name="fileTypesIncluded" value="cs" />
+    <option name="excludeDotArtifactDirectory" value="true" />
+  </component>
+</project>

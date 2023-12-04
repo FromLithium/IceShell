@@ -3,6 +3,7 @@
 
 namespace IceShell.Core.CLI.Languages;
 
+using System.Collections.ObjectModel;
 using Kajabity.Tools.Java;
 
 /// <summary>
@@ -13,18 +14,18 @@ public class LanguageFile
     /// <summary>
     /// Gets an empty language file.
     /// </summary>
-    public static readonly LanguageFile Empty = new(new JavaProperties());
+    public static readonly LanguageFile Empty = new(new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()));
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LanguageFile"/> class.
     /// </summary>
     /// <param name="properties">The properties file.</param>
-    public LanguageFile(JavaProperties properties)
+    public LanguageFile(IReadOnlyDictionary<string, string> properties)
     {
         _properties = properties;
     }
-
-    private readonly JavaProperties _properties;
+    
+    private readonly IReadOnlyDictionary<string, string> _properties;
 
     /// <summary>
     /// Gets the message associated with the specified key.
@@ -33,12 +34,7 @@ public class LanguageFile
     /// <returns>The localised message if found; otherwise the key.</returns>
     public string Get(string key)
     {
-        if (!_properties.TryGetValue(key, out var value))
-        {
-            return key;
-        }
-
-        return value;
+        return !_properties.TryGetValue(key, out var value) ? key : value;
     }
 
     /// <summary>
