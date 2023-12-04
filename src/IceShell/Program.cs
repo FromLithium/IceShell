@@ -1,6 +1,8 @@
 // Copyright (C) NexusKrop & contributors 2023
 // See "COPYING.txt" for licence
 
+using System.Collections.Specialized;
+using System.Reflection;
 using IceShell.Batching;
 using IceShell.Core;
 using IceShell.Core.CLI.Languages;
@@ -8,6 +10,7 @@ using IceShell.Core.Commands.Bundled;
 using IceShell.Platform.Linux;
 using IceShell.Platform.Windows;
 using IceShell.Settings;
+using NexusKrop.IceCube.Util.Enumerables;
 using Spectre.Console;
 
 if (args.Length > 1)
@@ -17,7 +20,31 @@ if (args.Length > 1)
     return 2;
 }
 
-var userPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".iceShell");
+var portable = false;
+var help = false;
+
+var argList = new StringCollection();
+args.ForEach(x =>
+{
+    switch (x)
+    {
+        case "/P":
+            portable = true;
+            break;
+        case "/?":
+            help = true;
+            break;
+        default:
+            argList.Add(x);
+            break;
+    }
+});
+
+// If portable is activated using /P, put user folder in current directory
+// otherwise, put user folder in user home.
+var userPath = portable
+    ? Path.Combine(Environment.CurrentDirectory, ".iceShell")
+    : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".iceShell");
 Directory.CreateDirectory(userPath);
 
 var configPath = Path.Combine(userPath, "config.ini");
@@ -59,6 +86,20 @@ LanguageService.Instance.Load();
 LanguageService.SetInstanceConfig(sh);
 Executive.Attach(sh);
 
+if (help)
+{
+    // Display help information and return.
+    Console.WriteLine(LangMessage.Get("launcher.intro"),
+        Assembly.GetExecutingAssembly().GetName().Version);
+    Console.WriteLine();
+    Console.WriteLine(LangMessage.Get("launcher.options"));
+    Console.WriteLine();
+    Console.WriteLine(LangMessage.Get("launcher.help.option_P"));
+    Console.WriteLine(LangMessage.Get("launcher.help.option_question"));
+    Console.WriteLine();
+    return 0;
+}
+
 var shell = new Shell(sh);
 
 shell.ModuleManager.AddModule(new BatchingModule());
@@ -80,11 +121,11 @@ DefaultCommands.Register(shell.Dispatcher);
 
 var retCode = -255;
 
-if (args.Length == 0)
+if (argList.Count == 0)
 {
     retCode = shell.RunInteractive();
 }
-else if (args.Length == 1)
+else if (argList.Count == 1)
 {
     shell.ModuleManager.Initialize();
     retCode = shell.Execute(args[0]).ExitCode;

@@ -162,5 +162,9 @@
   "init_module_fail": "Failed to load module {0}:",
   "batch_goto_not_supported": "Jumping is not supported in the current context",
   "batch_goto_no_such_label": "Unknown label - {0}",
-  "batch_not_successful": "Unsuccessful return code for line {0}"
+  "batch_not_successful": "Unsuccessful return code for line {0}",
+    "launcher.intro": "IceShell Launcher, version {0}",
+    "launcher.options": "Options:",
+    "launcher.help.option_P": "/P - portable mode",
+    "launcher.help.option_question": "/? - show help message"
 }

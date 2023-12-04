@@ -162,5 +162,9 @@
   "init_module_fail": "无法加载模块 {0}：",
   "batch_goto_not_supported": "当前上下文不支持跳转",
   "batch_goto_no_such_label": "未知标签 - {0}",
-  "batch_not_successful": "行 {0} 返回不成功"
+  "batch_not_successful": "行 {0} 返回不成功",
+    "launcher.intro": "IceShell 启动器 {0}",
+    "launcher.options": "选项：",
+    "launcher.help.option_P": "/P - 绿色模式",
+    "launcher.help.option_question": "/? - 显示帮助信息"
 }
