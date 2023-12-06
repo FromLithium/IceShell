@@ -1,6 +1,8 @@
 # The IceShell Reference
 
-This is the November 2023 edition of the IceShell Reference documentation.
+This is the December 2023 edition of the IceShell Reference documentation.
+
+This documentation is a work in progress. It may not reflect the current state of the software, and you are advised to check the program change log for latest features, updates and changes.
 
 0. [Introduction](0-Introduction.md)
 
@@ -13,6 +15,8 @@ This is the November 2023 edition of the IceShell Reference documentation.
 4. [Error Codes](4-Error-Codes.md)
 
 5. [API](5-API.md)
+   
+   1. [Custom Commands](5.1-Custom-Commands.md)
 - [Appendix A: Security](Appendix-A-Security.md)
 
 ---
