@@ -33,7 +33,6 @@ public sealed class BundledCommandsProvider
         typeof(SetCommand),
         typeof(FindCommand),
         typeof(RemarksCommand),
-        typeof(MoreCommand),
         typeof(DateCommand)
     };
 

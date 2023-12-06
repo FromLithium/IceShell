@@ -30,4 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IceShell.Parsing\IceShell.Parsing.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Commands\Utilities\" />
+  </ItemGroup>
 </Project>

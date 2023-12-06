@@ -7,11 +7,18 @@ using IceShell.Core.Api;
 using NexusKrop.IceShell.Core.CLI;
 using System;
 using System.Collections.Generic;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
 
-[CommandInfo("more")]
-internal class MoreCommand : IShellCommand
+internal static class MoreCommand
 {
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    internal static void RegisterTo(IRegistryCommandDispatcher dispatcher)
+    {
+        new CommandBuilder("more", Routine)
+            .Build(dispatcher);
+    }
+    
+    private static CommandResult Routine(IShell shell, ICommandExecutor executor, CommandContext context)
     {
         if (context.Retrieval == null)
         {
@@ -21,8 +28,9 @@ internal class MoreCommand : IShellCommand
         var bufferHeight = Console.BufferHeight;
         var bufferWidth = Console.BufferWidth;
 
-        var list = new List<string>(bufferHeight);
         string? makeNext = null;
+
+        var list = new List<string>(bufferHeight);
 
         // Cut the string into lines.
         while (true)
