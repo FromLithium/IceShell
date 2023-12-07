@@ -3,7 +3,7 @@
 IceShell is an experimental shell interpreter written in C#. Its syntax and format is inspired by Windows Command Prompt and MS-DOS.
 
 > [!NOTE]
-> This documentation is written in October 2023. Updates after the date may render this documentation outdated. Please check [the CHANGELOG](../../../CHANGELOG.md) for changes.
+> This documentation is written in October 2023, and was last updated in December 2023. Updates after the date may render this documentation outdated. Please check [the CHANGELOG](../../../CHANGELOG.md) for changes.
 
 This shell interpreter is mostly a hobby project, and should not be used for remote or advanced system administration. For more information, see this [page](Appendix-A-Security.md).
 
