@@ -18,7 +18,7 @@ public class SimpleCommandTests
         var dispatcher = new RegistryCommandDispatcher();
         ExitCommand.RegisterTo(dispatcher);
 
-        var retVal = dispatcher.Execute(shell.Object, shell.Object, "exit");
+        var retVal = dispatcher.Execute(shell.Object, new ShellCommandDocument(), "exit");
 
         Assert.Multiple(() =>
         {

@@ -18,7 +18,7 @@ internal static class MoreCommand
             .Build(dispatcher);
     }
     
-    private static CommandResult Routine(IShell shell, ICommandExecutor executor, CommandContext context)
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
     {
         if (context.Retrieval == null)
         {

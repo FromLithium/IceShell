@@ -8,6 +8,7 @@ using System.Reflection;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands.Attributes;
+using IceShell.Core.Commands.Utilities;
 using NexusKrop.IceCube.Util.Enumerables;
 
 /// <summary>
@@ -36,7 +37,8 @@ public class AnnotatedCommandRegistry
         var entry = ResolveAnnotatedCommand(type, out var provider);
         _providers.Add(entry, provider);
         
-        _dispatcher.Register(entry, (shell, executor, context) => ExecuteAnnotatedCommand(entry, context, shell, executor));
+        _dispatcher.Register(entry, (shell, document, context) => 
+            ExecuteAnnotatedCommand(entry, context, shell, new CommandDocumentAnnotationWrapper(document)));
     }
     
     internal CommandRegistryEntry ResolveAnnotatedCommand(Type type, out AnnotatedCommandProvider provider)

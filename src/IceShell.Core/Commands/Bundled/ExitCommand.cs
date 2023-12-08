@@ -22,7 +22,7 @@ public static class ExitCommand
         dispatcher.Register(entry, Execute);
     }
 
-    private static CommandResult Execute(IShell shell, ICommandExecutor executor, CommandContext context)
+    private static CommandResult Execute(IShell shell, ICommandDocument document, CommandContext context)
     {
         shell.Quit();
         return CommandResult.Ok();

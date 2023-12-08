@@ -9,26 +9,23 @@ using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands;
 using IceShell.Core.Exceptions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using IceShell.Core.Api.Commands;
 
-public class BatchFile : ICommandExecutor
+public class BatchFile(
+    IList<CommandSectionCompound> lines,
+    IDictionary<string, int> labels,
+    IDictionary<string, string>? variables)
+    : ICommandDocument
 {
-    public BatchFile(IList<CommandSectionCompound> lines, IDictionary<string, int> labels)
-    {
-        _lines = lines;
-        _labels = labels;
-    }
-
-    private readonly IList<CommandSectionCompound> _lines;
-    private readonly IDictionary<string, int> _labels;
-
-    public bool SupportsJump => true;
+    public bool IsJumpSupported => true;
 
     public int CurrentLine { get; private set; }
 
-    public static BatchFile Parse(IEnumerable<string> lines, IRegistryCommandDispatcher dispatcher)
+    public static BatchFile Parse(IEnumerable<string> lines, IRegistryCommandDispatcher dispatcher,
+        IDictionary<string, string>? variables = null)
     {
         var retVal = new List<CommandSectionCompound>();
         var labels = new Dictionary<string, int>();
@@ -56,14 +53,14 @@ public class BatchFile : ICommandExecutor
             retVal.Add(dispatcher.Parse(line));
         }
 
-        return new(retVal, labels);
+        return new(retVal, labels, variables);
     }
 
     public CommandResult RunBatch(IShell shell)
     {
-        while (CurrentLine < _lines.Count)
+        while (CurrentLine < lines.Count)
         {
-            var line = _lines[CurrentLine];
+            var line = lines[CurrentLine];
             CurrentLine++;
 
             if (!line.Any())
@@ -84,16 +81,18 @@ public class BatchFile : ICommandExecutor
 
     public void Jump(string label)
     {
-        if (!_labels.TryGetValue(label, out var labelLine))
+        if (!labels.TryGetValue(label, out var labelLine))
         {
             throw new CommandFormatException(string.Format(LangMessage.Get("batch_goto_no_such_label"), label));
         }
 
-        if (labelLine > _lines.Count)
+        if (labelLine > lines.Count)
         {
             throw new InvalidOperationException("Label is not correctly parsed? Over line amount!");
         }
 
         CurrentLine = labelLine - 1;
     }
+
+    public IDictionary<string, string>? Variables { get; } = variables;
 }

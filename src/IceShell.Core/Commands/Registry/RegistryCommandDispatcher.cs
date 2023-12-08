@@ -177,13 +177,13 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     }
 
     /// <inheritdoc />
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, string line)
+    public CommandResult Execute(IShell shell, ICommandDocument document, string line)
     {
-        return Execute(shell, executor, Parse(line));
+        return Execute(shell, document, Parse(line));
     }
 
     /// <inheritdoc />
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context, RegistryCommandParseResult parseResult)
+    public CommandResult Execute(IShell shell, ICommandDocument document, ExecutionContext context, RegistryCommandParseResult parseResult)
     {
         if (!_commandRegistry.TryGetValue(parseResult.CommandId, out var command) ||
             !_commandDelegates.TryGetValue(command, out var routine))
@@ -200,7 +200,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
 
         try
         {
-            return routine(shell, executor, new CommandContext(parseResult.Arguments, context.NextAction, context.Retrieval));
+            return routine(shell, document, new CommandContext(parseResult.Arguments, context.NextAction, context.Retrieval));
         }
         catch (CommandInterruptException e)
         {
@@ -209,7 +209,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     }
 
     /// <inheritdoc />
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context, CommandSection section)
+    public CommandResult Execute(IShell shell, ICommandDocument document, ExecutionContext context, CommandSection section)
     {
         if (string.IsNullOrWhiteSpace(section.Name))
         {
@@ -221,7 +221,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
         {
             var cmd = section.Command.Value;
             
-            return Execute(shell, executor, context, cmd);
+            return Execute(shell, document, context, cmd);
         }
         else if (section.Statements != null)
         {
@@ -281,7 +281,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     }
 
     /// <inheritdoc />
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, CommandSectionCompound compound)
+    public CommandResult Execute(IShell shell, ICommandDocument document, CommandSectionCompound compound)
     {
         var inAction = false;
 
@@ -310,7 +310,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
 
             if (line.IsCommand)
             {
-                exitCode = Execute(shell, executor, context, line);
+                exitCode = Execute(shell, document, context, line);
 
                 if (exitCode.OutStream != null)
                 {

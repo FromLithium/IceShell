@@ -11,6 +11,10 @@ This version is to be the Anniversary Preview version.
 
 ### Added
 
+#### Overall
+
+- Added Chinese translation.
+
 #### Commands
 
 - Added several options for the `DIR` command.
@@ -25,6 +29,8 @@ This version is to be the Anniversary Preview version.
 - Added new parsing logic allowing support for many integral number types as well as enumerations being declared as argument types.
 - Added new Linux platform module with a new `CHMOD` command.
 - Added new `AddPlatformModules` under the new `Launcher` configuration section that configures whether to add Windows and Linux platform modules for the respective platforms.
+- Added new `CLIP` command for Windows to copy text to clipboard.
+- Added `ICommandDocument` interface for jump label and context specific variable support.
 
 #### Syntax
 
@@ -52,6 +58,7 @@ This version is to be the Anniversary Preview version.
 #### Overall
 
 - Upgraded the project runtime version to .NET 8.
+- Changed the localisation file format to JSON.
 
 #### Commands
 
@@ -75,6 +82,7 @@ This version is to be the Anniversary Preview version.
     - Now you can append a command surrounded with parentheses right after the condition expression, and it will be executed if condition matches.
     - You can further this by append `ELSE` and another command surrounded with parentheses right after it, and it will be executed if the condition does not match.
 - Added configuration option `ExpandVariablesForAllValues` to expand all variables in value arguments.
+- Deprecated `ICommandExecutor` in favour of `ICommandDocument`.
 
 #### Shell
 

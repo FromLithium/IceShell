@@ -8,4 +8,4 @@ using IceShell.Core.Commands;
 /// <summary>
 /// The command execution delegate.
 /// </summary>
-public delegate CommandResult CommandDelegate(IShell shell, ICommandExecutor executor, CommandContext context);
+public delegate CommandResult CommandDelegate(IShell shell, ICommandDocument executor, CommandContext context);

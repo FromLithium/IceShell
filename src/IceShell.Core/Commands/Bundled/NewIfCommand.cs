@@ -27,7 +27,7 @@ public static class NewIfCommand
             .Build(dispatcher);
     }
 
-    private static CommandResult Routine(IShell shell, ICommandExecutor executor, CommandContext context)
+    private static CommandResult Routine(IShell shell, ICommandDocument executor, CommandContext context)
     {
         if (!context.Arguments.OriginalWords.Any())
         {

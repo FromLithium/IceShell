@@ -6,6 +6,7 @@ namespace IceShell.Core.Commands;
 /// <summary>
 /// Represents a service that can act as the executor and context provider of commands.
 /// </summary>
+[Obsolete("Use ICommandDocument instead.")]
 public interface ICommandExecutor
 {
     /// <summary>

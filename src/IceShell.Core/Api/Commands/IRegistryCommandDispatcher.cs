@@ -104,7 +104,7 @@ public interface IRegistryCommandDispatcher
     /// <param name="executor">The executor to act on behalf of.</param>
     /// <param name="line">The line to parse.</param>
     /// <returns>The result of the command execution.</returns>
-    CommandResult Execute(IShell shell, ICommandExecutor executor, string line);
+    CommandResult Execute(IShell shell, ICommandDocument document, string line);
     
     /// <summary>
     /// Executes an already parsed command line.
@@ -114,7 +114,7 @@ public interface IRegistryCommandDispatcher
     /// <param name="context">The execution context.</param>
     /// <param name="parseResult">The parse result.</param>
     /// <returns>The result of the command execution.</returns>
-    CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context, RegistryCommandParseResult parseResult);
+    CommandResult Execute(IShell shell, ICommandDocument document, ExecutionContext context, RegistryCommandParseResult parseResult);
 
     /// <summary>
     /// Executes an already parsed internal or external command.
@@ -124,7 +124,7 @@ public interface IRegistryCommandDispatcher
     /// <param name="context">The context.</param>
     /// <param name="section">The section to execute.</param>
     /// <returns>The result of the command execution.</returns>
-    CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context, CommandSection section);
+    CommandResult Execute(IShell shell, ICommandDocument document, ExecutionContext context, CommandSection section);
     
     /// <summary>
     /// Executes a compound of already parsed commands.
@@ -133,5 +133,5 @@ public interface IRegistryCommandDispatcher
     /// <param name="executor">The executor to act on behalf of.</param>
     /// <param name="compound">The compound to execute.</param>
     /// <returns>The result of the command execution.</returns>
-    CommandResult Execute(IShell shell, ICommandExecutor executor, CommandSectionCompound compound);
+    CommandResult Execute(IShell shell, ICommandDocument document, CommandSectionCompound compound);
 }

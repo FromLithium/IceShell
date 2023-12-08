@@ -42,6 +42,7 @@ public class Shell : IShell
     public const string DefaultPrompt = "$P$G ";
 
     private readonly ShellSettings _settings;
+    private readonly ICommandDocument _document = new ShellCommandDocument();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Shell"/> class, with the default settings.
@@ -72,9 +73,6 @@ public class Shell : IShell
     /// <inheritdoc />
     public IRegistryCommandDispatcher Dispatcher { get; }
 
-    /// <inheritdoc />
-    public bool SupportsJump => false;
-
     /// <inheritdoc/>
     public int LastExitCode { get; private set; }
 
@@ -93,8 +91,8 @@ public class Shell : IShell
     /// Parses and then executes the specified user input.
     /// </summary>
     /// <param name="line">The input.</param>
-    /// <param name="actualExecutor">The executor to pass to commands (or have this instance to act on behalf of). If <see langword="null"/>, the Shell will run commands on its own behalf.</param>
-    public CommandResult Execute(string line, ICommandExecutor? actualExecutor = null)
+    /// <param name="document">The executor to pass to commands (or have this instance to act on behalf of). If <see langword="null"/>, the Shell will run commands on its own behalf.</param>
+    public CommandResult Execute(string line, ICommandDocument? document = null)
     {
         CommandResult cmdResult;
 
@@ -102,7 +100,7 @@ public class Shell : IShell
         {
             var batchLine = Dispatcher.Parse(line);
 
-            cmdResult = Dispatcher.Execute(this, actualExecutor ?? this, batchLine);
+            cmdResult = Dispatcher.Execute(this, document ?? _document, batchLine);
         }
         catch (CommandFormatException ex)
         {
@@ -130,9 +128,9 @@ public class Shell : IShell
     }
 
     /// <inheritdoc />
-    public CommandResult Execute(CommandSectionCompound compound, ICommandExecutor? actualExecutor = null)
+    public CommandResult Execute(CommandSectionCompound compound, ICommandDocument? document = null)
     {
-        return Dispatcher.Execute(this, actualExecutor ?? this, compound);
+        return Dispatcher.Execute(this, document ?? _document, compound);
     }
 
     /// <summary>
@@ -183,29 +181,14 @@ public class Shell : IShell
             // Command failure handling
             if (execResult.ExitCode != 0 && execResult.ErrorCode != CommandErrorCode.None)
             {
-                if (!string.IsNullOrWhiteSpace(execResult.Message))
-                {
-                    ConsoleOutput.PrintShellError(execResult.Message);
-                }
-                else
-                {
-                    ConsoleOutput.PrintShellError(LangMessage.MsgFromErrorCode(execResult.ErrorCode));
-                }
+                ConsoleOutput.PrintShellError(!string.IsNullOrWhiteSpace(execResult.Message)
+                    ? execResult.Message
+                    : LangMessage.MsgFromErrorCode(execResult.ErrorCode));
             }
 
             Console.WriteLine();
         }
 
         return 0;
-    }
-
-    /// <summary>
-    /// Throws <see cref="NotSupportedException"/> as interactive shells should never support skipping through lines.
-    /// </summary>
-    /// <param name="label">The label to skip to. Ignored.</param>
-    /// <exception cref="NotSupportedException">The action is not supported.</exception>
-    public void Jump(string label)
-    {
-        throw new NotSupportedException();
     }
 }
