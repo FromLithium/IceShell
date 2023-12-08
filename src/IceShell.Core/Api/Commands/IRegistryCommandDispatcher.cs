@@ -77,31 +77,34 @@ public interface IRegistryCommandDispatcher
     /// Parses the specified command line for execution at a later time.
     /// </summary>
     /// <param name="line">The line to parse.</param>
+    /// <param name="document">The command document.</param>
     /// <returns>The parse result.</returns>
-    CommandSectionCompound Parse(string line)
+    CommandSectionCompound Parse(string line, ICommandDocument? document = null)
     {
-        return Parse((ReadOnlySpan<char>)line);
+        return Parse((ReadOnlySpan<char>)line, document);
     }
 
     /// <summary>
     /// Parses the specified command line for execution at a later time.
     /// </summary>
     /// <param name="line">The line to parse.</param>
+    /// <param name="document">The command document.</param>
     /// <returns>The parse result.</returns>
-    CommandSectionCompound Parse(ReadOnlySpan<char> line);
+    CommandSectionCompound Parse(ReadOnlySpan<char> line, ICommandDocument? document);
 
     /// <summary>
     /// Parses the specified segment to its internal command equivalent.
     /// </summary>
     /// <param name="segment">The segment.</param>
+    /// <param name="document">The command document.</param>
     /// <returns>The parsed section.</returns>
-    CommandSection ParseSection(SyntaxSegment segment);
+    CommandSection ParseSection(SyntaxSegment segment, ICommandDocument? document);
     
     /// <summary>
     /// Parses and then executes the specified command line.
     /// </summary>
     /// <param name="shell">The shell to execute on behalf of.</param>
-    /// <param name="executor">The executor to act on behalf of.</param>
+    /// <param name="document">The command document.</param>
     /// <param name="line">The line to parse.</param>
     /// <returns>The result of the command execution.</returns>
     CommandResult Execute(IShell shell, ICommandDocument document, string line);
@@ -110,7 +113,7 @@ public interface IRegistryCommandDispatcher
     /// Executes an already parsed command line.
     /// </summary>
     /// <param name="shell">The shell to execute on behalf of.</param>
-    /// <param name="executor">The executor to act on behalf of.</param>
+    /// <param name="document">The command document.</param>
     /// <param name="context">The execution context.</param>
     /// <param name="parseResult">The parse result.</param>
     /// <returns>The result of the command execution.</returns>
@@ -120,7 +123,7 @@ public interface IRegistryCommandDispatcher
     /// Executes an already parsed internal or external command.
     /// </summary>
     /// <param name="shell">The shell to execute the section as.</param>
-    /// <param name="executor">The executor to act on behalf of.</param>
+    /// <param name="document">The command document.</param>
     /// <param name="context">The context.</param>
     /// <param name="section">The section to execute.</param>
     /// <returns>The result of the command execution.</returns>
@@ -130,7 +133,7 @@ public interface IRegistryCommandDispatcher
     /// Executes a compound of already parsed commands.
     /// </summary>
     /// <param name="shell">The shell to execute the compound as.</param>
-    /// <param name="executor">The executor to act on behalf of.</param>
+    /// <param name="document">The command document.</param>
     /// <param name="compound">The compound to execute.</param>
     /// <returns>The result of the command execution.</returns>
     CommandResult Execute(IShell shell, ICommandDocument document, CommandSectionCompound compound);

@@ -23,7 +23,7 @@ public class CommandParsingProviderTests
 
         var invocation = CommandParser.ParseSingleCommand(new CommandWordBreaker().RunParse("test Hello World"));
 
-        var provider = new CommandParsingProvider(invocation, entry);
+        var provider = new CommandParsingProvider(invocation, entry, null);
         var result = provider.Parse(null);
         
         Assert.Multiple(() =>

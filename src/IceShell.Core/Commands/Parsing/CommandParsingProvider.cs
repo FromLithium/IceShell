@@ -4,8 +4,10 @@
 namespace IceShell.Core.Commands.Parsing;
 
 using System.Text;
+using IceShell.Core.Api;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Registry;
+using IceShell.Core.Commands.Utilities;
 using IceShell.Core.Exceptions;
 using IceShell.Core.FileSystem;
 using IceShell.Parsing;
@@ -19,19 +21,22 @@ public class CommandParsingProvider
     private readonly CommandRegistryEntry _definition;
     private readonly SyntaxCommandInvocation _command;
     private readonly bool _expandAllVariables;
+    private readonly ICommandDocument? _document;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandArgument"/> command.
     /// </summary>
     /// <param name="command">The command syntax to parse.</param>
     /// <param name="definition">The definition of the command.</param>
+    /// <param name="document">The document.</param>
     /// <param name="expandAllVariables">If <see langword="true"/>, then all variables are expanded accordingly.</param>
-    public CommandParsingProvider(SyntaxCommandInvocation command, CommandRegistryEntry definition,
+    public CommandParsingProvider(SyntaxCommandInvocation command, CommandRegistryEntry definition, ICommandDocument? document,
         bool expandAllVariables = false)
     {
         _command = command;
         _definition = definition;
         _expandAllVariables = expandAllVariables;
+        _document = document;
     }
 
     /// <summary>
@@ -82,7 +87,7 @@ public class CommandParsingProvider
                     throw ExceptionHelper.WithName(LangMessage.Get("argument_option_no_value"), option.Identifier);
                 }
                 
-                result.AddSwitch(optionDef.Identifier, true);
+                result.AddSwitch(optionDef.Identifier);
                 setSwitches.Add(optionDef.Identifier);
             }
             else
@@ -133,6 +138,11 @@ public class CommandParsingProvider
             if (_expandAllVariables)
             {
                 actualStr = PathSearcher.ExpandVariables(actualStr, true);
+
+                if (_document != null)
+                {
+                    actualStr = CommandParsingUtil.ExpandContextVariables(actualStr, _document);   
+                }
             }
 
             // If greedy string is on and we are at the last value as defined...

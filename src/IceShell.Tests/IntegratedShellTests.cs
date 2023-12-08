@@ -18,4 +18,11 @@ public class IntegratedShellTests
         
         Assert.That(CommandResult.IsSuccess(result));
     }
+
+    [Test]
+    public void ModuleManager_NotNull()
+    {
+        var shell = new Shell();
+        Assert.That(shell.ModuleManager, Is.Not.Null);
+    }
 }

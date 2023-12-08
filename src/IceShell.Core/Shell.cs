@@ -98,7 +98,7 @@ public class Shell : IShell
 
         try
         {
-            var batchLine = Dispatcher.Parse(line);
+            var batchLine = Dispatcher.Parse(line, document);
 
             cmdResult = Dispatcher.Execute(this, document ?? _document, batchLine);
         }

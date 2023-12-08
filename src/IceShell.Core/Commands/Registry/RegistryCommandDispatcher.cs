@@ -123,18 +123,18 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     }
 
     /// <inheritdoc />
-    public CommandSectionCompound Parse(ReadOnlySpan<char> line)
+    public CommandSectionCompound Parse(ReadOnlySpan<char> line, ICommandDocument? document = null)
     {
         var statements = new CommandWordBreaker().RunParse(line);
 
         var rawCompound = CommandParser.ParseCompound(statements, HasAlias, x => PathSearcher.ExpandHome(x));
-        var sysCompound = rawCompound.Select(ParseSection);
+        var sysCompound = rawCompound.Select(x => ParseSection(x, document));
 
         return new CommandSectionCompound(sysCompound);
     }
 
     /// <inheritdoc />
-    public CommandSection ParseSection(SyntaxSegment segment)
+    public CommandSection ParseSection(SyntaxSegment segment, ICommandDocument? document)
     {
         if (segment.Type == SegmentType.ExternalCommand)
         {
@@ -159,16 +159,16 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
                 nameof(segment));
         }
 
-        var arguments = InternalParseArgument(segment.InternalCommand, definition);
+        var arguments = InternalParseArgument(segment.InternalCommand, definition, document);
 
         var cmdInfo = new RegistryCommandParseResult(definition.Identifier, arguments);
 
         return new CommandSection(cmdInfo, segment.InternalCommand!.Name, segment.NextAction);
     }
 
-    private CommandArgumentResult InternalParseArgument(SyntaxCommandInvocation invocation, CommandRegistryEntry entry)
+    private CommandArgumentResult InternalParseArgument(SyntaxCommandInvocation invocation, CommandRegistryEntry entry, ICommandDocument? document)
     {
-        var parsingProvider = new CommandParsingProvider(invocation, entry, _parseArgumentVariables);
+        var parsingProvider = new CommandParsingProvider(invocation, entry, document, _parseArgumentVariables);
         
         // TODO optimise this by separating all value options with switches.
         return parsingProvider.Parse(entry.Options.Where(x => x.Value.IsSwitch)
@@ -179,7 +179,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     /// <inheritdoc />
     public CommandResult Execute(IShell shell, ICommandDocument document, string line)
     {
-        return Execute(shell, document, Parse(line));
+        return Execute(shell, document, Parse(line, document));
     }
 
     /// <inheritdoc />
