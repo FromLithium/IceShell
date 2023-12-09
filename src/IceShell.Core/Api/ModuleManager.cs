@@ -1,4 +1,4 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Core.Api;
@@ -18,6 +18,7 @@ public class ModuleManager : IModuleManager
 {
     private readonly List<IModule> _modules = new();
     private readonly IRegistryCommandDispatcher _commandDispatcher;
+    private bool _initialised;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ModuleManager"/> class.
@@ -28,9 +29,22 @@ public class ModuleManager : IModuleManager
         _commandDispatcher = commandDispatcher;
     }
 
+    private static InvalidOperationException ExceptionInitialised()
+        => new("This module manager have already been initialised.");
+
+    private void CheckInitialised()
+    {
+        if (_initialised)
+        {
+            throw ExceptionInitialised();
+        }
+    }
+    
     /// <inheritdoc />
     public void LoadDirectory(string directory)
     {
+        CheckInitialised();
+        
         if (!Directory.Exists(directory))
         {
             // Nothing to load
@@ -60,12 +74,16 @@ public class ModuleManager : IModuleManager
     /// <inheritdoc />
     public void AddModule(IModule module)
     {
+        CheckInitialised();
+        
         _modules.Add(module);
     }
 
     /// <inheritdoc />
     public void AddModule(Type type)
     {
+        CheckInitialised();
+        
         var moduleI = type.GetInterface(nameof(IModule));
 
         if (moduleI != typeof(IModule) ||
@@ -76,39 +94,7 @@ public class ModuleManager : IModuleManager
 
         AddModule(module);
     }
-
-    /// <summary>
-    /// Calls the initialization function for all modules. This finalizes the process of module initialization process.
-    /// </summary>
-    [Obsolete("Use Initialize instead.")]
-    public void InitializeModules(ICommandDispatcher dispatcher)
-    {
-        Initialize();
-    }
-
-    /// <summary>
-    /// Loads all modules in the specified assembly.
-    /// </summary>
-    /// <param name="assembly">The assembly.</param>
-    [Obsolete("Use LoadAssembly(Assembly) instead.")]
-    public void LoadModuleFrom(Assembly assembly)
-    {
-        LoadAssembly(assembly);
-    }
-
-    /// <summary>
-    /// Loads a module from the given path or file.
-    /// </summary>
-    /// <param name="file">The file.</param>
-    /// <remarks>
-    /// This method throws same exceptions as of <see cref="Assembly.LoadFrom(string)"/>.
-    /// </remarks>
-    [Obsolete("Use LoadAssembly(string) instead.")]
-    public void LoadModuleFrom(string file)
-    {
-        LoadAssembly(file);
-    }
-
+    
     /// <inheritdoc/>
     public void LoadAssembly(string file)
     {
@@ -133,6 +119,8 @@ public class ModuleManager : IModuleManager
     /// <inheritdoc/>
     public void Initialize()
     {
+        CheckInitialised();
+        
         foreach (var module in _modules)
         {
             try
@@ -145,5 +133,7 @@ public class ModuleManager : IModuleManager
                 ConsoleOutput.PrintShellError(ex.ToString());
             }
         }
+
+        _initialised = true;
     }
 }
