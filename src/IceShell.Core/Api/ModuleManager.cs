@@ -8,6 +8,7 @@ using NexusKrop.IceShell.Core.CLI;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using IceShell.Core.Api.Commands;
 
@@ -41,6 +42,7 @@ public class ModuleManager : IModuleManager
     }
     
     /// <inheritdoc />
+    [RequiresUnreferencedCode("Requires reflection on the specified directory.")]
     public void LoadDirectory(string directory)
     {
         CheckInitialised();
@@ -80,6 +82,7 @@ public class ModuleManager : IModuleManager
     }
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("Requires reflection on the specified type.")]
     public void AddModule(Type type)
     {
         CheckInitialised();
@@ -96,6 +99,7 @@ public class ModuleManager : IModuleManager
     }
     
     /// <inheritdoc/>
+    [RequiresUnreferencedCode("Requires reflection on the specified assembly.")]
     public void LoadAssembly(string file)
     {
 #pragma warning disable S3885
@@ -108,6 +112,7 @@ public class ModuleManager : IModuleManager
     }
 
     /// <inheritdoc/>
+    [RequiresUnreferencedCode("Requires reflection on the specified assembly.")]
     public void LoadAssembly(Assembly assembly)
     {
         foreach (var type in assembly.GetTypes())

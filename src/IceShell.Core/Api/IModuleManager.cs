@@ -3,6 +3,7 @@
 
 namespace IceShell.Core.Api;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 /// <summary>
@@ -22,6 +23,7 @@ public interface IModuleManager
     /// </summary>
     /// <param name="type">The type to add.</param>
     /// <exception cref="InvalidOperationException">This instance is already initialised.</exception>
+    [RequiresUnreferencedCode("Requires reflection on the specified type.")]
     void AddModule(Type type);
 
     /// <summary>
@@ -29,6 +31,7 @@ public interface IModuleManager
     /// </summary>
     /// <param name="file">The assembly file to load modules from.</param>
     /// <exception cref="InvalidOperationException">This instance is already initialised.</exception>
+    [RequiresUnreferencedCode("Requires reflection on the specified file.")]
     void LoadAssembly(string file);
 
     /// <summary>
@@ -36,6 +39,7 @@ public interface IModuleManager
     /// </summary>
     /// <param name="assembly">The assembly to load modules from.</param>
     /// <exception cref="InvalidOperationException">This instance is already initialised.</exception>
+    [RequiresUnreferencedCode("Requires reflection on the specified assembly.")]
     void LoadAssembly(Assembly assembly);
 
     /// <summary>
@@ -43,6 +47,7 @@ public interface IModuleManager
     /// </summary>
     /// <param name="directory">The directory to load modules from.</param>
     /// <exception cref="InvalidOperationException">This instance is already initialised.</exception>
+    [RequiresUnreferencedCode("Requires reflection on the specified directory.")]
     void LoadDirectory(string directory);
 
     /// <summary>

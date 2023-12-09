@@ -3,14 +3,14 @@
 
 namespace IceShell.Core.Commands.Registry;
 
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands.Argument;
 using IceShell.Core.Exceptions;
-using NexusKrop.IceCube.Collections;
 
+[RequiresUnreferencedCode("Annotated commands requiring reflection on the command.")]
 internal class AnnotatedCommandProvider
 {
     private readonly IRegistryCommandDispatcher _dispatcher;

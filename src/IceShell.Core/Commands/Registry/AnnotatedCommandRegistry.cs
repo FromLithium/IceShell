@@ -4,6 +4,7 @@
 namespace IceShell.Core.Commands.Registry;
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
@@ -14,6 +15,7 @@ using NexusKrop.IceCube.Util.Enumerables;
 /// <summary>
 /// Provides services for registering old legacy annotated commands.
 /// </summary>
+[RequiresUnreferencedCode("Annotated commands requiring reflection on the command.")]
 public class AnnotatedCommandRegistry
 {
     /// <summary>
