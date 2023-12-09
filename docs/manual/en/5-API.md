@@ -12,21 +12,7 @@ The most commonly used part of the IceShell API would be the commands API. In Ic
 
 You can use `CommandBuilder` to create command entries and register commands. It is a helper class that helps you to quickly create `CommandEntry` and add options and parameters to the command, assoicating with a `CommandDelegate` and register it to `IRegistryCommandDispatcher`.
 
-### Identifiers and Aliases
-
-Commands are referred by the internal implementation with their identifiers; users refers to commands with aliases. Aliases are case insensitive, while identifiers are not.
-
-If available, a command dispatcher will register your command identifier as the first alias of  your command, and you can also add more aliases by calling relevant methods on the `IRegistryCommandDispatcher`.
-
-You can use `AnyCommand(string)` to check if a command with the specified identifier exists, and use `HasAlias(string)` to check the same but for aliases.
-
-### Variable value commands
-
-Variable value commands does not declare a specification that is bound by the command processing engine; instead, the command processor only splits up the words and feeds them to your command.
-
-This means the command processor will not provide any parsing and validation (other than those of for options and switches), and you will have to parse arguments yourself.
-
-You can make a command use variable values by setting `VariableValues` property to true for `CommandRegistryEntry`, or by calling `VariableValues()` for `CommandBuilder`.
+For detailed information, see the section 5.1 [Custom Commands](5.1-Custom-Commands.md).
 
 * * *
 

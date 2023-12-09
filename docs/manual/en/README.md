@@ -4,19 +4,14 @@ This is the December 2023 edition of the IceShell Reference documentation.
 
 This documentation is a work in progress. It may not reflect the current state of the software, and you are advised to check the program change log for latest features, updates and changes.
 
-0. [Introduction](0-Introduction.md)
-
+- [Introduction](0-Introduction.md)
 1. [Definitions](1-Definitions.md)
-
 2. [Syntax](2-Syntax.md)
-
 3. [Built-in Commands](3-BuiltIn-Commands.md)
-
 4. [Error Codes](4-Error-Codes.md)
-
 5. [API](5-API.md)
-   
    1. [Custom Commands](5.1-Custom-Commands.md)
+   2. [Modules](5.2-Modules.md)
 - [Appendix A: Security](Appendix-A-Security.md)
 
 ---
