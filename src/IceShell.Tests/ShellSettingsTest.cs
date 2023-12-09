@@ -1,6 +1,6 @@
 namespace IceShell.Tests;
 
-using IceShell.Settings;
+using IceShell.Core.Settings;
 using IniParser.Model;
 
 public class ShellSettingsTest

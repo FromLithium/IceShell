@@ -6,8 +6,8 @@ namespace IceShell.Core.CLI.Languages;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text.Json;
+using IceShell.Core.Settings;
 using Kajabity.Tools.Java;
-using global::IceShell.Settings;
 
 /// <summary>
 /// Provide methods and properties to help with the usage of language files.

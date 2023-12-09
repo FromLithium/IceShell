@@ -15,7 +15,7 @@ using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands;
 using IceShell.Core.Commands.Registry;
 using IceShell.Core.Exceptions;
-using IceShell.Settings;
+using IceShell.Core.Settings;
 using NexusKrop.IceShell.Core.CLI;
 using NexusKrop.IceShell.Core.Completion;
 using ReadLineReboot;
@@ -142,8 +142,7 @@ public class Shell : IShell
     {
         ReadLine.HistoryEnabled = true;
         ReadLine.AutoCompletionHandler = new ShellCompletionHandler(Dispatcher, Executive.DirCache);
-
-        ModuleManager.LoadDirectory(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "modules"));
+        
         ModuleManager.Initialize();
 
         // show date and time if allowed

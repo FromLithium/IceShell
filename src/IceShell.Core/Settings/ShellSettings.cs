@@ -1,7 +1,7 @@
 // Copyright (C) NexusKrop & contributors 2023
 // See "COPYING.txt" for licence
 
-namespace IceShell.Settings;
+namespace IceShell.Core.Settings;
 
 using IniParser;
 using IniParser.Model;
@@ -13,6 +13,9 @@ using JetBrains.Annotations;
 [PublicAPI]
 public class ShellSettings
 {
+    private const string SectionLauncher = "Launcher";
+    private const string SectionShell = "Shell";
+    
     /// <summary>
     /// Gets or sets whether to display date and time when the shell interpreter starts.
     /// </summary>
@@ -43,6 +46,11 @@ public class ShellSettings
     /// Gets or sets a value indicating whether the launcher should add platform modules.
     /// </summary>
     public bool AddPlatformModules { get; set; }
+    
+    /// <summary>
+    /// Gets or sets a value indicating whether the launcher should search for and add external modules on startup.
+    /// </summary>
+    public bool AddExternalModules { get; set; }
 
     /// <summary>
     /// Writes the configuration to the specified file. The existing contents of the file will be deleted.
@@ -54,7 +62,7 @@ public class ShellSettings
 
         var data = new IniData
         {
-            ["Shell"] =
+            [SectionShell] =
             {
                 ["DisplayDateTimeOnStartup"] = DisplayDateTimeOnStartUp.ToString(),
                 [nameof(DisplayShellInfoOnStartUp)] = DisplayShellInfoOnStartUp.ToString(),
@@ -62,9 +70,10 @@ public class ShellSettings
                 [nameof(TerminateUponInterrupt)] = TerminateUponInterrupt.ToString(),
                 [nameof(ExpandVariablesForAllValues)] = ExpandVariablesForAllValues.ToString()
             },
-            ["Launcher"] =
+            [SectionLauncher] =
             {
-                [nameof(AddPlatformModules)] = AddPlatformModules.ToString()
+                [nameof(AddPlatformModules)] = AddPlatformModules.ToString(),
+                [nameof(AddExternalModules)] = AddExternalModules.ToString()
             }
         };
 
@@ -95,23 +104,20 @@ public class ShellSettings
         return new ShellSettings
         {
             // Add data here
-            DisplayDateTimeOnStartUp = bool.Parse(GetSettingSafe(data, "Shell", "DisplayDateTimeOnStartup", "false")),
-            Language = GetSettingSafe(data, "Shell", nameof(Language), "en"),
-            DisplayShellInfoOnStartUp = bool.Parse(GetSettingSafe(data, "Shell", nameof(DisplayShellInfoOnStartUp), "false")),
-            AddPlatformModules = GetBoolSettingSafe(data, "Launcher", nameof(AddPlatformModules), true),
-            TerminateUponInterrupt = GetBoolSettingSafe(data, "Shell", nameof(TerminateUponInterrupt)),
-            ExpandVariablesForAllValues = GetBoolSettingSafe(data, "Shell", nameof(ExpandVariablesForAllValues), true)
+            DisplayDateTimeOnStartUp = bool.Parse(GetSettingSafe(data, SectionShell, "DisplayDateTimeOnStartup", "false")),
+            Language = GetSettingSafe(data, SectionShell, nameof(Language), "en"),
+            DisplayShellInfoOnStartUp = bool.Parse(GetSettingSafe(data, SectionShell, nameof(DisplayShellInfoOnStartUp), "false")),
+            AddPlatformModules = GetBoolSettingSafe(data, SectionLauncher, nameof(AddPlatformModules), true),
+            TerminateUponInterrupt = GetBoolSettingSafe(data, SectionShell, nameof(TerminateUponInterrupt)),
+            ExpandVariablesForAllValues = GetBoolSettingSafe(data, SectionShell, nameof(ExpandVariablesForAllValues), true),
+            AddExternalModules = GetBoolSettingSafe(data, SectionLauncher, nameof(AddExternalModules), true)
         };
     }
 
     private static bool GetBoolSettingSafe(IniData data, string key, string name, bool defaultValue = false)
     {
-        if (!bool.TryParse(GetSettingSafe(data, key, name, string.Empty), out var result))
-        {
-            return defaultValue;
-        }
-
-        return result;
+        return !bool.TryParse(GetSettingSafe(data, key, name, string.Empty), out var result) 
+            ? defaultValue : result;
     }
     
     private static string GetSettingSafe(IniData data, string key, string name, string defaultValue)

@@ -4,7 +4,6 @@
 namespace IceShell.Core;
 
 using IceShell.Core.Commands;
-using IceShell.Settings;
 using NexusKrop.IceCube;
 using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.Completion.Cache;
@@ -14,6 +13,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using IceShell.Core.FileSystem;
+using IceShell.Core.Settings;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 

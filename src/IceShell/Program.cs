@@ -3,13 +3,14 @@
 
 using System.Collections.Specialized;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using IceShell.Batching;
 using IceShell.Core;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Bundled;
+using IceShell.Core.Settings;
 using IceShell.Platform.Linux;
 using IceShell.Platform.Windows;
-using IceShell.Settings;
 using NexusKrop.IceCube.Util.Enumerables;
 using Spectre.Console;
 
@@ -102,8 +103,10 @@ if (help)
 
 var shell = new Shell(sh);
 
+// Add the default modules.
 shell.ModuleManager.AddModule(new BatchingModule());
 
+// Add the platform modules.
 if (sh.AddPlatformModules)
 {
     if (OperatingSystem.IsWindows())
@@ -115,6 +118,12 @@ if (sh.AddPlatformModules)
     {
         shell.ModuleManager.AddModule(new LinuxPlatformModule());
     }
+}
+
+// Add all other modules.
+if (RuntimeFeature.IsDynamicCodeSupported)
+{
+    shell.ModuleManager.LoadDirectory(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "modules"));
 }
 
 DefaultCommands.Register(shell.Dispatcher);
