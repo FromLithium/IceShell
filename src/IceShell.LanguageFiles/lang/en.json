@@ -136,6 +136,8 @@
     "command.set.description": "Displays, sets, or removes environment variables.",
     "command.set.value_variable.description": "Specifies the name of the environment variable to display, set or remove.",
     "command.set.value_value.description": "Specifies the value to set the environment variable value to.",
+    "command.set.error.invalid_variable_name": "Invalid variable name syntax",
+    "command.set.error.no_context_variable_support": "Context-specific variables are not currently available",
     "command.start.description": "Starts a file or program via the system shell.",
     "command.start.value_target.description": "Specifies the target file or executable.",
     "command.type.description": "Displays the contents of a text file.",
