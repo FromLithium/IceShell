@@ -10,6 +10,22 @@ In this guide you will know about:
 
 ## Issue Labels
 
+An issue is usually assigned up to three scoped labels, and when your issue is assigned any of the scoped label it means that
+your issue have been acknowledged.
+
+You can also work on issues that have no assignees set and have `status/open` scoped label attached.
+
+### Issue Status
+
+The Issue Status labels indicates the current state of an issue.
+
+- `open`: Open for contributions.
+- `question`: More information are needed (the issue is incomplete).
+- `in-progress`: Is being actively worked on by at least one contributor.
+- `done`: Work has been completed and is either being tested or is pending closure.
+- `duplicate`: The issue is a duplicate of another issue.
+- `wontfix`: The issue is either impossible to fix or implement, or it is not wise to fix or implement the issue.
+
 ### Effort/Expertise Category
 
 The Effort/Expertise Category are set of labels that roughly describes how much effort
