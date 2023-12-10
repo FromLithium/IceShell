@@ -1,29 +1,27 @@
 // Copyright (C) NexusKrop & contributors 2023
 // See "COPYING.txt" for licence
 
-namespace NexusKrop.IceShell.Core.Commands.Bundled;
+namespace IceShell.Core.Commands.Bundled;
 
-using global::IceShell.Core;
-using global::IceShell.Core.Api;
-using global::IceShell.Core.Commands;
-using global::IceShell.Core.Commands.Attributes;
+using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
 
 /// <summary>
 /// Defines a command that does nothing and always succeeds. This command is intended to be a comment command.
 /// </summary>
-[CommandInfo("rem")]
-[GreedyString]
-public class RemarksCommand : IShellCommand
+public class RemarksCommand
 {
     /// <summary>
-    /// Gets or sets the content of the comment.
+    /// Constructs this command and registers it to the specified dispatcher.
     /// </summary>
-    [Value("comment", position: 0)]
-    public string? Comment { get; set; }
-
-    /// <inheritdoc />
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    /// <param name="dispatcher">The dispatcher to register to.</param>
+    public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
-        return CommandResult.Ok();
+        new CommandBuilder("rem", (_, _, _) => CommandResult.Ok())
+            .ValueParameter("comment")
+                .Position(0)
+                .Build()
+            .Build(dispatcher);
     }
 }

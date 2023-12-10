@@ -4,7 +4,6 @@
 namespace IceShell.Core.Commands.Bundled;
 
 using IceShell.Core.Api;
-using IceShell.Core.Commands.Attributes;
 using System;
 using System.IO;
 using IceShell.Core.Api.Commands;
@@ -13,7 +12,7 @@ using IceShell.Core.Commands.Registry;
 /// <summary>
 /// Defines a command that displays or modifies an environment variable.
 /// </summary>
-public class SetCommand
+public static class SetCommand
 {
     /// <summary>
     /// Constructs this command and registers this command to the specified dispatcher.
@@ -27,9 +26,7 @@ public class SetCommand
                 .Required()
                 .NoExpandVariables()
                 .Build()
-            .ValueParameter("value")
-                .Position(1)
-                .Build()
+            .ValueParameter("value", 1)
             .Build(dispatcher);
     }
     

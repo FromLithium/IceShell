@@ -24,5 +24,7 @@ public static class DefaultCommands
         NewIfCommand.RegisterTo(dispatcher);
         MoreCommand.RegisterTo(dispatcher);
         SetCommand.RegisterTo(dispatcher);
+        RemarksCommand.RegisterTo(dispatcher);
+        ShellVersionCommand.RegisterTo(dispatcher);
     }
 }

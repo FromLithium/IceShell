@@ -20,7 +20,6 @@ public sealed class BundledCommandsProvider
         typeof(DirCommandEx),
         typeof(CdCommandEx),
         typeof(CopyCommandEx),
-        typeof(ShellVersionCommand),
         typeof(StartCommandEx),
         typeof(ClearScreenCommandEx),
         typeof(MakeDirectoryCommand),
@@ -31,7 +30,6 @@ public sealed class BundledCommandsProvider
         typeof(PromptCommandEx),
         typeof(HelpCommandEx),
         typeof(FindCommand),
-        typeof(RemarksCommand),
         typeof(DateCommand)
     };
 

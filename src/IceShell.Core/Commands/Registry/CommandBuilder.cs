@@ -61,7 +61,6 @@ public class CommandBuilder
     /// <param name="position">The position of the value parameter in the command.</param>
     /// <param name="required">If <see langword="true"/>, any attempt to invoke the command without this parameter specified will be rejected with an error.</param>
     /// <returns>This instance, for chaining.</returns>
-    [Obsolete("Use ValueParameter(string) instead.")]
     public CommandBuilder ValueParameter(string refName, int position, bool required = false)
     {
         ValueParameterInternal(refName, position, required, false);
