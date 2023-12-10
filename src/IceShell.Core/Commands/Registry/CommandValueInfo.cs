@@ -35,6 +35,11 @@ public struct CommandValueInfo
     /// Gets or sets a value indicating whether this value parameter is required.
     /// </summary>
     public bool Required { get; set; }
+    
+    /// <summary>
+    /// Gets or sets a value indicating whether variables in this parameter should not be expanded.
+    /// </summary>
+    public bool NoExpandVariables { get; set; }
 
     /// <inheritdoc />
     public override int GetHashCode()

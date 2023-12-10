@@ -20,7 +20,10 @@ public static class EchoCommand
     public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
         new CommandBuilder("echo", Routine)
-            .ValueParameter("message", 0, required: false)
+            .ValueParameter("message")
+                .Position(0)
+                .Required()
+                .Build()
             .SwitchOption('P')
             .GreedyString()
             .Build(dispatcher);

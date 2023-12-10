@@ -22,9 +22,14 @@ public class SetCommand
     public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
         new CommandBuilder("set", Routine)
-            .ValueParameter("name", 0, true)
-            .ValueParameter("value", 1)
-            .NoParseVariables()
+            .ValueParameter("name")
+                .Position(0)
+                .Required()
+                .NoExpandVariables()
+                .Build()
+            .ValueParameter("value")
+                .Position(1)
+                .Build()
             .Build(dispatcher);
     }
     

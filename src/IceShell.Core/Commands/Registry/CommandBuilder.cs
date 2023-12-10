@@ -46,6 +46,14 @@ public class CommandBuilder
         return this;
     }
 
+    internal void ValueParameterInternal(string refName, int position, bool required, bool noExpandVariables)
+    {
+        _entry.AddValue(new CommandValueInfo(refName, position, required)
+        {
+            NoExpandVariables = noExpandVariables
+        });
+    }
+
     /// <summary>
     /// Registers a value parameter to the command.
     /// </summary>
@@ -53,10 +61,21 @@ public class CommandBuilder
     /// <param name="position">The position of the value parameter in the command.</param>
     /// <param name="required">If <see langword="true"/>, any attempt to invoke the command without this parameter specified will be rejected with an error.</param>
     /// <returns>This instance, for chaining.</returns>
+    [Obsolete("Use ValueParameter(string) instead.")]
     public CommandBuilder ValueParameter(string refName, int position, bool required = false)
     {
-        _entry.AddValue(refName, position, required);
+        ValueParameterInternal(refName, position, required, false);
         return this;
+    }
+
+    /// <summary>
+    /// Construct and register a value parameter to the command.
+    /// </summary>
+    /// <param name="refName">The reference name.</param>
+    /// <returns>An instance of <see cref="CommandValueBuilder"/> to construct and register the command.</returns>
+    public CommandValueBuilder ValueParameter(string refName)
+    {
+        return new CommandValueBuilder(this, refName);
     }
 
     /// <summary>

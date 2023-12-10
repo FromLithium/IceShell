@@ -131,11 +131,13 @@ public class CommandParsingProvider
             {
                 throw new CommandFormatException(LangMessage.MsgTooManyArguments(index + 1, _definition.Values.Count));
             }
+            
+            var valueDef = _definition.Values[index];
 
             var actualStr = x.Content;
             
             // Configuration option shall control whether to expand all variables.
-            if (_expandAllVariables)
+            if (_expandAllVariables && !valueDef.NoExpandVariables)
             {
                 actualStr = PathSearcher.ExpandVariables(actualStr, true);
 
@@ -153,7 +155,6 @@ public class CommandParsingProvider
             }
             else
             {
-                var valueDef = _definition.Values[index];
                 result.AddValue(valueDef, actualStr);
 
                 index++;
