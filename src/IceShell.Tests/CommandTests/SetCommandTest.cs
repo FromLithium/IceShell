@@ -5,6 +5,8 @@ using IceShell.Core.Commands;
 using IceShell.Core.Commands.Bundled;
 using Moq;
 using System;
+using IceShell.Core.Api;
+using IceShell.Core.Commands.Registry;
 
 public class SetCommandTest
 {
@@ -13,15 +15,12 @@ public class SetCommandTest
     [Test]
     public void SetCommand_SetVar()
     {
-        var set = new SetCommand
-        {
-            VariableName = TestVarName,
-            VariableValue = "ICESHELL_DEV_TEST_VALUE"
-        };
+        var dispatcher = new RegistryCommandDispatcher();
+        SetCommand.RegisterTo(dispatcher);
 
         Assert.Multiple(() =>
         {
-            Assert.That(set.Execute(Mock.Of<IShell>(), Mock.Of<ICommandExecutor>(), ExecutionContext.Default).ExitCode, Is.EqualTo(0));
+            Assert.That(CommandResult.IsSuccess(dispatcher.Execute(Mock.Of<IShell>(), new ShellCommandDocument(), $"set {TestVarName} ICESHELL_DEV_TEST_VALUE")));
             Assert.That(Environment.GetEnvironmentVariable(TestVarName), Is.EqualTo("ICESHELL_DEV_TEST_VALUE"));
         });
     }
