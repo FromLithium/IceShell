@@ -89,6 +89,17 @@ public class CommandBuilder
         _entry.CustomUsage = usage;
         return this;
     }
+
+    /// <summary>
+    /// Registers this command so that variable notations in the arguments are not expanded for this command
+    /// even if <see cref="IceShell.Core.Settings.ShellSettings.ExpandVariablesForAllValues"/> is set to <see langword="true"/>.
+    /// </summary>
+    /// <returns>This instance, for chaining.</returns>
+    public CommandBuilder NoParseVariables()
+    {
+        _entry.NoParseVariables = true;
+        return this;
+    }
     
     /// <summary>
     /// Constructs the command and register it to the dispatcher.

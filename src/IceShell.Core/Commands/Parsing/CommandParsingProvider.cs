@@ -29,13 +29,13 @@ public class CommandParsingProvider
     /// <param name="command">The command syntax to parse.</param>
     /// <param name="definition">The definition of the command.</param>
     /// <param name="document">The document.</param>
-    /// <param name="expandAllVariables">If <see langword="true"/>, then all variables are expanded accordingly.</param>
+    /// <param name="expandAllVariables">If <see langword="true"/>, then all variables are expanded accordingly. Ignored if <see cref="CommandRegistryEntry.NoParseVariables"/> is set to <see langword="true"/>.</param>
     public CommandParsingProvider(SyntaxCommandInvocation command, CommandRegistryEntry definition, ICommandDocument? document,
         bool expandAllVariables = false)
     {
         _command = command;
         _definition = definition;
-        _expandAllVariables = expandAllVariables;
+        _expandAllVariables = expandAllVariables && !_definition.NoParseVariables;
         _document = document;
     }
 

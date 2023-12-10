@@ -53,6 +53,12 @@ public class CommandRegistryEntry
     /// without being quoted.
     /// </summary>
     public bool GreedyString { get; set; }
+    
+    /// <summary>
+    /// Gets or sets a value indicating that whether to not to parse variables even if
+    /// <see cref="IceShell.Core.Settings.ShellSettings.ExpandVariablesForAllValues"/> is set to <see langword="true"/>.
+    /// </summary>
+    public bool NoParseVariables { get; set; }
 
     /// <summary>
     /// Registers a new value parameter.
