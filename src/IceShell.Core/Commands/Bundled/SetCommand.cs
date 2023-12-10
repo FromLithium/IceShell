@@ -7,46 +7,52 @@ using IceShell.Core.Api;
 using IceShell.Core.Commands.Attributes;
 using System;
 using System.IO;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
 
 /// <summary>
-/// Displays or modifies an environment variable.
+/// Defines a command that displays or modifies an environment variable.
 /// </summary>
-[CommandInfo("set")]
-[GreedyString]
-public class SetCommand : IShellCommand
+public class SetCommand
 {
     /// <summary>
-    /// The name of the variable.
+    /// Constructs this command and registers this command to the specified dispatcher.
     /// </summary>
-    [Value("variable", position: 0)]
-    public string? VariableName { get; set; }
-
-    /// <summary>
-    /// The value of the variable. If not specified, displays the current value.
-    /// </summary>
-    [Value("value", position: 1, required: false)]
-    public string? VariableValue { get; set; }
-
-    /// <inheritdoc />
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    /// <param name="dispatcher">The dispatcher to register to.</param>
+    public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
-        TextReader? pipeStream = null;
+        new CommandBuilder("set", Routine)
+            .ValueParameter("name", 0, true)
+            .ValueParameter("value", 1)
+            .NoParseVariables()
+            .Build(dispatcher);
+    }
+    
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
+    {
+        var variableName = context.GetValue("name");
+        var variableValue = context.GetValue("value");
 
-        if (string.IsNullOrWhiteSpace(VariableName))
+        if (string.IsNullOrWhiteSpace(variableName))
+        {
+            return CommandResult.WithError(CommandErrorCode.BadArgument);
+        }
+
+        if (string.IsNullOrWhiteSpace(variableName))
         {
             return CommandResult.WithMissingValue(0);
         }
 
-        if (VariableValue is null)
+        if (variableValue is null)
         {
-            var envVar = Environment.GetEnvironmentVariable(VariableName);
+            var envVar = Environment.GetEnvironmentVariable(variableName);
 
-            pipeStream = envVar == null ? TextReader.Null : new StringReader(envVar);
+            var pipeStream = envVar == null ? TextReader.Null : new StringReader(envVar);
 
-            return CommandResult.Ok();
+            return CommandResult.Ok(pipeStream);
         }
 
-        Environment.SetEnvironmentVariable(VariableName, VariableValue);
+        Environment.SetEnvironmentVariable(variableName, variableValue);
 
         return CommandResult.Ok();
     }

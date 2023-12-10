@@ -23,5 +23,6 @@ public static class DefaultCommands
         ExitCommand.RegisterTo(dispatcher);
         NewIfCommand.RegisterTo(dispatcher);
         MoreCommand.RegisterTo(dispatcher);
+        SetCommand.RegisterTo(dispatcher);
     }
 }
