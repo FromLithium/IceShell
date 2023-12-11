@@ -22,6 +22,7 @@ using System.Diagnostics;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Languages;
+using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Commands.Parsing;
 using IceShell.Core.Exceptions;
 using IceShell.Core.FileSystem;
@@ -194,7 +195,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
 
         if (parseResult.Arguments.IsHelpInformationRequested)
         {
-            HelpCommandEx.PrintHelp(command, this);
+            HelpCommand.PrintHelp(command, this);
             return CommandResult.Ok();
         }
 

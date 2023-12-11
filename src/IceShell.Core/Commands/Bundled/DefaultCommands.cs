@@ -26,5 +26,6 @@ public static class DefaultCommands
         SetCommand.RegisterTo(dispatcher);
         RemarksCommand.RegisterTo(dispatcher);
         ShellVersionCommand.RegisterTo(dispatcher);
+        HelpCommand.RegisterTo(dispatcher);
     }
 }

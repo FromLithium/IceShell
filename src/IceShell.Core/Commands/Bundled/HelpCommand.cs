@@ -1,24 +1,22 @@
 // Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
-namespace NexusKrop.IceShell.Core.Commands.Bundled;
+namespace IceShell.Core.Commands.Bundled;
 
-using global::IceShell.Core;
-using global::IceShell.Core.Api;
-using global::IceShell.Core.CLI.Languages;
-using global::IceShell.Core.Commands;
-using global::IceShell.Core.Commands.Attributes;
+using System.Text;
+using IceShell.Core;
+using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.CLI.Languages;
+using IceShell.Core.Commands.Registry;
 using NexusKrop.IceCube.Util.Enumerables;
 using Spectre.Console;
-using System.Text;
-using global::IceShell.Core.Api.Commands;
-using global::IceShell.Core.Commands.Registry;
 
 /// <summary>
 /// Provides help information for IceShell commands.
 /// </summary>
 [CommandInfo("help")]
-public class HelpCommandEx : IShellCommand
+public static class HelpCommand
 {
     private const string DescriptionMessageFormat = "command.{0}.description";
     private const string OptionMessageFormat = "command.{0}.option_{1}.description";
@@ -27,26 +25,24 @@ public class HelpCommandEx : IShellCommand
     private const string LiteralSwitches = "command.help.detailed.switches";
     private const string LiteralOptions = "command.help.detailed.options";
 
+    private const string ValueParameterCommandName = "command";
+
     /// <summary>
-    /// Gets or sets the name of the command that the user wants help information.
+    /// Constructs this command and registers this command to the specified dispatcher.
     /// </summary>
-    /// <value>
-    /// The name of the command that the user wants help information. If <see langword="null"/>, prints a list of commands.
-    /// </value>
-    [Value("command", false, position: 0)]
-    public string? CommandName { get; set; }
-
-    /// <inheritdoc/>
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    /// <param name="dispatcher">The dispatcher to register to.</param>
+    public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
-        var commandName = CommandName;
+        new CommandBuilder("help", Routine)
+            .ValueParameter(ValueParameterCommandName, 0)
+            .Build(dispatcher);
+    }
+    
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
+    {
+        var commandName = context.GetValue(ValueParameterCommandName);
 
-        if (string.IsNullOrWhiteSpace(commandName))
-        {
-            return ExecuteSummary(shell);
-        }
-
-        return ExecuteDetailed(shell, commandName);
+        return string.IsNullOrWhiteSpace(commandName) ? ExecuteSummary(shell) : ExecuteDetailed(shell, commandName);
     }
 
     private static CommandResult ExecuteDetailed(IShell shell, string commandName)
