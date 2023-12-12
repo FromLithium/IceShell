@@ -1,7 +1,7 @@
 # Built-In Commands
 
 > **NOTE**
->
+> 
 > This section is a work in progress.
 
 This section describes all built-in commands that are available in IceShell and its default modules.
@@ -209,38 +209,7 @@ Returns zero on success and non-zero on failure. For detailed error information,
 
 ## IF
 
-Performs conditional execution, or checks for a conditions.
-
-```bat
-if [not] <condition expression>... [(then-command)] [ELSE (else-command)]
-         <variable>=<value>
-         FILE <file-path>
-         DIR <directory-path>
-         EXISTS <path>
-         ERRORLEVEL <exit-code>
-```
-
-## Arguments
-
-- **not**: If specified, this inverts the result of the condition expression.
-- **condition expression**:
-  - `<variable>=<value>`: Determines if the variable is equivalent to the specified value.
-  - `FILE <file-path>`: Determines if the specified file exists.
-    - **file-path**: The path to the file to check for existence.
-  - `DIR <directory-path`: Determines if the specified directory exists.
-    - **directory-path**: The path to the directory to check for existence.
-  - `EXISTS <path>`: Determines if either a file or a folder exists at the specified path.
-    - **path**: The path to check for existence.
-- **(then-command)**: Must be wrapped in parentheses. The command to execute if the condition was met.
-- **ELSE**: Specifies to execute a command if the condition did not met.
-  - **(else-command)**: Required if **ELSE** was specified. Must be wrapped in parentheses. The command to execute if the condition did not met.
-
-## Exit Code
-
-- If a **then-command** was not specified, returns zero if the condition was met, and non-zero if the condition did not met, or on failure.
-- If a **then-command** was specified, returns zero on success and non-zero on failure.
-
-For detailed error information, check the error code. If the error code was `None`, the command succeeded.
+See [IF](3-BuiltIn-Commands/IF.md).
 
 <!-- ======================================= -->
 
@@ -260,8 +229,8 @@ mkdir <directory>
 ### Errors
 
 - 
-
-### Exit Code
+  
+  ### Exit Code
 
 Returns `0` if the command succeeds, non-zero otherwise. Check the error code for detailed error.
 
@@ -346,7 +315,7 @@ PROMPT [prompt]
 The prompt template is a string with placeholders:
 
 | Placeholder | Value                                     |
-|-------------|-------------------------------------------|
+| ----------- | ----------------------------------------- |
 | `$Q`        | The equal sign (`=`)                      |
 | `$$`        | The dollar sign (`$`)                     |
 | `$T`        | The current time in short time format     |
@@ -355,7 +324,7 @@ The prompt template is a string with placeholders:
 | `$V`        | The version of IceShell application       |
 | `$G`        | The greater than sign (`>`)               |
 | `$L`        | The lesser than sign (`<`)                |
-| `$B`        | The pipe sign (`                          |`) |
+| `$B`        | The pipe sign (`                          |
 | `$_`        | System new-line sequence                  |
 
 ### Errors
