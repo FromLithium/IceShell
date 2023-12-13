@@ -1,7 +1,7 @@
 # IF
 
 | Name   | Description   |
-| ------ | ------------- |
+|--------|---------------|
 | Module | IceShell Core |
 | Since  | v0.2.1-alpha  |
 

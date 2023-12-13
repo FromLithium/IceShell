@@ -27,5 +27,7 @@ public static class DefaultCommands
         RemarksCommand.RegisterTo(dispatcher);
         ShellVersionCommand.RegisterTo(dispatcher);
         HelpCommand.RegisterTo(dispatcher);
+        ClearScreenCommand.RegisterTo(dispatcher);
+        CdCommand.RegisterTo(dispatcher);
     }
 }
