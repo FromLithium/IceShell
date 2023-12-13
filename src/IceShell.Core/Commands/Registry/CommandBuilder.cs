@@ -3,6 +3,8 @@
 
 namespace IceShell.Core.Commands.Registry;
 
+using System.Collections.Specialized;
+using System.Diagnostics;
 using IceShell.Core.Api.Commands;
 
 /// <summary>
@@ -12,6 +14,7 @@ public class CommandBuilder
 {
     private readonly CommandRegistryEntry _entry;
     private readonly CommandDelegate _routine;
+    private readonly StringCollection _aliases = [];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandBuilder"/> class.
@@ -24,6 +27,19 @@ public class CommandBuilder
         _routine = routine;
     }
 
+    /// <summary>
+    /// Registers an alias to the command.
+    /// </summary>
+    /// <param name="alias">The alias.</param>
+    /// <returns>This instance, for chaining.</returns>
+    public CommandBuilder Alias(string alias)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(alias);
+        
+        _aliases.Add(alias);
+        return this;
+    }
+    
     /// <summary>
     /// Registers a switch option to the command.
     /// </summary>
@@ -126,6 +142,15 @@ public class CommandBuilder
     public void Build(IRegistryCommandDispatcher dispatcher)
     {
         dispatcher.Register(_entry, _routine);
+        foreach (var alias in _aliases)
+        {
+            if (string.IsNullOrWhiteSpace(alias))
+            {
+                throw new InvalidOperationException("An alias is null or consisted only of whitespace.");
+            }
+            
+            dispatcher.PutAlias(alias, _entry.Identifier);
+        }
     }
 
     /// <summary>
