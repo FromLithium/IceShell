@@ -81,7 +81,7 @@
     "command.if.condition.exists.name_required": "Path to check is required",
     "command.if.condition.variable.invalid_format": "Invalid variable comparison expression",
     "command.if.else.command_required": "The command to execute is required for ELSE statement",
-    "command_prompt_invalid_template": "Invalid prompt template",
+    "command.prompt.invalid_template": "Invalid prompt template",
     "command.clip.windows.creation_failed": "Unable to get hold of clipboard",
     "command.call.description": "Calls a batch program.",
     "command.call.value_file.description": "The name of the batch file to call.",

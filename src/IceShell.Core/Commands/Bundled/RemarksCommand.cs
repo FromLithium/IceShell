@@ -10,7 +10,7 @@ using IceShell.Core.Commands.Registry;
 /// <summary>
 /// Defines a command that does nothing and always succeeds. This command is intended to be a comment command.
 /// </summary>
-public class RemarksCommand
+public static class RemarksCommand
 {
     /// <summary>
     /// Constructs this command and registers it to the specified dispatcher.

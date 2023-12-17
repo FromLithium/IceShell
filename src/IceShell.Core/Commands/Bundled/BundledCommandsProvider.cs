@@ -25,7 +25,7 @@ public sealed class BundledCommandsProvider
         typeof(MakeFileCommand),
         typeof(MoveCommandEx),
         typeof(TypeCommandEx),
-        typeof(PromptCommandEx),
+        typeof(PromptCommand),
         typeof(FindCommand),
         typeof(DateCommand)
     };
