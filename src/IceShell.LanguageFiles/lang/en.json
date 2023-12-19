@@ -55,6 +55,7 @@
     "command.date.error.no_rfc_and_iso": "You cannot specify to use RFC and ISO format at the same time",
     "dir_directory_of": "Directory of {0}",
     "command.dir.error.cannot_have_all_upper_and_lower": "You cannot specify all upper-case and all lower-case at the same time",
+    "command.dir.item_count": "{0} files, {1} directories",
     "del_prompt": "Delete file {0}?",
     "ver_line_0": "IceShell version {0}",
     "ver_line_1": "Running on {0}",

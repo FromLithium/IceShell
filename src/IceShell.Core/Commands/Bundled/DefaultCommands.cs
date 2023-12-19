@@ -34,5 +34,7 @@ public static class DefaultCommands
         PromptCommand.RegisterTo(dispatcher);
         StartCommand.RegisterTo(dispatcher);
         MakeDirectoryCommand.RegisterTo(dispatcher);
+        MakeFileCommand.RegisterTo(dispatcher);
+        DirCommand.RegisterTo(dispatcher);
     }
 }

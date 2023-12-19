@@ -1,58 +1,118 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
-namespace NexusKrop.IceShell.Core.Commands.Bundled;
+namespace IceShell.Core.Commands.Bundled;
 
-using global::IceShell.Core;
-using global::IceShell.Core.CLI.Languages;
-using global::IceShell.Core.Commands;
-using global::IceShell.Core.Commands.Attributes;
-using global::IceShell.Parsing;
-using global::IceShell.Core.Api;
-using NexusKrop.IceShell.Core.FileSystem;
-using System;
-using System.Collections.Generic;
 using System.Text;
-using global::IceShell.Core.Api.Native;
-using global::IceShell.Core.FileSystem;
+using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Api.Native;
+using IceShell.Core.CLI.Languages;
+using IceShell.Core.Commands.Registry;
+using IceShell.Core.FileSystem;
+using IceShell.Parsing;
 
 /// <summary>
-/// Displays a list of files and subdirectories in a directory.
+///     Defines a command that displays a list of files and subdirectories in a directory. This class cannot be inherited.
 /// </summary>
 /// <remarks>
-/// <para>
-/// When executed without redirection, this command prints a user-friendly table of directories and files
-/// to the standard output.
-/// </para>
-/// <para>
-/// When executed and instructed to redirect output to the next command, the command sends a list of directories
-/// and files, with each line being a file or directory, and three null separated fields (of file name, size,
-/// modification date). It looks like this (in example, two lines of strings in C#. In terminal it looks like lines of unseparated fields):
-/// <code language="cs">
+///     <para>
+///         When executed without redirection, this command prints a user-friendly table of directories and files
+///         to the standard output, unless <c>/B</c> was specified - in this case, displays a list of files and directories.
+///     </para>
+///     <para>
+///         When executed and instructed to redirect output to the next command, the command sends a list of directories
+///         and files, with each line being a file or directory, and three null separated fields (of file name, size,
+///         modification date). It looks like this (in example, two lines of strings in C#. In terminal it looks like lines
+///         of non-separated fields):
+///         <code language="cs">
 /// {
 ///     "text.txt\0123\2023-09-25T20:45:59.4034994",
 ///     "dir\0DIR\02023-09-25T20:45:59.4034994"
 /// }
 /// </code>
-/// </para>
+///     </para>
 /// </remarks>
-[CommandInfo("dir")]
-internal class DirCommandEx : IShellCommand
+public sealed class DirCommand
 {
-    private sealed record class DirTableRow(string ShortDateTime, string Size, string FileName);
+    private const string ValueNameDirectory = "directory";
+    private const char OptionDateFormat = 'd';
+    private const char OptionTimeFormat = 't';
+    private const char SwitchRevealHidden = 'h';
+    private const char SwitchAllLowerCase = 'L';
+    private const char SwitchAllUpperCase = 'U';
+    private const char SwitchUseShortName = 'S';
+    private const char SwitchBareMode = 'B';
+
+    private const string MessageItemCount = "command.dir.item_count";
 
     private readonly List<DirTableRow> _rows = new();
 
-    private int _fileCount;
-    private int _dirCount;
+    private string _dateFormat = "yyyy/MM/dd";
 
     private int _dateLongest;
-    private int _sizeLongest;
-    private int _fileNameLongest;
-
-    private string _dateFormat = "yyyy/MM/dd";
-    private string _timeFormat = "HH:mm";
     private string _dir = Environment.CurrentDirectory;
+    private int _dirCount;
+
+    private int _fileCount;
+    private int _fileNameLongest;
+    private int _sizeLongest;
+    private string _timeFormat = "HH:mm";
+
+    private DirCommand(CommandContext context)
+    {
+        TargetDirectory = context.GetValue(ValueNameDirectory)!;
+
+        DateFormat = context.GetOptionValue(OptionDateFormat);
+        TimeFormat = context.GetOptionValue(OptionTimeFormat);
+        RevealHidden = context.GetSwitch(SwitchRevealHidden);
+        AllLowerCase = context.GetSwitch(SwitchAllLowerCase);
+        AllUpperCase = context.GetSwitch(SwitchAllUpperCase);
+        UseShortName = context.GetSwitch(SwitchUseShortName);
+        BareMode = context.GetSwitch(SwitchBareMode);
+    }
+
+    private string TargetDirectory { get; }
+
+    private string? DateFormat { get; }
+
+    private string? TimeFormat { get; }
+
+    private bool RevealHidden { get; }
+
+    // ***** Anniversary preview update options
+
+    private bool AllLowerCase { get; }
+
+    private bool AllUpperCase { get; }
+
+    private bool UseShortName { get; }
+
+    private bool BareMode { get; }
+
+    /// <summary>
+    ///     Constructs this command and registers this command to the specified dispatcher.
+    /// </summary>
+    /// <param name="dispatcher">The dispatcher to register to.</param>
+    public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
+    {
+        new CommandBuilder("dir", Routine)
+            .ValueParameter(ValueNameDirectory, 0)
+            .ValueOption(OptionDateFormat)
+            .ValueOption(OptionTimeFormat)
+            .SwitchOption(SwitchRevealHidden)
+            .SwitchOption(SwitchAllLowerCase)
+            .SwitchOption(SwitchAllUpperCase)
+            .SwitchOption(SwitchUseShortName)
+            .SwitchOption(SwitchBareMode)
+            .Build(dispatcher);
+    }
+
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
+    {
+        var instance = new DirCommand(context);
+        return instance.Execute(context);
+    }
 
     private string GetTableDateTime(DateTime time)
     {
@@ -104,7 +164,7 @@ internal class DirCommandEx : IShellCommand
             // If not enough characters to align the table, fill with white-spaces.
             if (row.ShortDateTime.Length < dateMinimum)
             {
-                for (int i = row.ShortDateTime.Length; i < dateMinimum; i++)
+                for (var i = row.ShortDateTime.Length; i < dateMinimum; i++)
                 {
                     Console.Write(' ');
                 }
@@ -115,7 +175,7 @@ internal class DirCommandEx : IShellCommand
 
             if (row.Size.Length < sizeMinimum)
             {
-                for (int i = row.Size.Length; i < sizeMinimum; i++)
+                for (var i = row.Size.Length; i < sizeMinimum; i++)
                 {
                     Console.Write(' ');
                 }
@@ -144,9 +204,11 @@ internal class DirCommandEx : IShellCommand
         }
     }
 
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    private CommandResult Execute(CommandContext context)
     {
-        var realTarget = string.IsNullOrEmpty(TargetDir) ? Directory.GetCurrentDirectory() : PathSearcher.ExpandVariables(TargetDir);
+        var realTarget = string.IsNullOrEmpty(TargetDirectory)
+            ? Directory.GetCurrentDirectory()
+            : PathSearcher.ExpandVariables(TargetDirectory);
         TextReader? pipeStream = null;
 
         // All chunked out ones need fix
@@ -171,10 +233,11 @@ internal class DirCommandEx : IShellCommand
         // You cannot specify All Upper-case and All Lower-case at the same time.
         if (AllUpperCase && AllLowerCase)
         {
-            return CommandResult.WithError(CommandErrorCode.BadArgument, LangMessage.Get("command.dir.error.cannot_have_all_upper_and_lower"));
+            return CommandResult.WithError(CommandErrorCode.BadArgument,
+                LangMessage.Get("command.dir.error.cannot_have_all_upper_and_lower"));
         }
 
-        if (Bare)
+        if (BareMode)
         {
             pipeStream = ExecuteBare();
         }
@@ -253,7 +316,7 @@ internal class DirCommandEx : IShellCommand
             var procName = ProcessNameByOption(folder.Name);
 
             // Add to row.
-            sb.AppendFormat("{0}\0{1}\0{2}", procName, "DIR", modified.ToString("o")).AppendLine();
+            sb.Append($"{procName}\0DIR\0{modified:o}").AppendLine();
         }
 
         // Do the same for files.
@@ -268,7 +331,7 @@ internal class DirCommandEx : IShellCommand
 
             var procName = ProcessNameByOption(file.Name);
 
-            sb.AppendFormat("{0}\0{1}\0{2}", procName, file.Length.ToString(), modified.ToString("o")).AppendLine();
+            sb.Append($"{procName}\0{file.Length.ToString()}\0{modified.ToString("o")}").AppendLine();
         }
 
         var str = sb.ToString();
@@ -309,7 +372,7 @@ internal class DirCommandEx : IShellCommand
             }
 
             // Add to row.
-            _rows.Add(new(tableDate, "<DIR>", ProcessNameByOption(folder.Name)));
+            _rows.Add(new DirTableRow(tableDate, "<DIR>", ProcessNameByOption(folder.Name)));
 
             // +1 to directory entry count.
             _dirCount++;
@@ -332,7 +395,7 @@ internal class DirCommandEx : IShellCommand
                 _dateLongest = tableDate.Length;
             }
 
-            _rows.Add(new(tableDate, file.Length.ToString(), ProcessNameByOption(file.Name)));
+            _rows.Add(new DirTableRow(tableDate, file.Length.ToString(), ProcessNameByOption(file.Name)));
             _fileCount++;
         }
 
@@ -341,12 +404,12 @@ internal class DirCommandEx : IShellCommand
 
         // Print out the last line.
         // We do it manually here.
-        for (int i = 0; i < _dateLongest; i++)
+        for (var i = 0; i < _dateLongest; i++)
         {
             Console.Write(' ');
         }
 
-        Console.WriteLine("{0} files, {1} directories", _fileCount, _dirCount);
+        Console.WriteLine(LangMessage.Get(MessageItemCount), _fileCount, _dirCount);
     }
 
     private static bool IsHidden(FileSystemInfo info)
@@ -354,7 +417,7 @@ internal class DirCommandEx : IShellCommand
         var windows = OperatingSystem.IsWindows();
 
         if (windows && (info.Attributes.HasFlag(FileAttributes.Hidden)
-                    || info.Attributes.HasFlag(FileAttributes.System)))
+                        || info.Attributes.HasFlag(FileAttributes.System)))
         {
             return true;
         }
@@ -369,7 +432,7 @@ internal class DirCommandEx : IShellCommand
 
     private string ProcessNameByOption(string name)
     {
-        if (ShortName && OperatingSystem.IsWindows())
+        if (UseShortName && OperatingSystem.IsWindows())
         {
             var shortName = WindowsFileApi.GetShortPathName(name);
 
@@ -380,7 +443,8 @@ internal class DirCommandEx : IShellCommand
         {
             return name.ToUpper();
         }
-        else if (AllLowerCase)
+
+        if (AllLowerCase)
         {
             return name.ToLower();
         }
@@ -388,29 +452,5 @@ internal class DirCommandEx : IShellCommand
         return name;
     }
 
-    [Value("directory", required: false, position: 0)]
-    public string? TargetDir { get; set; }
-
-    [Option('d', true)]
-    public string? DateFormat { get; set; }
-
-    [Option('t', true)]
-    public string? TimeFormat { get; set; }
-
-    [Option('h', false)]
-    public bool RevealHidden { get; set; }
-
-    // ***** Anniversary preview update options
-
-    [Option('L', false)]
-    public bool AllLowerCase { get; set; }
-
-    [Option('U', false)]
-    public bool AllUpperCase { get; set; }
-
-    [Option('S', false)]
-    public bool ShortName { get; set; }
-
-    [Option('B', false)]
-    public bool Bare { get; set; }
+    private sealed record DirTableRow(string ShortDateTime, string Size, string FileName);
 }

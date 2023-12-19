@@ -55,6 +55,7 @@
     "command.date.error.no_rfc_and_iso": "不能同时指定使用 RFC 和 ISO 格式",
     "dir_directory_of": "{0} 的目录",
     "command.dir.error.cannot_have_all_upper_and_lower": "不能同时指定使用强制大写和强制小写",
+    "command.dir.item_count": "{0} 个文件，{1} 个目录",
     "del_prompt": "确认删除文件 {0}？",
     "ver_line_0": "IceShell 版本 {0}",
     "ver_line_1": "于 {0} 上运行",

@@ -65,6 +65,7 @@ This version is to be the Anniversary Preview version.
 - Overhauled the API interface and the internal system of the command dispatching and registration system.
     - Annotated commands now is registered by a separate service connected to the new dispatcher service.
     - Now is possible (and is preferred) to register "regular" commands without the use of any command classes at all.
+    - Migrated bundled commands to the new syntax.
 - Overhauled the command help description system and registration entry system for better internationalisation.
     - Commands are now registered by IDs, and aliases are now registered in a separate registry. 
     - Now command and argument descriptions are automatically internationalised.
@@ -83,6 +84,7 @@ This version is to be the Anniversary Preview version.
     - You can further this by append `ELSE` and another command surrounded with parentheses right after it, and it will be executed if the condition does not match.
 - Added configuration option `ExpandVariablesForAllValues` to expand all variables in value arguments.
 - Deprecated `ICommandExecutor` in favour of `ICommandDocument`.
+- Localised the `N files, N directories` message in `DIR` command.
 
 #### Shell
 
