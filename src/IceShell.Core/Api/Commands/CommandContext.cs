@@ -54,10 +54,10 @@ public readonly struct CommandContext
     /// Gets the value of the specified value option.
     /// </summary>
     /// <param name="option">The option.</param>
-    /// <returns>The value of the specified value option.</returns>
-    public string GetOptionValue(char option)
+    /// <returns>The value of the specified value option, or <see langword="null"/> if not specified.</returns>
+    public string? GetOptionValue(char option)
     {
-        return Arguments.ValueOptions[option];
+        return Arguments.ValueOptions.GetValueOrDefault(option);
     }
 
     /// <summary>
