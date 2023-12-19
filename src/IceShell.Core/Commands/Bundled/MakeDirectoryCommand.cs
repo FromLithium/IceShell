@@ -1,39 +1,41 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
-namespace NexusKrop.IceShell.Core.Commands.Bundled;
+namespace IceShell.Core.Commands.Bundled;
 
-using global::IceShell.Core;
-using global::IceShell.Core.Api;
-using global::IceShell.Core.Commands;
-using global::IceShell.Core.Commands.Attributes;
-using global::IceShell.Core.Commands.Complex;
-using global::IceShell.Core.Exceptions;
-using NexusKrop.IceCube.Exceptions;
-using NexusKrop.IceShell.Core.Commands.Complex;
-using NexusKrop.IceShell.Core.FileSystem;
 using System;
-using global::IceShell.Core.FileSystem;
+using IceShell.Core;
+using IceShell.Core.Api;
+using IceShell.Core.Commands;
+using IceShell.Core.Commands.Complex;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
+using IceShell.Core.FileSystem;
 
 /// <summary>
-/// Creates a directory, or a tree of directories.
+/// Defines a command that creates either a directory or a tree of directories.
 /// </summary>
 [CommandInfo("mkdir")]
 [CommandAlias("md")]
-public class MakeDirectoryCommand : IShellCommand
+public static class MakeDirectoryCommand
 {
     /// <summary>
-    /// Gets or sets the name of the directory or that path syntax that represents the directory tree to create.
+    /// Constructs this command and registers this command to the specified dispatcher.
     /// </summary>
-    [Value("directory", true, 0)]
-    public string? DirectoryName { get; set; }
-
-    /// <inheritdoc />
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    /// <param name="dispatcher">The dispatcher to register to.</param>
+    public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
-        var dir = PathSearcher.ExpandVariables(DirectoryName);
-
-        Checks.ArgNotNull(DirectoryName);
+        new CommandBuilder("mkdir", Routine)
+            .Alias("md")
+            .NoParseVariables()
+            .ValueParameter("directory", 0, true)
+            .Build(dispatcher);
+    }
+    
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
+    {
+        var dir = PathSearcher.ExpandVariables(context.GetValue("directory"));
+        
         CommandChecks.NothingExists(dir);
 
         try

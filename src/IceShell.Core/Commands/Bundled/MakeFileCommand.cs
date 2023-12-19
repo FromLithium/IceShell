@@ -1,39 +1,37 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
-namespace NexusKrop.IceShell.Core.Commands.Bundled;
+namespace IceShell.Core.Commands.Bundled;
 
-using global::IceShell.Core;
-using global::IceShell.Core.Api;
-using global::IceShell.Core.Commands;
-using global::IceShell.Core.Commands.Attributes;
-using global::IceShell.Core.Exceptions;
-using NexusKrop.IceCube.Exceptions;
-using NexusKrop.IceShell.Core.Commands.Complex;
-using NexusKrop.IceShell.Core.FileSystem;
-using System;
-using global::IceShell.Core.FileSystem;
+using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
+using IceShell.Core.Exceptions;
+using IceShell.Core.FileSystem;
 
 /// <summary>
 /// Defines a command that creates an empty file.
 /// </summary>
-[CommandInfo("mkfile")]
-public class MakeFileCommand : IShellCommand
+public static class MakeFileCommand
 {
     /// <summary>
-    /// Gets or sets the name of the file to create.
+    ///     Constructs this command and registers this command to the specified dispatcher.
     /// </summary>
-    [Value("value", position: 0)]
-    public string? Name { get; set; }
-
-    /// <inheritdoc/>
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    /// <param name="dispatcher">The dispatcher to register to.</param>
+    public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
-        var actual = PathSearcher.ExpandVariables(Name);
+        new CommandBuilder("mkfile", Routine)
+            .NoParseVariables()
+            .ValueParameter("file", 0, true)
+            .Build(dispatcher);
+    }
 
-        Checks.ArgNotNull(actual);
-        CommandChecks.FileNotExists(actual!);
-        CommandChecks.DirectoryNotExists(actual!);
+    private static CommandResult Routine(IShell shell, ICommandDocument executor, CommandContext context)
+    {
+        var actual = PathSearcher.ExpandVariables(context.GetValue("file"));
+
+        CommandChecks.FileNotExists(actual);
+        CommandChecks.DirectoryNotExists(actual);
 
         try
         {

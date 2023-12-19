@@ -33,5 +33,6 @@ public static class DefaultCommands
         MoveCommand.RegisterTo(dispatcher);
         PromptCommand.RegisterTo(dispatcher);
         StartCommand.RegisterTo(dispatcher);
+        MakeDirectoryCommand.RegisterTo(dispatcher);
     }
 }

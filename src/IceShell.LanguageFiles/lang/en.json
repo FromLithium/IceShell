@@ -127,7 +127,7 @@
     "command.mkdir.description": "Creates a directory.",
     "command.mkdir.value_directory.description": "Specifies the directory (or a tree of directories) to create.",
     "command.mkfile.description": "Creates a file.",
-    "command.mkfile.value_value.description": "Specifies the file to create.",
+    "command.mkfile.value_file.description": "Specifies the file to create.",
     "command.move.description": "Moves or renames a file.",
     "command.move.option_f.description": "If specified, the target file will be overwritten.",
     "command.prompt.description": "Changes the IceShell command prompt.",

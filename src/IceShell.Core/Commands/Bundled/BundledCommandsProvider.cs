@@ -18,7 +18,6 @@ public sealed class BundledCommandsProvider
     private static readonly Type[] BundledCommands =
     {
         typeof(DirCommandEx),
-        typeof(MakeDirectoryCommand),
         typeof(DeleteFileCommandEx),
         typeof(MakeFileCommand),
         typeof(TypeCommandEx),
