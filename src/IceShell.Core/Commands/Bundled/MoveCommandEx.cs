@@ -11,6 +11,7 @@ using global::IceShell.Core.Api;
 /// </summary>
 [CommandInfo("move")]
 [VariableValue]
+[Obsolete("Use MoveCommand instead.")]
 public class MoveCommandEx : DestinationFileCommandBase
 {
     /// <inheritdoc />

@@ -160,6 +160,14 @@ public static class LangMessage
     /// <param name="value">The Nth value that is missing.</param>
     /// <returns>The requires value message.</returns>
     public static string MsgMissingValue(int value) => GetFormat("generic_requires_value", value);
+    
+    /// <summary>
+    /// Gets the message that is displayed when Nth value is required but missing.
+    /// </summary>
+    /// <param name="value">The reference name of the that is missing.</param>
+    /// <returns>The requires value message.</returns>
+    public static string MsgMissingValue(string value) => GetFormat("generic_requires_value", value);
+
 
     /// <summary>
     /// Gets the message that is displayed when the procedure cannot continue because it does not have access

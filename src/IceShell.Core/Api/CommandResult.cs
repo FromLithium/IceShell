@@ -130,6 +130,16 @@ public record struct CommandResult
     {
         return WithError(CommandErrorCode.SyntaxError, LangMessage.MsgMissingValue(valuePos));
     }
+    
+    /// <summary>
+    /// Creates a new instance of <see cref="CommandResult"/> indicating that a value is missing.
+    /// </summary>
+    /// <param name="valueName">The reference name of value.</param>
+    /// <returns>The result.</returns>
+    public static CommandResult WithMissingValue(string valueName)
+    {
+        return WithError(CommandErrorCode.SyntaxError, LangMessage.MsgMissingValue(valueName));
+    }
 
     /// <summary>
     /// Creates a new instance of <see cref="CommandResult"/> indicating that a required file was not found.
@@ -159,5 +169,15 @@ public record struct CommandResult
     public static CommandResult WithExistingFile(string file)
     {
         return WithError(CommandErrorCode.FileExists, LangMessage.MsgFileAlreadyExists(file));
+    }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="CommandResult"/> indicating that the last operation is interrupted
+    /// abnormally.
+    /// </summary>
+    /// <returns>The created <see cref="CommandResult"/>.</returns>
+    public static CommandResult WithInterrupted()
+    {
+        return CommandResult.WithError(CommandErrorCode.Interrupted);
     }
 }

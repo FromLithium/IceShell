@@ -29,5 +29,9 @@ public static class DefaultCommands
         HelpCommand.RegisterTo(dispatcher);
         ClearScreenCommand.RegisterTo(dispatcher);
         CdCommand.RegisterTo(dispatcher);
+        CopyCommand.RegisterTo(dispatcher);
+        MoveCommand.RegisterTo(dispatcher);
+        PromptCommand.RegisterTo(dispatcher);
+        StartCommand.RegisterTo(dispatcher);
     }
 }

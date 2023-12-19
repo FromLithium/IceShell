@@ -44,6 +44,7 @@
     "generic_command_error_16": "需要管道输入",
     "generic_command_error_17": "未知命令或文件",
     "generic_command_error_18": "该命令不支持管道",
+    "generic_command_error_19": "执行被中断",
     "shell.attribution.version": "IceShell 版本 {0}",
     "shell.attribution.copyright_1": "版权所有 (C) WithLithum & 项目贡献者 2023",
     "shell.attribution.copyright_2": "以 GNU General Public License 版本 3（或任何其后版本）许可",

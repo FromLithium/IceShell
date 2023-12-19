@@ -82,7 +82,11 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     /// <inheritdoc />
     public void Register(CommandRegistryEntry command, CommandDelegate routine)
     {
-        _commandRegistry[command.Identifier] = command;
+        if (!_commandRegistry.TryAdd(command.Identifier, command))
+        {
+            throw new ArgumentException("A command with the same identifier already exists.", nameof(command));
+        }
+
         _commandDelegates[command] = routine;
         PutAlias(command.Identifier, command.Identifier);
     }

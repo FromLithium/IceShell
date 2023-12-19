@@ -1,4 +1,4 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Core.Commands.Bundled;
@@ -17,7 +17,7 @@ using JetBrains.Annotations;
 /// <summary>
 /// Defines a command that starts the specified file or executable program.
 /// </summary>
-public class StartCommandEx
+public static class StartCommand
 {
     /// <summary>
     /// The unique identifier of this command.
@@ -26,12 +26,6 @@ public class StartCommandEx
     public const string CommandId = "start";
 
     private const string ValueParameterTarget = "target";
-    
-    /// <summary>
-    /// Gets or sets the executable or the file to start.
-    /// </summary>
-    [Value("target", position: 0)]
-    public string? Target { get; set; }
 
     /// <summary>
     /// Constructs this command and registers this command to the specified dispatcher.

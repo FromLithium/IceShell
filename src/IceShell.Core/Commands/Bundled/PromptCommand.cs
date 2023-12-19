@@ -1,4 +1,4 @@
-// Copyright (C) NexusKrop & contributors 2023
+// Copyright (C) WithLithum & contributors 2023
 // See "COPYING.txt" for licence
 
 namespace IceShell.Core.Commands.Bundled;
@@ -6,7 +6,6 @@ namespace IceShell.Core.Commands.Bundled;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Languages;
-using IceShell.Core.Commands.Attributes;
 using IceShell.Core.Commands.Registry;
 using JetBrains.Annotations;
 

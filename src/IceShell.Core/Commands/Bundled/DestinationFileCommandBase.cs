@@ -15,13 +15,12 @@ using IceShell.Core.FileSystem;
 /// <summary>
 /// Provides a base class for file operation commands that involves multiple sources and a single destination.
 /// </summary>
-[VariableValue]
-public abstract class DestinationFileCommandBase : IShellCommand
+[Obsolete("Use DestinationFileCommandContext with new syntax instead.")]
+public abstract class DestinationFileCommandBase
 {
     /// <summary>
     /// Gets or sets the buffer to store values.
     /// </summary>
-    [VariableValueBuffer]
     public IReadOnlyList<string>? Buffer { get; set; }
 
     /// <summary>

@@ -7,7 +7,6 @@ using System;
 using IceShell.Core;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
-using IceShell.Core.Commands;
 using IceShell.Core.Commands.Registry;
 
 /// <summary>

@@ -12,6 +12,7 @@ using global::IceShell.Core.Api;
 /// </summary>
 [CommandInfo("copy", CustomUsage = "<sources...> <destination>")]
 [VariableValue]
+[Obsolete("Use CopyCommand instead.")]
 public class CopyCommandEx : DestinationFileCommandBase
 {
     /// <inheritdoc />

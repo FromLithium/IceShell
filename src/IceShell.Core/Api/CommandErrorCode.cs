@@ -83,5 +83,9 @@ public enum CommandErrorCode
     /// <summary>
     /// Pipe redirection to the current command is not supported.
     /// </summary>
-    PipelineToNotSupported
+    PipelineToNotSupported,
+    /// <summary>
+    /// Operation is cancelled or interrupted.
+    /// </summary>
+    Interrupted
 }

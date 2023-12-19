@@ -44,6 +44,7 @@
     "generic_command_error_16": "Pipeline input required",
     "generic_command_error_17": "Unknown command or file",
     "generic_command_error_18": "Pipe redirection to this command is not supported",
+    "generic_command_error_19": "Interrupted",
     "shell.attribution.version": "IceShell, version {0}",
     "shell.attribution.copyright_1": "Copyright (C) WithLithum \u0026 contributors 2023",
     "shell.attribution.copyright_2": "Licensed under GNU General Public License version 3 (or any later version)",
