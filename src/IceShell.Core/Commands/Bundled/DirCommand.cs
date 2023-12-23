@@ -111,7 +111,7 @@ public sealed class DirCommand
     private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
     {
         var instance = new DirCommand(context);
-        return instance.Execute(context);
+        return instance.Execute(context, document);
     }
 
     private string GetTableDateTime(DateTime time)
@@ -204,11 +204,11 @@ public sealed class DirCommand
         }
     }
 
-    private CommandResult Execute(CommandContext context)
+    private CommandResult Execute(CommandContext context, ICommandDocument document)
     {
         var realTarget = string.IsNullOrEmpty(TargetDirectory)
             ? Directory.GetCurrentDirectory()
-            : PathSearcher.ExpandVariables(TargetDirectory);
+            : PathSearcher.ExpandVariables(TargetDirectory, document: document);
         TextReader? pipeStream = null;
 
         // All chunked out ones need fix

@@ -33,7 +33,7 @@ public static class CdCommand
             .Build(dispatcher);
     }
     
-    private static CommandResult Routine(IShell shell, ICommandDocument executor, CommandContext context)
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
     {
         var destination = context.GetValue(ValueDestination);
         
@@ -44,7 +44,7 @@ public static class CdCommand
             return CommandResult.Ok();
         }
 
-        var target = PathSearcher.ExpandVariables(destination) ?? "";
+        var target = PathSearcher.ExpandVariables(destination, document: document) ?? "";
 
         if (!Directory.Exists(target))
         {

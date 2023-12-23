@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Text;
+using IceShell.Core.Api;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Exceptions;
 using JetBrains.Annotations;
@@ -146,10 +147,12 @@ public static class PathSearcher
     /// <param name="path">The path to expand.</param>
     /// <param name="lenient">If <see langword="true"/>, unknown or malformed environment variables will not cause <see cref="CommandFormatException"/> to be thrown.</param>
     /// <param name="expandHome">If <see langword="true"/>, expands the home directory (by <c>~</c> symbol).</param>
+    /// <param name="document">The document to parse context variables from.</param>
     /// <returns>The expanded path.</returns>
-    public static string ExpandVariables(ReadOnlySpan<char> path, bool lenient = false, bool expandHome = true)
+    public static string ExpandVariables(ReadOnlySpan<char> path, bool lenient = false, bool expandHome = true, ICommandDocument? document = null)
     {
         var inVariable = false;
+        var inContextVariable = false;
 
         // If it is solely "~" symbol then do not bother do the rest of the processing and
         // return the HOME.
@@ -174,8 +177,44 @@ public static class PathSearcher
                     continue;
                 }
             }
+
+            if (inVariable && inContextVariable)
+            {
+                throw new InvalidOperationException("Should not be in both.");
+            }
             
-            if (x == '%')
+            if (x == '$' && document is { Variables: not null } && !inVariable)
+            {
+                if (!inContextVariable)
+                {
+                    // Begin an environment variable.
+                    inContextVariable = true;
+                    continue;
+                }
+
+                // End an environment variable.
+                inContextVariable = false;
+
+                // Get variable name and clear builder to reuse.
+                var variableName = varBuilder.ToString();
+                varBuilder.Clear();
+
+                if (!string.IsNullOrEmpty(variableName))
+                {
+                    if (!document.Variables.TryGetValue(variableName, out var varValue))
+                    {
+                        throw ExceptionHelper.UnknownEnvironmentVariable(variableName);
+                    }
+
+                    builder.Append(varValue);
+                    continue;
+                }
+
+                // If otherwise, this is hereby escaped.
+            }
+
+            
+            if (x == '%' && !inContextVariable)
             {
                 if (!inVariable)
                 {

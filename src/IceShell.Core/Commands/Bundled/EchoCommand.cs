@@ -48,7 +48,7 @@ public static class EchoCommand
             // Expand variables and home directory.
             if (expandLikePath)
             {
-                finalText = PathSearcher.ExpandVariables(message, true, expandLikePath);
+                finalText = PathSearcher.ExpandVariables(message, true, expandLikePath, document);
             }
 
             Console.WriteLine(finalText);

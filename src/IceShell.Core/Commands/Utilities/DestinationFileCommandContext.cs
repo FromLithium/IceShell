@@ -58,8 +58,9 @@ public class DestinationFileCommandContext
     /// </summary>
     /// <param name="action">The operation to execute.</param>
     /// <param name="token">The cancellation token.</param>
-    /// <returns>The results</returns>
-    public CommandResult Do(DestinationFileCommandDelegate action, CancellationToken token = default)
+    /// <param name="document">The command document.</param>
+    /// <returns>The results.</returns>
+    public CommandResult Do(DestinationFileCommandDelegate action, CancellationToken token = default, ICommandDocument? document = null)
     {
         if (!Sources.Any())
         {
@@ -68,7 +69,7 @@ public class DestinationFileCommandContext
         
         var matcher = new Matcher();
 
-        Sources.Select(t => PathSearcher.ExpandVariables(t))
+        Sources.Select(t => PathSearcher.ExpandVariables(t, document: document))
             .ForEach(x => matcher.AddInclude(x));
 
         var destIsDir = Directory.Exists(Destination) || Destination!.EndsWith(Path.DirectorySeparatorChar);
