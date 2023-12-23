@@ -16,9 +16,6 @@ public static class DefaultCommands
     /// <param name="dispatcher">The dispatcher to register the commands to.</param>
     public static void Register(IRegistryCommandDispatcher dispatcher)
     {
-        var provider = new BundledCommandsProvider(dispatcher);
-        provider.Register();
-
         EchoCommand.RegisterTo(dispatcher);
         ExitCommand.RegisterTo(dispatcher);
         NewIfCommand.RegisterTo(dispatcher);
@@ -36,5 +33,9 @@ public static class DefaultCommands
         MakeDirectoryCommand.RegisterTo(dispatcher);
         MakeFileCommand.RegisterTo(dispatcher);
         DirCommand.RegisterTo(dispatcher);
+        DeleteFileCommand.RegisterTo(dispatcher);
+        DateCommand.RegisterTo(dispatcher);
+        TypeCommand.RegisterTo(dispatcher);
+        FindCommand.RegisterTo(dispatcher);
     }
 }

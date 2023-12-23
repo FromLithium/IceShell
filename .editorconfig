@@ -6,13 +6,12 @@ indent_style = space
 indent_size = 4
 tab_width = 4
 end_of_line = crlf
+file_header_template = Copyright (C) WithLithum & contributors 2023 \n// See "COPYING.txt" for licence
 
 [*.cs]
 # VSSPELL: Spell checker settings for all files
 vsspell_section_id = 9f07c577adcd4fd7a93a42a503828225
 vsspell_dictionary_languages_9f07c577adcd4fd7a93a42a503828225 = en-GB
-
-file_header_template = Copyright (C) WithLithum & contributors 2023\nSee "COPYING.txt" for licence
 
 # ReSharper properties
 resharper_align_multiline_statement_conditions = false

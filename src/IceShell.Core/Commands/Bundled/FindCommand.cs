@@ -1,24 +1,38 @@
+// Copyright (C) WithLithum & contributors 2023
+// See "COPYING.txt" for licence
+
 namespace IceShell.Core.Commands.Bundled;
 
 using IceShell.Core.Api;
-using IceShell.Core.Commands.Attributes;
-using NexusKrop.IceShell.Core.Commands.Complex;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
 
 /// <summary>
 /// Searches for lines of strings containing the specified keyword.
 /// </summary>
 [CommandInfo("find")]
-public class FindCommand : IShellCommand
+public static class FindCommand
 {
     /// <summary>
-    /// Gets or sets the keyword to search for.
+    /// Constructs this command and registers this command to the specified dispatcher.
     /// </summary>
-    [Value("keyword", true, 0)]
-    public string Keyword { get; set; } = "";
-
-    /// <inheritdoc/>
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    /// <param name="dispatcher">The dispatcher to register to.</param>
+    public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
+        new CommandBuilder("find", Routine)
+            .ValueParameter("keyword", 0, true)
+            .Build(dispatcher);
+    }
+    
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
+    {
+        var keyword = context.GetValue("keyword");
+
+        if (keyword == null)
+        {
+            throw new InvalidOperationException("Keyword should not be null.");
+        }
+        
         if (context.Retrieval == null)
         {
             return CommandResult.Ok();
@@ -36,7 +50,7 @@ public class FindCommand : IShellCommand
                 break;
             }
 
-            if (line.Contains(Keyword))
+            if (line.Contains(keyword))
             {
                 writer.WriteLine(line);
             }

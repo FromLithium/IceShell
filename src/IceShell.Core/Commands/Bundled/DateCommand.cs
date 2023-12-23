@@ -4,59 +4,58 @@
 namespace IceShell.Core.Commands.Bundled;
 
 using IceShell.Core.Api;
+using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Languages;
-using IceShell.Core.Commands.Attributes;
+using IceShell.Core.Commands.Registry;
 
 /// <summary>
-/// A command that displays the current date and time.
+/// Defines a command that displays the current date and time.
 /// </summary>
-[CommandInfo("date")]
-public class DateCommand : IShellCommand
+public static class DateCommand
 {
-    /// <summary>
-    /// Gets or sets a value indicating whether the command shall only output the date itself.
-    /// </summary>
-    [Option('B', false)]
-    public bool Bare { get; set; }
+    private const char SwitchBareMode = 'B';
+    private const char SwitchUseIsoFormat = 'O';
+    private const char SwitchUseRfcFormat = 'R';
+    private const char SwitchUseUniversalTime = 'U';
 
     /// <summary>
-    /// Gets or sets a value indicating whether the command shall output in ISO 8601 format.
+    /// Constructs this command and registers this command to the specified dispatcher.
     /// </summary>
-    [Option('O', false)]
-    public bool UseIsoFormat { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the command shall output in RFC 1123 format.
-    /// </summary>
-    [Option('R', false)]
-    public bool UseRfcFormat { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the command shall output universal time.
-    /// </summary>
-    [Option('U', false)]
-    public bool UniversalTime { get; set; }
-
-    /// <inheritdoc />
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    /// <param name="dispatcher">The dispatcher to register to.</param>
+    public static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
-        var now = UniversalTime ? DateTime.UtcNow : DateTime.Now;
+        new CommandBuilder("date", Routine)
+            .SwitchOption(SwitchBareMode)
+            .SwitchOption(SwitchUseIsoFormat)
+            .SwitchOption(SwitchUseRfcFormat)
+            .SwitchOption(SwitchUseUniversalTime)
+            .Build(dispatcher);
+    }
+    
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
+    {
+        var useUniversalTime = context.GetSwitch(SwitchUseUniversalTime);
+        var useIsoFormat = context.GetSwitch(SwitchUseIsoFormat);
+        var useRfcFormat = context.GetSwitch(SwitchUseRfcFormat);
+        var bareMode = context.GetSwitch(SwitchBareMode);
+        
+        var now = useUniversalTime ? DateTime.UtcNow : DateTime.Now;
         string? dateStr = null;
         string? fullStr = null;
 
         // One cannot use RFC time and ISO time together at the same time.
         // ReSharper disable once ConvertIfStatementToSwitchStatement
-        if (UseIsoFormat && UseRfcFormat)
+        if (useIsoFormat && useRfcFormat)
         {
             return CommandResult.WithError(CommandErrorCode.BadArgument, LangMessage.GetFormat("command.date.error.no_rfc_and_iso"));
         }
 
         // Check which format to use.
-        if (UseIsoFormat)
+        if (useIsoFormat)
         {
             dateStr = now.ToString("O");
         }
-        else if (UseRfcFormat)
+        else if (useRfcFormat)
         {
             dateStr = now.ToString("R");
         }
@@ -65,7 +64,7 @@ public class DateCommand : IShellCommand
             dateStr = now.ToString();
         }
 
-        fullStr = Bare ? dateStr :LangMessage.GetFormat("command.date.current_is", dateStr);
+        fullStr = bareMode ? dateStr :LangMessage.GetFormat("command.date.current_is", dateStr);
         return CommandResult.Ok(new StringReader(fullStr));
     }
 }
