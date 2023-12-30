@@ -5,7 +5,6 @@ namespace IceShell.Platform.Windows;
 
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
-using IceShell.Core.Commands.Registry;
 
 public class WindowsPlatformModule : IModule
 {

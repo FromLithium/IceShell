@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Company>IceShell contributors</Company>
     <Authors>WithLithum</Authors>
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.3.0</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Product>IceShell</Product>
     <RepositoryUrl>https://codeberg.org/WithLithum/IceShell.git</RepositoryUrl>
