@@ -11,16 +11,13 @@ public class WindowsPlatformModule : IModule
 {
     public void Initialize(IRegistryCommandDispatcher dispatcher)
     {
-        var registry = new AnnotatedCommandRegistry(dispatcher);
-
         if (!OperatingSystem.IsWindows())
         {
             return;
         }
-
-        registry.Register(typeof(VolumeInfoCommand));
-        registry.Register(typeof(MemoryInfoCommand));
         
+        MemoryInfoCommand.RegisterTo(dispatcher);
+        VolumeInfoCommand.RegisterTo(dispatcher);
         WindowsClipCommand.RegisterTo(dispatcher);
     }
 }

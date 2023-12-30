@@ -12,11 +12,9 @@ public class LinuxPlatformModule : IModule
 {
     public void Initialize(IRegistryCommandDispatcher dispatcher)
     {
-        var registry = new AnnotatedCommandRegistry(dispatcher);
-        
         if (OperatingSystem.IsLinux())
         {
-            registry.Register(typeof(ChangeFileModeCommand));
+            ChangeFileModeCommand.RegisterTo(dispatcher);
         }
     }
 }

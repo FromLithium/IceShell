@@ -5,16 +5,22 @@ namespace IceShell.Platform.Windows;
 
 using IceShell.Core;
 using IceShell.Core.Api;
-using IceShell.Core.Commands;
 using Spectre.Console;
 using System.Management;
 using System.Runtime.Versioning;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
 
-[CommandInfo("mem")]
 [SupportedOSPlatform("windows")]
-public class MemoryInfoCommand : IShellCommand
+internal static class MemoryInfoCommand
 {
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    internal static void RegisterTo(IRegistryCommandDispatcher dispatcher)
+    {
+        new CommandBuilder("mem", Routine)
+            .Build(dispatcher);
+    }
+    
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
     {
         var wql = new ObjectQuery("SELECT * FROM Win32_OperatingSystem");
         var searcher = new ManagementObjectSearcher(wql);

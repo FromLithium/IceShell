@@ -11,24 +11,32 @@ using Spectre.Console;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Registry;
 using Vanara.PInvoke;
 
 [CommandInfo("vol")]
-internal class VolumeInfoCommand : IShellCommand
+internal static class VolumeInfoCommand
 {
-    [Value("volume", false, 0)]
-    public string? VolumePath { get; set; }
-
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    internal static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
-        VolumePath ??= Environment.CurrentDirectory;
+        new CommandBuilder("vol", Routine)
+            .ValueParameter("volume", 0, true)
+            .Build(dispatcher);
+    }
 
-        if (Directory.Exists(VolumePath) && VolumePath.Length > 3)
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
+    {
+        var volumePath = context.GetValue("volume")!;
+        
+        volumePath ??= Environment.CurrentDirectory;
+
+        if (Directory.Exists(volumePath) && volumePath.Length > 3)
         {
-            VolumePath = VolumePath[..3];
+            volumePath = volumePath[..3];
         }
 
-        var realVolumePath = VolumePath.EndsWith('\\') ? VolumePath : $"{VolumePath}\\";
+        var realVolumePath = volumePath.EndsWith('\\') ? volumePath : $"{volumePath}\\";
 
         if (!Kernel32.GetVolumeInformation(realVolumePath,
             out var volumeName,

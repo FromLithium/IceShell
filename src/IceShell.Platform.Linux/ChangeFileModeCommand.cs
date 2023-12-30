@@ -3,25 +3,28 @@
 using System.Runtime.Versioning;
 using IceShell.Core;
 using IceShell.Core.Api;
-using IceShell.Core.Commands;
+using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands.Attributes;
+using IceShell.Core.Commands.Registry;
 
-[CommandInfo("chmod")]
 [SupportedOSPlatform("linux")]
-[GreedyString]
-public class ChangeFileModeCommand : IShellCommand
+internal static class ChangeFileModeCommand
 {
-    [Value("target", true, 0)]
-    public string TargetFile { get; set; }
-    
-    [Value("mode", true, 0)]
-    public string TargetMode { get; set; }
-    
-    public CommandResult Execute(IShell shell, ICommandExecutor executor, ExecutionContext context)
+    internal static void RegisterTo(IRegistryCommandDispatcher dispatcher)
     {
-        var searchResults = Executive.GlobFiles(TargetFile);
+        new CommandBuilder("chmod", Routine)
+            .ValueParameter("target", 0, true)
+            .ValueParameter("mode", 0, true)
+            .Build(dispatcher);
+    }
+    
+    private static CommandResult Routine(IShell shell, ICommandDocument document, CommandContext context)
+    {
+        var targetFile = context.GetValue("target");
+        var targetMode = context.GetValue("mode");
+        var searchResults = Executive.GlobFiles(targetFile!);
 
-        if (!TryParseUnixFileMode(TargetMode, out var mode))
+        if (!TryParseUnixFileMode(targetMode!, out var mode))
         {
             return CommandResult.WithError(CommandErrorCode.BadArgument);
         }
