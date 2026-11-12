@@ -2,11 +2,12 @@ namespace IceShell.Tests;
 
 using IceShell.Core.Exceptions;
 using IceShell.Core.FileSystem;
+using IceShell.Tests.Utilities;
 using NexusKrop.IceShell.Core.FileSystem;
 
 public class PathSearcherTests
 {
-    [Test]
+    [Fact]
     public void ExpandPath_Variable()
     {
         var testVar = "ICESHELL_TEST_000_EXPANDPATH";
@@ -16,10 +17,10 @@ public class PathSearcherTests
 
         var expanded = PathSearcher.ExpandVariables("%IceShell000Test%");
 
-        Assert.That(expanded, Is.EqualTo(testVar));
+        Assert.Equal(expanded, testVar);
     }
 
-    [Test]
+    [Fact]
     public void ExpandHome_Basic()
     {
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -27,37 +28,33 @@ public class PathSearcherTests
         var basePath = $"Documents{separator}Test.txt";
         var combined = Path.Combine(home, basePath);
         
-        Assert.That(PathSearcher.ExpandHome($"~{basePath}"),
-            Is.EqualTo(combined));
+        Assert.Equal(PathSearcher.ExpandHome($"~{basePath}"),
+            combined);
     }
 
-    [Test]
+    [Fact]
     public void ExpandHome_NoExpandMiddle()
     {
         var separator = Path.DirectorySeparatorChar;
         var testPath = $"{separator}~{separator}test";
         
-        Assert.That(PathSearcher.ExpandHome(testPath),
-            Is.EqualTo(testPath));
+        Assert.Equal(PathSearcher.ExpandHome(testPath), testPath);
     }
 
-    [Test]
+    [Fact]
     public void ExpandHome_JustHome()
     {
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        
-        Assert.That(PathSearcher.ExpandHome("~"),
-            Is.EqualTo(home));
+        Assert.Equal(PathSearcher.ExpandHome("~"), home);
     }
 
-    [Test]
+    [Fact]
     public void ExpandPath_Escape()
     {
-        Assert.That(PathSearcher.ExpandVariables("%%"),
-            Is.EqualTo("%"));
+        Assert.Equal(PathSearcher.ExpandVariables("%%"), "%");
     }
 
-    [Test]
+    [Fact]
     public void ExpandPath_Complex()
     {
         var testVar = "ICESHELL_TEST_001_COMPLEX";
@@ -65,17 +62,16 @@ public class PathSearcherTests
 
         Environment.SetEnvironmentVariable(testName, testVar);
 
-        Assert.That(PathSearcher.ExpandVariables("%IceShell001Test%%%"),
-            Is.EqualTo("ICESHELL_TEST_001_COMPLEX%"));
+        Assert.Equal("ICESHELL_TEST_001_COMPLEX%", PathSearcher.ExpandVariables("%IceShell001Test%%%"));
     }
 
-    [Test]
+    [Fact]
     public void ExpandPath_NonLenient_PathNeverEnds()
     {
         Assert.Throws<CommandFormatException>(() => PathSearcher.ExpandVariables("%"));
     }
 
-    [Test]
+    [Fact]
     public void ExpandPath_NonLenient_NonExistingVariable()
     {
         Environment.SetEnvironmentVariable("IceShell002Test", null);
@@ -83,8 +79,7 @@ public class PathSearcherTests
         Assert.Throws<CommandFormatException>(() => PathSearcher.ExpandVariables("%IceShell002Test%", false));
     }
 
-    [Test]
-    [Platform("Win")]
+    [WindowsFact]
     public void CheckPath_Windows()
     {
         Assert.Throws<CommandFormatException>(() => PathSearcher.CheckPath("path|"));

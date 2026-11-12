@@ -1,19 +1,19 @@
 namespace IceShell.Tests.CommandTests;
 
 using IceShell.Core;
-using IceShell.Core.Commands;
 using IceShell.Core.Commands.Bundled;
-using Moq;
 using System;
 using IceShell.Core.Api;
 using IceShell.Core.Commands.Registry;
+using NSubstitute;
+
 
 public class SetCommandTest
 {
     private const string TestVarName = "ICESHELL_DEV_TEST_SET_COMMAND";
     private const string TestVarValue = "ICESHELL_DEV_TEST_VALUE";
 
-    [Test]
+    [Fact]
     public void SetCommand_SetEnvironmentVariable()
     {
         Environment.SetEnvironmentVariable(TestVarName, null);
@@ -21,14 +21,11 @@ public class SetCommandTest
         var dispatcher = new RegistryCommandDispatcher();
         SetCommand.RegisterTo(dispatcher);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(CommandResult.IsSuccess(dispatcher.Execute(Mock.Of<IShell>(), new ShellCommandDocument(), $"set %{TestVarName}% {TestVarValue}")));
-            Assert.That(Environment.GetEnvironmentVariable(TestVarName), Is.EqualTo(TestVarValue));
-        });
+        Assert.Multiple(() => Assert.True(CommandResult.IsSuccess(dispatcher.Execute(Substitute.For<IShell>(), new ShellCommandDocument(), $"set %{TestVarName}% {TestVarValue}"))),
+            () => Assert.Equal(TestVarValue, Environment.GetEnvironmentVariable(TestVarName)));
     }
     
-    [Test]
+    [Fact]
     public void SetCommand_DeleteEnvironmentVariable()
     {
         Environment.SetEnvironmentVariable(TestVarName, TestVarValue);
@@ -36,14 +33,12 @@ public class SetCommandTest
         var dispatcher = new RegistryCommandDispatcher();
         SetCommand.RegisterTo(dispatcher);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(CommandResult.IsSuccess(dispatcher.Execute(Mock.Of<IShell>(), new ShellCommandDocument(), $"set %{TestVarName}=")));
-            Assert.That(Environment.GetEnvironmentVariable(TestVarName), Is.Null);
-        });
+        Assert.Multiple(
+            () => Assert.True(CommandResult.IsSuccess(dispatcher.Execute(Substitute.For<IShell>(), new ShellCommandDocument(), $"set %{TestVarName}="))),
+            () => Assert.Null(Environment.GetEnvironmentVariable(TestVarName)));
     }
 
-    [Test]
+    [Fact]
     public void SetCommand_SetContextVariable()
     {
         var document = new ShellCommandDocument();
@@ -51,14 +46,13 @@ public class SetCommandTest
         var dispatcher = new RegistryCommandDispatcher();
         SetCommand.RegisterTo(dispatcher);
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(CommandResult.IsSuccess(dispatcher.Execute(Mock.Of<IShell>(),document, $"set ${TestVarName}$ {TestVarValue}")));
-            Assert.That(document.Variables![TestVarName], Is.EqualTo(TestVarValue));
-        });
+        Assert.Multiple(
+            () => Assert.True(CommandResult.IsSuccess(dispatcher.Execute(Substitute.For<IShell>(),document, $"set ${TestVarName}$ {TestVarValue}"))),
+            () => Assert.Equal(TestVarValue, document.Variables![TestVarName])
+        );
     }
     
-    [Test]
+    [Fact]
     public void SetCommand_DeleteContextVariable()
     {
         var document = new ShellCommandDocument();
@@ -67,10 +61,9 @@ public class SetCommandTest
         var dispatcher = new RegistryCommandDispatcher();
         SetCommand.RegisterTo(dispatcher);
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(CommandResult.IsSuccess(dispatcher.Execute(Mock.Of<IShell>(), document, $"set ${TestVarName}=")));
-            Assert.That(document.Variables!.ContainsKey(TestVarName), Is.False);
-        });
+        Assert.Multiple(
+            () => Assert.True(CommandResult.IsSuccess(dispatcher.Execute(Substitute.For<IShell>(), document, $"set ${TestVarName}="))),
+            () => Assert.False(document.Variables.ContainsKey(TestVarName))
+        );
     }
 }

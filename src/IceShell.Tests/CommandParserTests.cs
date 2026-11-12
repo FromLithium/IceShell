@@ -46,53 +46,54 @@ public class CommandParserTests
         return true;
     }
 
-    [Test]
+    [Fact]
     public void ParseCompound_Simple()
     {
         var statements = SyntaxWord.Of("test", "argument", ">", "test1", "arg2");
 
         var parsed = CommandParser.ParseCompound(statements, _ => true, null);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(parsed.Segments, Has.Count.EqualTo(2));
+        Assert.Multiple(
+            () => Assert.Equal(2, parsed.Segments.Count),
 
-            Assert.That(MatchSegment(parsed.Segments[0],
+            () => Assert.True(MatchSegment(parsed.Segments[0],
                 nextAction: SyntaxNextAction.Redirect,
                 cmdName: "test",
                 optionPredicate: null,
-                valuePredicate: null));
+                valuePredicate: null)),
 
-            Assert.That(parsed.Segments[0].InternalCommand?.Values, Has.Count.EqualTo(1));
-            Assert.That(parsed.Segments[0].InternalCommand?.Values[0].Content, Is.EqualTo("argument"));
-
-            Assert.That(parsed.Segments[1].NextAction, Is.EqualTo(SyntaxNextAction.None));
-            Assert.That(parsed.Segments[1].InternalCommand?.Name, Is.EqualTo("test1"));
-            Assert.That(parsed.Segments[1].InternalCommand?.Options, Is.Empty);
-            Assert.That(parsed.Segments[1].InternalCommand?.Values, Has.Count.EqualTo(1));
-            Assert.That(parsed.Segments[1].InternalCommand?.Values[0].Content, Is.EqualTo("arg2"));
-        });
+            () => Assert.Collection(parsed.Segments,
+                x1 => Assert.Single(x1.InternalCommand?.Values!, 
+                    w => w.Content == "argument"),
+                x2 => Assert.Multiple(
+                    () => Assert.Equal(SyntaxNextAction.None, x2.NextAction),
+                    () => Assert.Equal("test1", x2.InternalCommand?.Name),
+                    () => Assert.Empty(x2.InternalCommand!.Options),
+                    () => Assert.Single(x2.InternalCommand!.Values,
+                        w => w.Content == "arg2")
+                ))
+        );
     }
 
-    [Test]
+    [Fact]
     public void ParseOption_NoValueOption()
     {
         var statement = new SyntaxWord("/T");
         var retVal = CommandParser.ParseOption(statement, null, out _);
 
-        Assert.That(retVal, Is.EqualTo(new SyntaxOption('T', null)));
+        Assert.Equal(new SyntaxOption('T', null), retVal);
     }
 
-    [Test]
+    [Fact]
     public void ParseOption_SimpleOption()
     {
         var statement = new SyntaxWord("/T:test_value");
         var retVal = CommandParser.ParseOption(statement, null, out _);
 
-        Assert.That(retVal, Is.EqualTo(new SyntaxOption('T', "test_value")));
+        Assert.Equal(new SyntaxOption('T', "test_value"), retVal);
     }
 
-    [Test]
+    [Fact]
     public void ParseOption_CompoundOption()
     {
         var statementFirst = new SyntaxWord("/T:");
@@ -100,10 +101,10 @@ public class CommandParserTests
 
         var retVal = CommandParser.ParseOption(statementFirst, statementSecond, out _);
 
-        Assert.That(retVal, Is.EqualTo(new SyntaxOption('T', "Test text")));
+        Assert.Equal(new SyntaxOption('T', "Test text"), retVal);
     }
 
-    [Test]
+    [Fact]
     public void ParseOption_OptionAndUnixPath()
     {
         var statements = new SyntaxWord[]{
@@ -112,109 +113,83 @@ public class CommandParserTests
             new("/bin/bash") };
 
         var retVal = CommandParser.ParseSingleCommand(statements);
-        Assert.Multiple(() =>
-        {
-            Assert.That(retVal.Name, Is.EqualTo("command"));
-
-            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>
-            {
-                new("/bin/bash")
-            }));
-
-            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>
-            {
-                new('O', null)
-            }));
-        });
+        Assert.Multiple(
+            () => Assert.Equal("command", retVal.Name),
+            () => Assert.Single(retVal.Values, new SyntaxWord("/bin/bash")),
+            () => Assert.Single(retVal.Options, new SyntaxOption('O', null))
+        );
     }
 
-    [Test]
+    [Fact]
     public void ParseCommand_Empty()
     {
         var retVal = CommandParser.ParseSingleCommand(Array.Empty<SyntaxWord>());
-        Assert.Multiple(() =>
-        {
-            Assert.That(retVal.Name, Is.EqualTo(string.Empty));
-            Assert.That(retVal.Options, Is.Empty);
-            Assert.That(retVal.Values, Is.Empty);
-        });
+        Assert.Multiple(
+            () => Assert.Empty(retVal.Name),
+            () => Assert.Empty(retVal.Options),
+            () => Assert.Empty(retVal.Values)
+        );
     }
 
-    [Test]
+    [Fact]
     public void ParseCommand_OptionsOnly()
     {
         var statements = new CommandWordBreaker(true).RunParse("command /T:test_value /Q:\"test value\" /X");
         var retVal = CommandParser.ParseSingleCommand(statements);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(retVal.Name, Is.EqualTo("command"));
-            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>()
-            {
-                new SyntaxOption('T', "test_value"),
-                new SyntaxOption('Q', "test value"),
-                new SyntaxOption('X', null)
-            }));
-            Assert.That(!retVal.Values.Any());
-        });
+        Assert.Multiple(
+            () => Assert.Equal("command", retVal.Name),
+            () => Assert.Collection(retVal.Options,
+                x1 => Assert.Equal(new SyntaxOption('T', "test_value"), x1),
+                x2 => Assert.Equal(new SyntaxOption('Q', "test value"), x2),
+                x3 => Assert.Equal(new SyntaxOption('X', null), x3)
+            ),
+            () => Assert.Empty(retVal.Values)
+        );
     }
 
-    [Test]
+    [Fact]
     public void ParseCommand_ValuesOnly()
     {
         var statements = new CommandWordBreaker(true).RunParse("command \"quoted value\" simple_value");
         var retVal = CommandParser.ParseSingleCommand(statements);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(retVal.Name, Is.EqualTo("command"));
-            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>
-            {
-                new("quoted value", WordQuoteType.Quotes, 8),
-                new("simple_value", WordQuoteType.None, 23)
-            }));
-            Assert.That(!retVal.Options.Any());
-        });
+        Assert.Multiple(
+            () => Assert.Equal("command", retVal.Name),
+            () => Assert.Collection(retVal.Values, 
+                x1 => Assert.Equal(new("quoted value", WordQuoteType.Quotes, 8), x1),
+                x2 => Assert.Equal(new("simple_value", WordQuoteType.None, 23), x2)
+            ),
+            () => Assert.Empty(retVal.Options)
+        );
     }
 
-    [Test]
+    [Fact]
     public void ParseCommand_QuotedOptions()
     {
         var statements = new CommandWordBreaker(true).RunParse("command \"/X\" /M");
         var retVal = CommandParser.ParseSingleCommand(statements);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(retVal.Name, Is.EqualTo("command"));
-            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>
-            {
-                new("/X", WordQuoteType.Quotes, 8)
-            }));
-            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>
-            {
-                new('M', null)
-            }));
-        });
+        Assert.Multiple(
+            () => Assert.Equal("command", retVal.Name),
+            () => Assert.Single(retVal.Values, new SyntaxWord("/X", WordQuoteType.Quotes, 8)),
+            () => Assert.Single(retVal.Options, new SyntaxOption('M', null))
+        );
     }
 
-    [Test]
+    [Fact]
     public void ParseCommand_EndOfOptions()
     {
         var statements = new CommandWordBreaker().RunParse("command /A /B -- /C");
         var retVal = CommandParser.ParseSingleCommand(statements);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(retVal.Name, Is.EqualTo("command"));
-            Assert.That(retVal.Options, Is.EqualTo(new HashSet<SyntaxOption>
-            {
-                new('A', null),
-                new('B', null)
-            }));
-            Assert.That(retVal.Values, Is.EqualTo(new HashSet<SyntaxWord>
-            {
-                new("/C", startsFrom: 17)
-            }));
-        });
+        Assert.Multiple(
+            () => Assert.Equal("command", retVal.Name),
+            () => Assert.Collection(retVal.Options,
+                x1 => Assert.Equal(new SyntaxOption('A', null), x1),
+                x2 => Assert.Equal(new SyntaxOption('B', null), x2)
+            ),
+            () => Assert.Single(retVal.Values, new SyntaxWord("/C", startsFrom: 17))
+        );
     }
 }

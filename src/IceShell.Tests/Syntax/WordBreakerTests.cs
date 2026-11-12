@@ -9,29 +9,26 @@ using IceShell.Parsing.Util;
 
 public class WordBreakerTests
 {
-    [Test]
+    [Fact]
     public void RunParse_TwoNonQuotedWithSpace()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("hello world");
         
-        Assert.Multiple(() =>
-        {
-           Assert.That(result, Has.Count.EqualTo(2));
-           Assert.That(result[0], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.None, 0)));
-           Assert.That(result[1], Is.EqualTo(new SyntaxWord("world", WordQuoteType.None, 6)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.None, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("world", WordQuoteType.None, 6), x2));
     }
 
-    [Test]
+    [Fact]
     public void RunParse_EmptyWord()
     {
         var breaker = new CommandWordBreaker();
         
-        Assert.That(breaker.RunParse(""), Is.Empty);
+        Assert.Empty(breaker.RunParse(""));
     }
 
-    [Test]
+    [Fact]
     public void RunParse_Final()
     {
         var breaker = new CommandWordBreaker();
@@ -40,7 +37,7 @@ public class WordBreakerTests
         Assert.Throws<InvalidOperationException>(() => breaker.RunParse("Hello Again!"));
     }
 
-    [Test]
+    [Fact]
     public void RunParse_Error_QuoteNeverEnd()
     {
         var breaker = new CommandWordBreaker();
@@ -48,7 +45,7 @@ public class WordBreakerTests
         Assert.Throws<FormatException>(() => breaker.RunParse("\"Hello World!"));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_Error_WrongRightRoundBracketInQuotePair()
     {
         var breaker = new CommandWordBreaker();
@@ -56,132 +53,112 @@ public class WordBreakerTests
         Assert.Throws<FormatException>(() => breaker.RunParse("\"Hello World!)"));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_ShouldPass_EscapedRightRoundBracketInQuotePair()
     {
         var breaker = new CommandWordBreaker();
         
-        Assert.DoesNotThrow(() => breaker.RunParse("\"Hello World!\\)\""));
+        var exception = Record.Exception(() => breaker.RunParse("\"Hello World!\\)\""));
+
+        Assert.Null(exception);
     }
 
-    [Test]
+    [Fact]
     public void RunParse_ValuedQuoteOptionTest()
     {
         var breaker = new CommandWordBreaker(true);
         var result = breaker.RunParse("/X:\"value\"");
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(2));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("/X:", WordQuoteType.None, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("value", WordQuoteType.Quotes, 3)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("/X:", WordQuoteType.None, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("value", WordQuoteType.Quotes, 3), x2));
     }
     
     #region Pair Quotes
-    [Test]
+    [Fact]
     public void RunParse_OnePairQuote_Quote()
     {
         var breaker = new CommandWordBreaker();
         
-        Assert.That(breaker.RunParse("\"word\""),
-            Has.One.EqualTo(new SyntaxWord("word", WordQuoteType.Quotes, 0)));
+        Assert.Single(breaker.RunParse("\"word\""),
+            new SyntaxWord("word", WordQuoteType.Quotes, 0));        
     }
     
-    [Test]
+    [Fact]
     public void RunParse_TwoPairQuote_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("\"hello\" \"world\"");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(2));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Quotes, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Quotes, 8)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Quotes, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Quotes, 8), x2));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_TwoPairQuoteWithOneWordInMiddle_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("\"hello\" middle \"world\"");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(3));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Quotes, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("middle", WordQuoteType.None, 8)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Quotes, 15)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Quotes, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("middle", WordQuoteType.None, 8), x2),
+            x3 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Quotes, 15), x3));
     }
     
-        [Test]
+    [Fact]
     public void RunParse_TwoPairQuotesWithOneWordBefore_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("before \"hello\" \"world\"");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(3));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("before", WordQuoteType.None, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Quotes, 7)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Quotes, 15)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("before", WordQuoteType.None, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Quotes, 7), x2),
+            x3 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Quotes, 15), x3));
     }
     
-    
-    [Test]
+    [Fact]
     public void RunParse_TwoPairQuotesWithOneWordAfter_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("\"hello\" \"world\" after");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(3));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Quotes, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Quotes, 8)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("after", WordQuoteType.None, 16)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Quotes, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Quotes, 8), x2),
+            x3 => Assert.Equal(new SyntaxWord("after", WordQuoteType.None, 16), x3));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_TwoPairQuotesWithOneWordBeforeAndInMiddle_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("before \"hello\" middle \"world\"");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(4));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("before", WordQuoteType.None, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Quotes, 7)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("middle", WordQuoteType.None, 15)));
-            Assert.That(result[3], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Quotes, 22)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("before", WordQuoteType.None, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Quotes, 7), x2),
+            x3 => Assert.Equal(new SyntaxWord("middle", WordQuoteType.None, 15), x3),
+            x4 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Quotes, 22), x4));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_TwoPairQuotesWithOneWordBeforeAfterAndInMiddle_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("before \"hello\" middle \"world\" after");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(5));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("before", WordQuoteType.None, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Quotes, 7)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("middle", WordQuoteType.None, 15)));
-            Assert.That(result[3], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Quotes, 22)));
-            Assert.That(result[4], Is.EqualTo(new SyntaxWord("after", WordQuoteType.None, 30)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("before", WordQuoteType.None, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Quotes, 7), x2),
+            x3 => Assert.Equal(new SyntaxWord("middle", WordQuoteType.None, 15), x3),
+            x4 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Quotes, 22), x4),
+            x5 => Assert.Equal(new SyntaxWord("after", WordQuoteType.None, 30), x5));
     }
 
-    [Test]
+    [Fact]
     public void RunParse_Error_DoubleQuoteToEndParentheses_Quote()
     {
         var breaker = new CommandWordBreaker();
@@ -189,141 +166,122 @@ public class WordBreakerTests
         Assert.Throws<FormatException>(() => breaker.RunParse("(Hello World!\""));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_ShouldPass_EscapedDoubleQuoteInParentheses_Quote()
     {
         var breaker = new CommandWordBreaker();
         
-        Assert.DoesNotThrow(() => breaker.RunParse("(Hello World!\\\")"));
+        var exception = Record.Exception(() => breaker.RunParse("(Hello World!\\\")"));
+
+        Assert.Null(exception);
     }
     #endregion
     
     #region Parentheses
-    [Test]
+    [Fact]
     public void RunParse_OneParentheses_Quote()
     {
         var breaker = new CommandWordBreaker();
         
-        Assert.That(breaker.RunParse("(word)"),
-            Has.One.EqualTo(new SyntaxWord("word", WordQuoteType.Parentheses, 0)));
+        Assert.Single(breaker.RunParse("(word)"),
+            new SyntaxWord("word", WordQuoteType.Parentheses, 0));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_TwoParentheses_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("(hello) (world)");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(2));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Parentheses, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Parentheses, 8)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Parentheses, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Parentheses, 8), x2));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_TwoParenthesesWithOneWordInMiddle_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("(hello) middle (world)");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(3));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Parentheses, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("middle", WordQuoteType.None, 8)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Parentheses, 15)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Parentheses, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("middle", WordQuoteType.None, 8), x2),
+            x3 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Parentheses, 15), x3));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_TwoParenthesesWithOneWordBefore_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("before (hello) (world)");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(3));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("before", WordQuoteType.None, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Parentheses, 7)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Parentheses, 15)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("before", WordQuoteType.None, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Parentheses, 7), x2),
+            x3 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Parentheses, 15), x3));
     }
     
     
-    [Test]
+    [Fact]
     public void RunParse_TwoParenthesesWithOneWordAfter_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("(hello) (world) after");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(3));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Parentheses, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Parentheses, 8)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("after", WordQuoteType.None, 16)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Parentheses, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Parentheses, 8), x2),
+            x3 => Assert.Equal(new SyntaxWord("after", WordQuoteType.None, 16), x3));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_TwoParenthesesWithOneWordBeforeAndInMiddle_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("before (hello) middle (world)");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(4));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("before", WordQuoteType.None, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Parentheses, 7)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("middle", WordQuoteType.None, 15)));
-            Assert.That(result[3], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Parentheses, 22)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("before", WordQuoteType.None, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Parentheses, 7), x2),
+            x3 => Assert.Equal(new SyntaxWord("middle", WordQuoteType.None, 15), x3),
+            x4 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Parentheses, 22), x4));
     }
     
-    [Test]
+    [Fact]
     public void RunParse_TwoParenthesesWithOneWordBeforeAfterAndInMiddle_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("before (hello) middle (world) after");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(5));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("before", WordQuoteType.None, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Parentheses, 7)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("middle", WordQuoteType.None, 15)));
-            Assert.That(result[3], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Parentheses, 22)));
-            Assert.That(result[4], Is.EqualTo(new SyntaxWord("after", WordQuoteType.None, 30)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("before", WordQuoteType.None, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Parentheses, 7), x2),
+            x3 => Assert.Equal(new SyntaxWord("middle", WordQuoteType.None, 15), x3),
+            x4 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Parentheses, 22), x4),
+            x5 => Assert.Equal(new SyntaxWord("after", WordQuoteType.None, 30), x5));
     }
     #endregion
     
-    [Test]
+    [Fact]
     public void RunParse_OnePairQuotesWithOneWordBeforeAfterAndInMiddleAlsoOneParentheses_Quote()
     {
         var breaker = new CommandWordBreaker();
         var result = breaker.RunParse("before \"hello\" middle (world) after");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Has.Count.EqualTo(5));
-            Assert.That(result[0], Is.EqualTo(new SyntaxWord("before", WordQuoteType.None, 0)));
-            Assert.That(result[1], Is.EqualTo(new SyntaxWord("hello", WordQuoteType.Quotes, 7)));
-            Assert.That(result[2], Is.EqualTo(new SyntaxWord("middle", WordQuoteType.None, 15)));
-            Assert.That(result[3], Is.EqualTo(new SyntaxWord("world", WordQuoteType.Parentheses, 22)));
-            Assert.That(result[4], Is.EqualTo(new SyntaxWord("after", WordQuoteType.None, 30)));
-        });
+        Assert.Collection(result,
+            x1 => Assert.Equal(new SyntaxWord("before", WordQuoteType.None, 0), x1),
+            x2 => Assert.Equal(new SyntaxWord("hello", WordQuoteType.Quotes, 7), x2),
+            x3 => Assert.Equal(new SyntaxWord("middle", WordQuoteType.None, 15), x3),
+            x4 => Assert.Equal(new SyntaxWord("world", WordQuoteType.Parentheses, 22), x4),
+            x5 => Assert.Equal(new SyntaxWord("after", WordQuoteType.None, 30), x5));
     }
 
-    [Test]
+    [Fact]
     public void RunParse_PairQuoteEscape_Quote()
     {
         var breaker = new CommandWordBreaker();
-        Assert.That(breaker.RunParse("\"\\\"Hello World!\\\"\""),
-            Has.One.EqualTo(new SyntaxWord("\"Hello World!\"", WordQuoteType.Quotes, 0)));
+        Assert.Single(breaker.RunParse("\"\\\"Hello World!\\\"\""),
+            new SyntaxWord("\"Hello World!\"", WordQuoteType.Quotes, 0));
     }
 }

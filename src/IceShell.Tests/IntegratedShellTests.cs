@@ -9,20 +9,20 @@ using IceShell.Core.Commands.Bundled;
 
 public class IntegratedShellTests
 {
-    [Test]
+    [Fact]
     public void Execute_HelloWorld()
     {
         var shell = new Shell();
         EchoCommand.RegisterTo(shell.Dispatcher);
         var result = shell.Execute("echo Hello World!");
         
-        Assert.That(CommandResult.IsSuccess(result));
+        Assert.True(CommandResult.IsSuccess(result));
     }
 
-    [Test]
+    [Fact]
     public void ModuleManager_NotNull()
     {
         var shell = new Shell();
-        Assert.That(shell.ModuleManager, Is.Not.Null);
+        Assert.NotNull(shell.ModuleManager);
     }
 }

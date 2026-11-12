@@ -5,7 +5,6 @@ namespace IceShell.Tests.Converters;
 
 using IceShell.Core;
 using IceShell.Core.Api;
-using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands;
 using IceShell.Core.Commands.Registry;
 
@@ -20,7 +19,7 @@ public class CommandRegistryTests
         }
     }
 
-    [Test]
+    [Fact]
     public void Register_AnnotatedCommandTest()
     {
         var dispatcher = new RegistryCommandDispatcher();
@@ -28,55 +27,51 @@ public class CommandRegistryTests
         
         registry.Register(typeof(TestCommand));
         
-        Assert.That(dispatcher.AnyCommand("test"));
+        Assert.True(dispatcher.AnyCommand("test"));
     }
     
-    [Test]
+    [Fact]
     public void Registry_AliasCaseInsensitive()
     {
         var dispatcher = new RegistryCommandDispatcher();
         var registry = new AnnotatedCommandRegistry(dispatcher);
         
         registry.Register(typeof(TestCommand));
-        Assert.Multiple(() =>
-        {
-            Assert.That(dispatcher.HasAlias("TEST"));
-            Assert.That(dispatcher.HasAlias("TeSt"));
-            Assert.That(dispatcher.HasAlias("test"));
-        });
+        Assert.Multiple(
+            () => Assert.True(dispatcher.HasAlias("TEST")),
+            () => Assert.True(dispatcher.HasAlias("TeSt")),
+            () => Assert.True(dispatcher.HasAlias("test"))
+        );
     }
     
-    [Test]
+    [Fact]
     public void Registry_IdentifierCaseSensitive()
     {
         var dispatcher = new RegistryCommandDispatcher();
         var registry = new AnnotatedCommandRegistry(dispatcher);
         
         registry.Register(typeof(TestCommand));
-        Assert.Multiple(() =>
-        {
-            Assert.That(dispatcher.AnyCommand("TEST"), Is.False);
-            Assert.That(dispatcher.AnyCommand("TeSt"), Is.False);
-            Assert.That(dispatcher.AnyCommand("test"), Is.True);
-        });
+        Assert.Multiple(
+            () => Assert.False(dispatcher.AnyCommand("TEST")),
+            () => Assert.False(dispatcher.AnyCommand("TeSt")),
+            () => Assert.True(dispatcher.AnyCommand("test"))
+        );
     }
 
-    [Test]
+    [Fact]
     public void ResolveAnnotatedCommand_Simple()
     {
         var registry = new AnnotatedCommandRegistry(new RegistryCommandDispatcher());
         var command = registry.ResolveAnnotatedCommand(typeof(TestCommand), out var provider);
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(command.Identifier, Is.EqualTo("test"));
-            Assert.That(command.CustomUsage, Is.Null);
-            Assert.That(command.Options, Is.Empty);
-            Assert.That(command.Values, Is.Empty);
-        });
+        Assert.Multiple(
+            () => Assert.Equal("test", command.Identifier),
+            () => Assert.Null(command.CustomUsage),
+            () => Assert.Empty(command.Options),
+            () => Assert.Empty(command.Values));
     }
 
-    [Test]
+    [Fact]
     public void Registry_SimpleRegularCommandTest()
     {
         var dispatcher = new RegistryCommandDispatcher();
@@ -84,10 +79,8 @@ public class CommandRegistryTests
         
         dispatcher.Register(commandInfo, (_, _, _) => CommandResult.Ok());
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(dispatcher.AnyCommand("regular"));
-            Assert.That(dispatcher.HasAlias("REGULAR"));
-        });
+        Assert.Multiple(
+            () => Assert.True(dispatcher.AnyCommand("regular")),
+            () => Assert.True(dispatcher.HasAlias("REGULAR")));
     }
 }

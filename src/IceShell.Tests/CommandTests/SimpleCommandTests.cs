@@ -7,23 +7,21 @@ using IceShell.Core;
 using IceShell.Core.Api;
 using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Commands.Registry;
-using Moq;
+using NSubstitute;
 
 public class SimpleCommandTests
 {
-    [Test]
+    [Fact]
     public void Exit_ShellExit()
     {
-        var shell = new Mock<IShell>();
+        var shell = Substitute.For<IShell>();
         var dispatcher = new RegistryCommandDispatcher();
         ExitCommand.RegisterTo(dispatcher);
 
-        var retVal = dispatcher.Execute(shell.Object, new ShellCommandDocument(), "exit");
+        var retVal = dispatcher.Execute(shell, new ShellCommandDocument(), "exit");
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(CommandResult.IsSuccess(retVal));
-            shell.Verify(x => x.Quit(), Times.Once);
-        });
+        Assert.Multiple(
+            () => Assert.True(CommandResult.IsSuccess(retVal)),
+            () => shell.Received(requiredNumberOfCalls: 1).Quit());
     }
 }

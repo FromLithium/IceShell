@@ -5,11 +5,13 @@ using IniParser.Model;
 
 public class ShellSettingsTest
 {
-    [Test]
+    [Fact]
     public void LoadFrom_EmptyNoException()
     {
         var iniData = new IniData();
 
-        Assert.DoesNotThrow(() => ShellSettings.LoadFrom(iniData));
+        var exception = Record.Exception(() => ShellSettings.LoadFrom(iniData));
+
+        Assert.Null(exception);
     }
 }

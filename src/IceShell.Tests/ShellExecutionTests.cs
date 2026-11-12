@@ -7,45 +7,45 @@ using IceShell.Core;
 using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Commands.Registry;
 using IceShell.Core.Exceptions;
-using Moq;
+using NSubstitute;
 
 public class ShellExecutionTests
 {
-    [Test]
+    [Fact]
     public void ShellCommandDocument_NoJump()
     {
         var document = new ShellCommandDocument();
         Assert.Throws<NotSupportedException>(() => document.Jump("blah"));
     }
 
-    [Test]
+    [Fact]
     public void ShellCommandDocument_JumpNotSupported()
     {
         var document = new ShellCommandDocument();
-        Assert.That(!document.IsJumpSupported);
+        Assert.False(document.IsJumpSupported);
     }
 
-    [Test]
+    [Fact]
     public void ShellCommandDocument_Variables()
     {
         var document = new ShellCommandDocument();
-        Assert.That(document.Variables, Is.Not.Null);
+        Assert.NotNull(document.Variables);
 
-        document.Variables!["test_variable"] = "test";
-        Assert.That(document.Variables["test_variable"], Is.EqualTo("test"));
+        document.Variables["test_variable"] = "test";
+        Assert.Equal("test", document.Variables["test_variable"]);
     }
 
-    [Test]
+    [Fact]
     public void CommandParsingUtil_ExpandContextVariables_NoSuchVariable()
     {
         var dispatcher = new RegistryCommandDispatcher(true);
         EchoCommand.RegisterTo(dispatcher);
 
         Assert.Throws<CommandFormatException>(() =>
-            dispatcher.Execute(Mock.Of<IShell>(), new ShellCommandDocument(), "echo $non-existent$"));
+            dispatcher.Execute(Substitute.For<IShell>(), new ShellCommandDocument(), "echo $non-existent$"));
     }
     
-    [Test]
+    [Fact]
     public void CommandParsingUtil_ExpandContextVariables_HaveVariable()
     {
         var dispatcher = new RegistryCommandDispatcher(true);
@@ -54,7 +54,9 @@ public class ShellExecutionTests
         var document = new ShellCommandDocument();
         document.Variables!["exists"] = "exists";
 
-        Assert.DoesNotThrow(() =>
-            dispatcher.Execute(Mock.Of<IShell>(), document, "echo $exists$"));
+        var exception = Record.Exception(() =>
+            dispatcher.Execute(Substitute.For<IShell>(), document, "echo $exists$"));
+
+        Assert.Null(exception);
     }
 }

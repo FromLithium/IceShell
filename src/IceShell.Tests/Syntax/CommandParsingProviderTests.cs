@@ -11,7 +11,7 @@ using IceShell.Parsing;
 
 public class CommandParsingProviderTests
 {
-    [Test]
+    [Fact]
     public void Parse_AlwaysProvideOriginalWords()
     {
         // Note that the command is not variable values by default,
@@ -26,11 +26,8 @@ public class CommandParsingProviderTests
         var provider = new CommandParsingProvider(invocation, entry, null);
         var result = provider.Parse(null);
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.OriginalWords, Has.Count.EqualTo(2));
-            Assert.That(result.OriginalWords[0].Content, Is.EqualTo("Hello"));
-            Assert.That(result.OriginalWords[1].Content, Is.EqualTo("World"));
-        });
+        Assert.Collection(result.OriginalWords,
+            x1 => Assert.Equal("Hello", x1.Content),
+            x2 => Assert.Equal("World", x2.Content));
     }
 }
