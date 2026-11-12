@@ -5,12 +5,15 @@
         "Krop",
         "mkfile"
     ],
-    "markdownlint.config": {
-        "MD024": {
-            "allow_different_nesting": true
-        },
-        "MD033": false,
-        "MD036": false,
-        "MD041": false
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.jj": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/bin": true,
+        "**/obj": true,
+        "**/.idea": true
     }
 }

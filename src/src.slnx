@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="IceShell.Batching/IceShell.Batching.csproj" />
+  <Project Path="IceShell.Core/IceShell.Core.csproj" />
+  <Project Path="IceShell.Parsing/IceShell.Parsing.csproj" />
+  <Project Path="IceShell.Platform.Linux/IceShell.Platform.Linux.csproj" />
+  <Project Path="IceShell.Platform.Windows/IceShell.Platform.Windows.csproj" />
+  <Project Path="IceShell.Tests/IceShell.Tests.csproj" />
+  <Project Path="IceShell/IceShell.csproj" />
+</Solution>

@@ -17,6 +17,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="lang/*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="IceShell.ico" />
   </ItemGroup>
 
@@ -26,7 +32,6 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="NexusKrop.IceCube" Version="0.4.0-alpha" />
     <PackageReference Include="Spectre.Console" Version="0.48.0" />
@@ -38,7 +43,5 @@
     <ProjectReference Include="..\IceShell.Platform.Linux\IceShell.Platform.Linux.csproj" />
     <ProjectReference Include="..\IceShell.Platform.Windows\IceShell.Platform.Windows.csproj" />
   </ItemGroup>
-
-  <Import Project="..\IceShell.LanguageFiles\IceShell.LanguageFiels.projitems" Label="Shared" />
 
 </Project>
