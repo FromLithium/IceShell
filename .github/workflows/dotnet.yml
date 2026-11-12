@@ -21,14 +21,14 @@ jobs:
       with:
         global-json: global.json
     - name: Restore dependencies
-      run: dotnet restore src/IceShell.sln
+      run: dotnet restore src/IceShell.slnx
     # - name: Cake Build
     #   run: "./src/build-ci.sh --target CIBuild"
     - name: Build
-      run: dotnet build src/IceShell.sln --no-restore --property:VersionPrefix=72.72.${{ github.run_number }} --version-suffix cibuild --configuration Release
+      run: dotnet build src/IceShell.slnx --no-restore --property:VersionPrefix=72.72.${{ github.run_number }} --version-suffix cibuild --configuration Release
     - name: Test
-    # Remember to CHANGE THIS when migrating to MTP
-      run: dotnet test src/IceShell.sln --no-build --verbosity normal --property:CollectCoverage=true
+    # TODO: Remember to CHANGE THIS when migrating to MTP
+      run: dotnet test src/IceShell.slnx --no-build --verbosity normal --property:CollectCoverage=true
     - name: Package Artifact
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:

@@ -53,7 +53,7 @@ public class CIBuildAppTask : FrostingTask<CIContext>
             settings.VersionSuffix = $"dev-artefact.{runId}.{@ref}";
         }
 
-        context.DotNetBuild("../IceShell.sln", settings);
+        context.DotNetBuild("../IceShell.slnx", settings);
     }
 }
 

@@ -2,9 +2,9 @@
 
 ## With .NET CLI
 
-Building IceShell with CLI requires .NET 7.0 SDK or later.
+Building IceShell with CLI requires .NET 8.0 SDK or later.
 
-- Navigate to your solution folder.
+- Navigate to the solution folder.
 - Run `dotnet build`.
 - Binaries should be available in `IceShell/src/IceShell/bin`.
 

@@ -54,7 +54,7 @@ public sealed class BuildAllTask : FrostingTask<BuildContext>
     {
         context.Information("Building");
 
-        context.DotNetBuild("../IceShell.sln", new()
+        context.DotNetBuild("../IceShell.slnx", new()
         {
             Configuration = context.MsBuildConfiguration,
             NoRestore = true
