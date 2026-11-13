@@ -9,7 +9,7 @@
 
 <h1>IceShell</h1>
 
-A cross-platform shell interpreter DOS and Windows NT Command Interpreters.
+A cross-platform shell interpreter, inspired by DOS and Windows NT Command Interpreters.
 
 </div>
 
