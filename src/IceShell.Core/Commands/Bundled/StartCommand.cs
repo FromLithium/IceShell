@@ -53,7 +53,7 @@ public static class StartCommand
 
         try
         {
-            NexusKrop.IceCube.Util.Shell.ShellExecute(realTarget);
+            var process = Executive.ShellExecute(realTarget);
         }
         catch (Win32Exception x) when (x.NativeErrorCode == 1155)
         {

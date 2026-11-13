@@ -9,7 +9,7 @@ using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Registry;
-using NexusKrop.IceCube.Util.Enumerables;
+using IceShell.Core.Utilities;
 using Spectre.Console;
 
 /// <summary>

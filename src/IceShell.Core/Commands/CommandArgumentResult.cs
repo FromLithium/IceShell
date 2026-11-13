@@ -6,7 +6,6 @@ namespace IceShell.Core.Commands;
 using System.Collections.ObjectModel;
 using IceShell.Core.Commands.Registry;
 using IceShell.Parsing;
-using NexusKrop.IceCube.Collections;
 
 /// <summary>
 /// Provides the result of a complete command argument parsing.

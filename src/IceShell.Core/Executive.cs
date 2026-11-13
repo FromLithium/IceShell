@@ -4,8 +4,6 @@
 namespace IceShell.Core;
 
 using IceShell.Core.Commands;
-using NexusKrop.IceCube;
-using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.Completion.Cache;
 using NexusKrop.IceShell.Core.FileSystem;
 using ReadLineReboot;
@@ -16,6 +14,8 @@ using IceShell.Core.FileSystem;
 using IceShell.Core.Settings;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+using IceShell.Core.Utilities;
+
 
 /// <summary>
 /// Provides executive services for the IceShell processes.
@@ -122,6 +122,22 @@ public static class Executive
     }
 
     /// <summary>
+    /// Executes the specified file. If the file is not an executable, executes the default program
+    /// associated with the file type.
+    /// </summary>
+    /// <param name="file">The file to execute.</param>
+    /// <returns>The process that was started.</returns>
+    public static Process? ShellExecute(string file)
+    {
+        var startInfo = new ProcessStartInfo(file)
+        {
+            UseShellExecute = true
+        };
+
+        return Process.Start(startInfo);
+    }
+
+    /// <summary>
     /// Attaches the executive services to the current process.
     /// </summary>
     public static void Attach(ShellSettings settings)
@@ -214,7 +230,7 @@ public static class Executive
 
         if ((InstanceSettings?.TerminateUponInterrupt == true) && OperatingSystem.IsLinux())
         {
-            WatchingProcess.EndGracefully();
+            WatchingProcess.Terminate();
         }
         else
         {

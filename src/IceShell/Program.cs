@@ -9,9 +9,9 @@ using IceShell.Core;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Settings;
+using IceShell.Core.Utilities;
 using IceShell.Platform.Linux;
 using IceShell.Platform.Windows;
-using NexusKrop.IceCube.Util.Enumerables;
 using Spectre.Console;
 
 if (args.Length > 1)

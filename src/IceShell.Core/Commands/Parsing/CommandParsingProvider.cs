@@ -10,8 +10,8 @@ using IceShell.Core.Commands.Registry;
 using IceShell.Core.Commands.Utilities;
 using IceShell.Core.Exceptions;
 using IceShell.Core.FileSystem;
+using IceShell.Core.Utilities;
 using IceShell.Parsing;
-using NexusKrop.IceCube.Util.Enumerables;
 
 /// <summary>
 /// Provides registry command parsing services.

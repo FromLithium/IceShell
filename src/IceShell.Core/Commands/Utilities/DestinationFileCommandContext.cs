@@ -10,7 +10,6 @@ using IceShell.Core.Commands.Registry;
 using IceShell.Core.FileSystem;
 using IceShell.Core.Utilities;
 using Microsoft.Extensions.FileSystemGlobbing;
-using NexusKrop.IceCube.Util.Enumerables;
 
 /// <summary>
 /// Specifies a routine for file operation with a source and a destination.

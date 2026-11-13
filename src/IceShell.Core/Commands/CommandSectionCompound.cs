@@ -3,7 +3,6 @@
 
 namespace IceShell.Core.Commands;
 
-using NexusKrop.IceCube.Util;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -44,7 +43,7 @@ public class CommandSectionCompound : IEnumerable<CommandSection>
     /// <returns>A new instance <see cref="CommandSectionCompound"/> with only a single command.</returns>
     public static CommandSectionCompound Single(CommandSection line)
     {
-        return new CommandSectionCompound(Arrays.Of(line));
+        return new CommandSectionCompound([line]);
     }
 
     /// <summary>

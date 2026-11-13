@@ -7,7 +7,6 @@ using global::IceShell.Core.Api;
 using global::IceShell.Core.Api.Commands;
 using global::IceShell.Core.Syntax;
 using global::IceShell.Parsing;
-using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.Completion.Cache;
 using ReadLineReboot;
 
@@ -33,7 +32,7 @@ internal class ShellCompletionHandler : IAutoCompleteHandler
         {
             var commands = CompleteCommandNames(statements[0].Content);
 
-            return commands?.IsEmpty() != false ? _cache.Complete(text) : commands;
+            return commands?.Length != 0 ? _cache.Complete(text) : commands;
         }
         else
         {

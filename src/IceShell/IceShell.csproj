@@ -33,7 +33,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NexusKrop.IceCube" />
     <PackageReference Include="Spectre.Console" />
   </ItemGroup>
 

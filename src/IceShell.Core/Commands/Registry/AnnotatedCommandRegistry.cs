@@ -10,7 +10,6 @@ using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands.Attributes;
 using IceShell.Core.Commands.Utilities;
-using NexusKrop.IceCube.Util.Enumerables;
 
 /// <summary>
 /// Provides services for registering old legacy annotated commands.
@@ -68,13 +67,13 @@ public class AnnotatedCommandRegistry
         
         foreach (var property in type.GetProperties())
         {
-            property.GetCustomAttributes().ForEach(x =>
+            foreach (var x in property.GetCustomAttributes())
             {
                 switch (x)
                 {
                     case VariableValueBufferAttribute:
                         outProvider.VariableBuffer = property;
-                        return true;
+                        continue;
                     // Register values first
                     case ValueAttribute valAttr:
                     {
@@ -100,9 +99,7 @@ public class AnnotatedCommandRegistry
                         break;
                     }
                 }
-
-                return true;
-            });
+            }
         }
 
         provider = outProvider;

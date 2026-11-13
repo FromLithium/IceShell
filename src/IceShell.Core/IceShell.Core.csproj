@@ -19,7 +19,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NexusKrop.IceCube" />
     <PackageReference Include="ReadLine.Reboot" />
     <PackageReference Include="Spectre.Console" />
     <PackageReference Include="Tmds.LibC" />

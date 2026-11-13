@@ -11,9 +11,9 @@ using IceShell.Core.Commands;
 using IceShell.Core.Commands.Registry;
 using IceShell.Core.Exceptions;
 using IceShell.Core.FileSystem;
+using IceShell.Core.Utilities;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
-using NexusKrop.IceCube.Util.Enumerables;
 using NexusKrop.IceShell.Core.CLI;
 
 /// <summary>

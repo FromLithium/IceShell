@@ -9,6 +9,20 @@ namespace IceShell.Core.Utilities;
 public static class EnumerableExtensions
 {
     /// <summary>
+    /// Executes the specified action for each item in the specified enumerable.
+    /// </summary>
+    /// <param name="enumerable">The enumerable.</param>
+    /// <param name="action">The action to execute.</param>
+    /// <typeparam name="T">The type of the items inside the specified enumerable.</typeparam>
+    public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+    {
+        foreach (var item in enumerable)
+        {
+            action(item);
+        }
+    }
+
+    /// <summary>
     /// Determines whether the specified enumerable have at least count items.
     /// </summary>
     /// <param name="enumerable">The enumerable.</param>
