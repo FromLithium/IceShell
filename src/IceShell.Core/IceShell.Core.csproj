@@ -20,7 +20,7 @@
     </PackageReference>
     <PackageReference Include="ReadLine.Reboot" />
     <PackageReference Include="Spectre.Console" />
-    <PackageReference Include="Tmds.LibC" />
+    <PackageReference Include="Mono.Unix" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CLI\Languages\*.properties" CopyToOutputDirectory="PreserveNewest" />

@@ -2,8 +2,7 @@ namespace IceShell.Core.Utilities;
 
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Tmds.Linux;
+using Mono.Unix.Native;
 
 /// <summary>
 /// Provides extension methods for process objects.
@@ -17,18 +16,26 @@ public static class ProcessExtensions
     /// <returns><see langword="true"/> if the signal can be delivered; otherwise, <see langword="false"/>.</returns>
     public static bool Terminate(this Process process)
     {
+        if (process.HasExited)
+        {
+            return false;
+        }
+
         if (OperatingSystem.IsWindows())
         {
             return process.CloseMainWindow();
         }
 
-        if (OperatingSystem.IsLinux())
+        if (OperatingSystem.IsLinux()
+            || OperatingSystem.IsMacOS())
         {       
-            var success = LibC.kill(process.Id, 15 /* SIGTERM */) == 0;
+            var success = Syscall.kill(process.Id, Signum.SIGTERM) == 0;
             if (!success)
             {
-                throw new Win32Exception(LibC.errno);
+                throw new Win32Exception((int)Syscall.GetLastError());
             }
+
+            return true;
         }
 
         return false;
