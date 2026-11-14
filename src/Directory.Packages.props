@@ -21,7 +21,6 @@
     <PackageVersion Include="Vanara.PInvoke.User32" Version="3.4.17" />
     
     <!-- Test framework and related packages -->
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="xunit.v3" Version="4.0.3" />
