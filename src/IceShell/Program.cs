@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using IceShell.Batching;
 using IceShell.Core;
+using IceShell.Core.CLI.Editor.Reboot;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Settings;
@@ -101,7 +102,8 @@ if (help)
     return 0;
 }
 
-var shell = new Shell(sh);
+var shell = new Shell(sh,
+    lineEditor: new RebootLineEditor());
 
 // Add the default modules.
 shell.ModuleManager.AddModule(new BatchingModule());

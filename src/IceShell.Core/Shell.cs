@@ -12,7 +12,6 @@ using System.Reflection;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Editor;
-using IceShell.Core.CLI.Editor.Reboot;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands;
 using IceShell.Core.Commands.Registry;
@@ -63,7 +62,7 @@ public class Shell : IShell
         ILineEditor? lineEditor = null)
     {
         _settings = settings;
-        _lineEditor = lineEditor ?? new RebootLineEditor();
+        _lineEditor = lineEditor ?? new BasicLineEditor();
         Prompt = DefaultPrompt;
         Dispatcher = dispatcher ?? new RegistryCommandDispatcher(settings.ExpandVariablesForAllValues);
         ModuleManager = new ModuleManager(Dispatcher);
