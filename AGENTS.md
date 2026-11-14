@@ -3,6 +3,7 @@
 ## Repository structure
 
 - `assets/`: Assets like logos.
+- `docs/`: Useful documentation files for development.
 - `lang/`: JSON language files.
 - `src/`: Source code.
 
@@ -19,3 +20,7 @@ From repository root:
 - **Restore**: `dotnet restore src/IceShell.sln`
 - **Build**: `dotnet build src/IceShell/IceShell.csproj`
 - **Test**: `dotnet test --project src/IceShell.Tests/IceShell.Tests.csproj`
+
+## See also
+
+- [Coding Style](docs/CODESTYLES.md)
