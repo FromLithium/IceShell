@@ -11,7 +11,7 @@
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="11.0.100" />
 
     <!-- Runtime dependencies -->
-    <PackageVersion Include="ini-parser-netstandard" Version="2.5.2" />
+    <PackageVersion Include="ini-parser-netstandard" Version="2.5.3" />
     <PackageVersion Include="Mono.Posix.NETStandard" Version="1.0.0" />
     <PackageVersion Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
     <PackageVersion Include="ReadLine.Reboot" Version="3.4.1" />
