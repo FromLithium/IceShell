@@ -11,7 +11,7 @@
     <NoWarn>1701;1702;S3903;CA1050</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Cake.Frosting" Version="3.1.0" />
+    <PackageReference Include="Cake.Frosting" Version="3.2.0" />
     <PackageReference Include="Cake.GitHub" Version="0.1.0" />
   </ItemGroup>
 </Project>
