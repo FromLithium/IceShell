@@ -4,7 +4,6 @@
 namespace IceShell.Core.CLI.Languages;
 
 using System.Collections.ObjectModel;
-using Kajabity.Tools.Java;
 
 /// <summary>
 /// Represents a language file.

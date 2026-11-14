@@ -13,7 +13,6 @@
   <ItemGroup>
     <PackageReference Include="ini-parser-netstandard" />
     <PackageReference Include="JetBrains.Annotations" />
-    <PackageReference Include="Kajabity.Tools.Java" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <PrivateAssets>all</PrivateAssets>

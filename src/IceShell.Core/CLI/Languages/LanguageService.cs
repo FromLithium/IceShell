@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text.Json;
 using IceShell.Core.Settings;
-using Kajabity.Tools.Java;
 
 /// <summary>
 /// Provide methods and properties to help with the usage of language files.
