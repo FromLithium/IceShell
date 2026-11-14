@@ -16,7 +16,7 @@
     <PackageVersion Include="Mono.Posix.NETStandard" Version="1.0.0" />
     <PackageVersion Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
     <PackageVersion Include="ReadLine.Reboot" Version="3.4.1" />
-    <PackageVersion Include="Spectre.Console" Version="0.48.0" />
+    <PackageVersion Include="Spectre.Console" Version="0.57.2" />
     <PackageVersion Include="Vanara.PInvoke.Kernel32" Version="3.4.17" />
     <PackageVersion Include="Vanara.PInvoke.User32" Version="3.4.17" />
     
