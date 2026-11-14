@@ -1,18 +1,16 @@
 // Copyright (C) NexusKrop & contributors 2023
 // See "COPYING.txt" for licence
 
-namespace NexusKrop.IceShell.Core.Completion;
+namespace IceShell.Core.CLI.Editor.Reboot;
 
-using global::IceShell.Core.Api;
-using global::IceShell.Core.Api.Commands;
-using global::IceShell.Core.Syntax;
-using global::IceShell.Parsing;
+using IceShell.Core.Api.Commands;
+using IceShell.Core.Syntax;
 using NexusKrop.IceShell.Core.Completion.Cache;
 using ReadLineReboot;
 
-internal class ShellCompletionHandler : IAutoCompleteHandler
+internal class RebootAutoCompleteHandler : IAutoCompleteHandler
 {
-    internal ShellCompletionHandler(IRegistryCommandDispatcher manager, DirCache cache)
+    internal RebootAutoCompleteHandler(IRegistryCommandDispatcher manager, DirCache cache)
     {
         _manager = manager;
         _cache = cache;

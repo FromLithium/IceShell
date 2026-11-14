@@ -11,14 +11,14 @@ using System.Diagnostics;
 using System.Reflection;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
+using IceShell.Core.CLI.Editor;
+using IceShell.Core.CLI.Editor.Reboot;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands;
 using IceShell.Core.Commands.Registry;
 using IceShell.Core.Exceptions;
 using IceShell.Core.Settings;
 using NexusKrop.IceShell.Core.CLI;
-using NexusKrop.IceShell.Core.Completion;
-using ReadLineReboot;
 
 /// <summary>
 /// Provides the shell experience of IceShell.
@@ -43,6 +43,7 @@ public class Shell : IShell
 
     private readonly ShellSettings _settings;
     private readonly ICommandDocument _document = new ShellCommandDocument();
+    private readonly ILineEditor _lineEditor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Shell"/> class, with the default settings.
@@ -56,9 +57,13 @@ public class Shell : IShell
     /// </summary>
     /// <param name="settings">The settings.</param>
     /// <param name="dispatcher">The dispatcher to use. If <see langword="null"/>, a default one is used.</param>
-    public Shell(ShellSettings settings, IRegistryCommandDispatcher? dispatcher = null)
+    /// <param name="lineEditor">The line editor implementation to use.</param>
+    public Shell(ShellSettings settings,
+        IRegistryCommandDispatcher? dispatcher = null,
+        ILineEditor? lineEditor = null)
     {
         _settings = settings;
+        _lineEditor = lineEditor ?? new RebootLineEditor();
         Prompt = DefaultPrompt;
         Dispatcher = dispatcher ?? new RegistryCommandDispatcher(settings.ExpandVariablesForAllValues);
         ModuleManager = new ModuleManager(Dispatcher);
@@ -140,9 +145,7 @@ public class Shell : IShell
     /// <returns>The exit code.</returns>
     public int RunInteractive()
     {
-        ReadLine.HistoryEnabled = true;
-        ReadLine.AutoCompletionHandler = new ShellCompletionHandler(Dispatcher, Executive.DirCache);
-        
+        _lineEditor.Initialize(Dispatcher);
         ModuleManager.Initialize();
 
         // show date and time if allowed
@@ -168,7 +171,7 @@ public class Shell : IShell
 
             prompt ??= "[prompt error]> ";
 
-            var input = ReadLine.Read(prompt);
+            var input = _lineEditor.DoReadLine(Dispatcher, prompt);
 
             if (string.IsNullOrWhiteSpace(input))
             {
