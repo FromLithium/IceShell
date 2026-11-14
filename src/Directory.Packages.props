@@ -7,7 +7,7 @@
     <PackageVersion Include="System.Management" Version="8.0.0" />
 
     <!-- MS Extensions -->
-    <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="11.0.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="11.0.100" />
 
     <!-- Runtime dependencies -->
