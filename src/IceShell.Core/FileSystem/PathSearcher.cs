@@ -11,7 +11,6 @@ using System.Text;
 using IceShell.Core.Api;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Exceptions;
-using JetBrains.Annotations;
 using NexusKrop.IceShell.Core.FileSystem;
 using Spectre.Console;
 
@@ -77,7 +76,6 @@ public static class PathSearcher
     /// </summary>
     /// <param name="path">The path to check.</param>
     /// <exception cref="FormatException">The path is invalid.</exception>
-    [PublicAPI]
     public static void CheckPath(ReadOnlySpan<char> path)
     {
         if (!IsPathValid(path))
@@ -92,7 +90,6 @@ public static class PathSearcher
     /// </summary>
     /// <param name="path">The path to check.</param>
     /// <returns><see langword="true"/> if the path is valid; otherwise, <see langword="false"/>.</returns>
-    [PublicAPI]
     public static bool IsPathValid(ReadOnlySpan<char> path)
     {
         var invalidPathChars = Path.GetInvalidPathChars();
@@ -293,7 +290,6 @@ public static class PathSearcher
     /// </summary>
     /// <param name="path">The path to check.</param>
     /// <exception cref="CommandFormatException">The specified path is invalid.</exception>
-    [PublicAPI]
     public static void EnsureFileName(string path)
     {
         CheckPath(path);

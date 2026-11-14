@@ -9,10 +9,8 @@ using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands;
-using IceShell.Core.Commands.Attributes;
 using IceShell.Core.Commands.Registry;
 using IceShell.Core.FileSystem;
-using JetBrains.Annotations;
 
 /// <summary>
 /// Defines a command that starts the specified file or executable program.
@@ -22,8 +20,7 @@ public static class StartCommand
     /// <summary>
     /// The unique identifier of this command.
     /// </summary>
-    [PublicAPI]
-    public const string CommandId = "start";
+    private const string CommandId = "start";
 
     private const string ValueParameterTarget = "target";
 

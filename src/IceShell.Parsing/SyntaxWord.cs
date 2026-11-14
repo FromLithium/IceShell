@@ -4,7 +4,6 @@
 namespace IceShell.Parsing;
 
 using IceShell.Parsing.Util;
-using JetBrains.Annotations;
 
 /// <summary>
 /// Represents a word in a command line, the basis for all command arguments (options, values, etc.).

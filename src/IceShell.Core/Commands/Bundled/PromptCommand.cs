@@ -7,7 +7,6 @@ using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Registry;
-using JetBrains.Annotations;
 
 /// <summary>
 /// Defines a command that changes the IceShell command prompt.
@@ -20,8 +19,7 @@ public static class PromptCommand
     /// <summary>
     /// The ID of this command.
     /// </summary>
-    [PublicAPI]
-    public const string CommandId = "prompt";
+    private const string CommandId = "prompt";
     
     /// <summary>
     /// Constructs this command and registers this command to the specified dispatcher.
