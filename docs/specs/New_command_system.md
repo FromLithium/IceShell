@@ -4,19 +4,46 @@ This is the specification of a new command system for IceShell. This system is n
 
 ## Terminology
 
-- _dispatcher_: The command dispatcher, responsible for locating and invoking commands.
 - _combinator_: See [Command Combinators](./Combinations.md).
+- _command name_: The first word of a command line (e.g. if `foo bar`, then `foo` is the command name).
+- _dispatcher_: The command dispatcher, responsible for locating and invoking commands.
+- _shell_: The shell (`IShell`) implementation, responsible for taking user input.
+
+## Shell
+
+The shell is responsible for the following tasks:
+
+- Retrieving user input command line.
+- Break the user input down into `SyntaxWord` list by invoking the word breaker (lexer).
+- Resolving environment variables and other special notation in the word list.
+- Passing the word list to the dispatcher.
 
 ## Dispatcher
 
 The command dispatcher is responsible for the following tasks:
 
-- Breaking down user input command line into words suitable for passing to commands.
 - Locating and invoking internal and external commands.
 - Handling redirections.
 - In the future, handle combinators, although this can be left out in the initial implementation.
 
 Do not reuse the old dispatcher class or interface when implementing the new dispatcher system. Use a new class and a new interface. If required, mark the old dispatcher as obsolete.
+
+### Processing word list
+
+The dispatcher MUST retrieve the command name from the word list and determine the type of the command to search first.
+
+The command name is the first entry in the word list.
+
+In the following cases, the dispatcher MUST treat the command name as the name of an external command only:
+
+- The command name word is quoted. That is, the quote type is not `None`.
+- The name of the command starts with a dot (`.`).
+- The name of the command contains a directory separator.
+
+In all other cases, the dispatcher MUST treat the command name as an internal command, unless:
+
+- There is no internal command with that name.
+- The dispatcher has been configured to resolve a non-file path command name to an external command.
 
 ### Locating internal commands
 
@@ -60,7 +87,7 @@ record InternalCommand
 {
     string Name { get; }
 
-    Func<IReadOnlyList<SyntaxWord>, int> Action { get; }
+    InternalCommandFunction Action { get; }
 }
 ```
 
@@ -69,20 +96,29 @@ record InternalCommand
 The logic of a command is a delegate conforming to the following signature:
 
 ```csharp
-int Execute(IReadOnlyList<SyntaxWord> args);
+delegate int InternalCommandFunction(IShell shell,
+    ICommandDocument document,
+    IReadOnlyList<SyntaxWord> args);
 ```
 
-Internal commands SHOULD NOT throw exceptions.
+Internal commands SHOULD NOT throw exceptions. The dispatcher, however, MUST treat exceptions from internal command functions as unexpected errors.
 
 ## External commands
 
 External commands are executable programs within the current directory, or a directory in `PATH`.
 
-File paths, when used as a command name, MUST be interpreted as external commands. If configured,
-a command name not corresponding to an internal command can also be interpreted as an external
-command.
+File paths, when used as a command name, MUST be interpreted as external commands. If configured, a command name not corresponding to an internal command can also be interpreted as an external command.
 
 Arguments MUST be passed to external commands by using the Argument List, not the argument string. The content of each word is passed as one entry to the external command, disregarding the quote status.
+
+### Locating external commands
+
+The dispatcher MUST resolve a command name to the full path of an executable by trying the following methods in order, until one of them succeeds:
+
+- If the command name is an absolute path, **use the absolute path**.
+- If the command name is a _relative_ file path (contains file path separator or the dot '`.`' character), **resolve its full path using the current directory as the base path**.
+- If the PATHEXT environment variable exists, then for each extension in PATHEXT, in order, append that extension to the command name and search for the resulting file - first in the current directory, then in each directory listed in PATH - stopping at the first file found.
+- Search for a file with same name as the command name - first in the current directory, then in each directory listed in PATH - stopping at the first file found.
 
 ## Aliases
 

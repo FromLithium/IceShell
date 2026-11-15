@@ -1,9 +1,6 @@
 # Command combinators
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT",
-"RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as
-described in BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all capitals, as shown
-here.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all capitals, as shown here.
 
 ## Terminology
 
@@ -15,8 +12,7 @@ here.
 command1 && command2
 ```
 
-Executes the command segment to the right of the combinator only if the command segment to the left
-finished with exit code of `0`.
+Executes the command segment to the right of the combinator only if the command segment to the left finished with exit code of `0`.
 
 Given the example above, the dispatcher MUST:
 
@@ -29,8 +25,7 @@ Given the example above, the dispatcher MUST:
 command1 && command2
 ```
 
-Executes the command segment to the right of the combinator only if the command segment to the left
-finished with a non-zero exit code.
+Executes the command segment to the right of the combinator only if the command segment to the left finished with a non-zero exit code.
 
 Given the example above, the dispatcher MUST:
 
@@ -45,8 +40,7 @@ command1 | command2
 
 A _pipe segment_ is two or more command lines separated by a pipe symbol (`|`).
 
-The dispatcher invokes a pipe segment by starting the commands concurrently, and then, for each
-pipe symbol, redirects the standard output of the program to its left to the program to its right.
+The dispatcher invokes a pipe segment by starting the commands concurrently, and then, for each pipe symbol, redirects the standard output of the program to its left to the program to its right.
 
 For example, given:
 
@@ -64,8 +58,11 @@ The dispatcher would:
     - Once the stdout of `command` finished, close stdin of `command2`.
 - Wait for all three commands to exit.
 
-If an internal command is encountered, the internal command SHOULD NOT be executed within the same
-shell process. A new instance of the shell program must be started.
+If an internal command is encountered, the internal command SHOULD NOT be executed within the same shell process. A new instance of the shell program must be started.
+
+## Special Considerations
+
+- The `goto` command changes the current document context. This command will break out of any combinators, and cannot be piped from or to.
 
 ## References
 
