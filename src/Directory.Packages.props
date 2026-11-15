@@ -17,7 +17,7 @@
     <PackageVersion Include="ReadLine.Reboot" Version="3.4.1" />
     <PackageVersion Include="Spectre.Console" Version="0.48.0" />
     <PackageVersion Include="Vanara.PInvoke.Kernel32" Version="3.4.17" />
-    <PackageVersion Include="Vanara.PInvoke.User32" Version="3.4.17" />
+    <PackageVersion Include="Vanara.PInvoke.User32" Version="5.0.8" />
     
     <!-- Test framework and related packages -->
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0" />
