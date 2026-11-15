@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- System packages -->
-    <PackageVersion Include="System.Management" Version="8.0.0" />
+    <PackageVersion Include="System.Management" Version="11.0.0" />
 
     <!-- MS Extensions -->
     <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="8.0.0" />
