@@ -51,20 +51,7 @@ The new system supports a **finite** set of internal commands built into the cor
 
 Internal commands MUST take precedence over external commands. An external can be explicitly invoked by specifying it as a path to the executable.
 
-The implementation would use a `switch` expression; however whatever else appropriate is accepted.
-
-```csharp
-InternalCommand? FindInternalCommand(string commandName)
-{
-    return commandName switch
-    {
-        "alias" => AliasCommand.Command,
-        "echo" => EchoCommand.Command,
-        // ...
-        _ => null
-    }
-}
-```
+The implementation would use a `switch` expression, or if it needs to be, a hash map, depending on the amount of internal commands; however whatever else appropriate is accepted.
 
 ### Executing internal commands
 
@@ -78,25 +65,10 @@ See [external commands](#external-commands).
 
 ## Internal commands
 
-An internal command is declared in code as an instance of `InternalCommand`.
-
-The `InternalCommand` record is defined as follows:
+An internal command is declared in code as an instance of `InternalCommand`, which is a delegate with the following signature:
 
 ```csharp
-record InternalCommand
-{
-    string Name { get; }
-
-    InternalCommandFunction Action { get; }
-}
-```
-
-### Execution logic
-
-The logic of a command is a delegate conforming to the following signature:
-
-```csharp
-delegate int InternalCommandFunction(IShell shell,
+delegate int InternalCommand(IShell shell,
     ICommandDocument document,
     IReadOnlyList<SyntaxWord> args);
 ```
@@ -105,7 +77,7 @@ Internal commands SHOULD NOT throw exceptions. The dispatcher, however, MUST tre
 
 ## External commands
 
-External commands are executable programs within the current directory, or a directory in `PATH`.
+External commands are executable programs specified by name or path.
 
 File paths, when used as a command name, MUST be interpreted as external commands. If configured, a command name not corresponding to an internal command can also be interpreted as an external command.
 
