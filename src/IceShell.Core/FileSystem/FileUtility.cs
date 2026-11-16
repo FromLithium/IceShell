@@ -2,8 +2,12 @@
 // See "COPYING.txt" for licence
 
 namespace NexusKrop.IceShell.Core.FileSystem;
+
 using System;
+using System.ComponentModel;
 using System.Reflection.PortableExecutable;
+using System.Runtime.Versioning;
+using Mono.Unix.Native;
 
 /// <summary>
 /// Provides utilities for file formats and types.
@@ -17,34 +21,64 @@ public static class FileUtility
     /// <returns><see langword="true" /> if the specified file is an executable; otherwise, <see langword="false"/>. </returns>
     public static bool IsExecutable(string file)
     {
+        if (!File.Exists(file))
+        {
+            return false;
+        }
+
         if (OperatingSystem.IsWindows())
         {
-            try
-            {
-                using var stream = File.OpenRead(file);
-                var reader = new PEReader(stream);
+            return IsExecutableCoreWindows(file);
+        }
+        else if (Environment.OSVersion.Platform == PlatformID.Unix)
+        {
+            return IsExecutableCoreUnix(file);
+        }
+        else
+        {
+            // This usually means we are in WASM.
+            //
+            // Elaborate test for whether the file is an executable will mean a lot of work so even
+            // if we are in WASI, the DOS behaviour of "Shell Execute if Not Executable" is not
+            // really viable here.
+            return false;
+        }
+    }
 
-                if (reader.PEHeaders == null)
-                {
-                    return false;
-                }
-
-                return reader.PEHeaders.IsExe;
-            }
-            catch (BadImageFormatException)
+    [UnsupportedOSPlatform("windows")]
+    private static bool IsExecutableCoreUnix(string fileName)
+    {
+        var success = Syscall.access(fileName, AccessModes.X_OK) == 0;
+        if (!success)
+        {
+            Errno errno = Stdlib.GetLastError();
+            if (errno == Errno.EACCES)
             {
                 return false;
             }
-        }
-        else if (OperatingSystem.IsLinux())
-        {
-            using var reader = new BinaryReader(File.OpenRead(file));
 
-            return reader.ReadByte() == 0x7f && reader.ReadChar() == 'E'
-                && reader.ReadChar() == 'L'
-                && reader.ReadChar() == 'F';
+            throw new Win32Exception((int)errno);
         }
-        else
+
+        return true;
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static bool IsExecutableCoreWindows(string fileName)
+    {
+        try
+        {
+            using Stream stream = File.OpenRead(fileName);
+            var reader = new PEReader(stream);
+
+            if (reader.PEHeaders == null)
+            {
+                return false;
+            }
+
+            return reader.PEHeaders.IsExe;
+        }
+        catch (BadImageFormatException)
         {
             return false;
         }

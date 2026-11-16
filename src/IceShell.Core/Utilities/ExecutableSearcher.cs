@@ -153,8 +153,7 @@ public static class ExecutableSearcher
                 testPath = Path.GetFullPath(testPath, baseDirectory);
             }
 
-            if (File.Exists(testPath)
-                && FileUtility.IsExecutable(testPath))
+            if (File.Exists(testPath))
             {
                 return testPath;
             }
@@ -163,7 +162,7 @@ public static class ExecutableSearcher
         // Perform exact path test
         string exactPath = Path.GetFullPath(commandName,
             baseDirectory ?? Environment.CurrentDirectory);
-        if (File.Exists(exactPath) && FileUtility.IsExecutable(exactPath))
+        if (File.Exists(exactPath))
         {
             return exactPath;
         }
