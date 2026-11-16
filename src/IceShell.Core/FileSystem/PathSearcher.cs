@@ -129,15 +129,15 @@ public static class PathSearcher
         {
             livePath = path[2..];
         }
-        
+
         var nextPath = new string(livePath);
-        
+
         var profile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
         var result = Path.Combine(profile, nextPath);
         return result;
     }
-    
+
     /// <summary>
     /// Evaluate a path and expands all environment variables within.
     /// </summary>
@@ -157,7 +157,7 @@ public static class PathSearcher
         {
             return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         }
-        
+
         var builder = new StringBuilder();
         var varBuilder = new StringBuilder();
         var firstChara = true;
@@ -179,7 +179,7 @@ public static class PathSearcher
             {
                 throw new InvalidOperationException("Should not be in both.");
             }
-            
+
             if (x == '$' && document is { Variables: not null } && !inVariable)
             {
                 if (!inContextVariable)
@@ -210,7 +210,7 @@ public static class PathSearcher
                 // If otherwise, this is hereby escaped.
             }
 
-            
+
             if (x == '%' && !inContextVariable)
             {
                 if (!inVariable)
@@ -325,6 +325,7 @@ public static class PathSearcher
     /// On all other operating systems, this method returns the name exactly.
     /// </para>
     /// </remarks>
+    [Obsolete("Use ExecutableSearcher.Find instead.")]
     public static string? GetSystemExecutableName(string name)
     {
         if (OperatingSystem.IsWindows() && !Path.HasExtension(name))
@@ -353,6 +354,7 @@ public static class PathSearcher
     /// </summary>
     /// <param name="name">The name of the executable to search.</param>
     /// <returns>The first executable found.</returns>
+    [Obsolete("Use ExecutableSearcher.FindSystem instead.")]
     public static string? SearchExecutable(string name)
     {
         EnsureFileName(name);

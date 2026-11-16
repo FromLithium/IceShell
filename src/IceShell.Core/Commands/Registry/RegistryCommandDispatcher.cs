@@ -27,6 +27,7 @@ using IceShell.Core.Commands.Parsing;
 using IceShell.Core.Exceptions;
 using IceShell.Core.FileSystem;
 using IceShell.Core.Syntax;
+using IceShell.Core.Utilities;
 using IceShell.Parsing;
 using NexusKrop.IceShell.Core.CLI;
 using NexusKrop.IceShell.Core.Commands.Bundled;
@@ -41,12 +42,12 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     private readonly Dictionary<string, string> _aliases = new();
     private readonly Dictionary<CommandRegistryEntry, CommandDelegate> _commandDelegates = new();
     private readonly bool _parseArgumentVariables;
-    
+
     internal RegistryCommandDispatcher(bool parseArgumentVariables = false)
     {
         _parseArgumentVariables = parseArgumentVariables;
     }
-    
+
     /// <inheritdoc />
     public int AliasCount => _aliases.Count;
 
@@ -123,7 +124,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
         {
             throw new ArgumentException("The specified ID does not exist.", nameof(id));
         }
-        
+
         _aliases.Add(alias.ToUpperInvariant(), id);
     }
 
@@ -157,7 +158,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
             throw new ArgumentException("The specified command is not associated with this dispatcher.",
                 nameof(segment));
         }
-        
+
         if (!_commandRegistry.TryGetValue(id, out var definition))
         {
             throw new ArgumentException("The specified command that the aliases is pointing to is not associated with this dispatcher.",
@@ -174,7 +175,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
     private CommandArgumentResult InternalParseArgument(SyntaxCommandInvocation invocation, CommandRegistryEntry entry, ICommandDocument? document)
     {
         var parsingProvider = new CommandParsingProvider(invocation, entry, document, _parseArgumentVariables);
-        
+
         // TODO optimise this by separating all value options with switches.
         return parsingProvider.Parse(entry.Options.Where(x => x.Value.IsSwitch)
             .Select(x => x.Key)
@@ -225,13 +226,13 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
         if (section is { IsCommand: true, Command: not null })
         {
             var cmd = section.Command.Value;
-            
+
             return Execute(shell, document, context, cmd);
         }
         else if (section.Statements != null)
         {
             // Execute external command.
-            
+
             var args = section.Statements.Select(x => x.Content);
 
             var argList = args.ToList();
@@ -242,7 +243,8 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
             }
 
             var cmdName = section.Name;
-            var searchResult = PathSearcher.GetSystemExecutableName(Path.Combine(Environment.CurrentDirectory, cmdName));
+            var searchResult = ExecutableSearcher.Find(cmdName,
+                Environment.CurrentDirectory);
 
             // If unable to find file...
             if (searchResult == null || !File.Exists(searchResult))
@@ -251,7 +253,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
             }
 
             var processInfo = new ProcessStartInfo(searchResult);
-            
+
             argList.ForEach(x =>
             {
                 // If this dispatcher is configured to expand variables,
@@ -260,10 +262,10 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
                 {
                     x = PathSearcher.ExpandVariables(x, true);
                 }
-                
+
                 processInfo.ArgumentList.Add(x);
             });
-            
+
             processInfo.UseShellExecute = false;
             processInfo.WorkingDirectory = Environment.CurrentDirectory;
 
@@ -304,7 +306,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
             if (nextAction == SyntaxNextAction.Redirect)
             {
                 context.Retrieval = lastOutStream;
-                
+
                 // Justification: this is a fail-safe measure.
                 // ReSharper disable once RedundantAssignment
                 lastOutStream = null;
@@ -357,7 +359,7 @@ public class RegistryCommandDispatcher : IRegistryCommandDispatcher
                     {
                         return CommandResult.WithError(CommandErrorCode.PipelineToNotSupported);
                     }
-                    
+
                     process.StandardInput.Write(context.Retrieval!.ReadToEnd());
                     context.Retrieval.Dispose();
                 }
