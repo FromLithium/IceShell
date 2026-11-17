@@ -75,6 +75,10 @@ public static class CommandCompat
                     ConsoleOutput.PrintShellError(LangMessage.Get(
                         "generic_out_stream_read_error"));
                     ConsoleOutput.PrintShellError(ex.ToString());
+
+                    return result.ExitCode == 0
+                        ? 1
+                        : result.ExitCode;
                 }
                 finally
                 {
@@ -100,7 +104,7 @@ public static class CommandCompat
         }
     }
 
-    private static IReadOnlyList<SyntaxWord> CreateInvocationWords(CommandRegistryEntry entry,
+    private static List<SyntaxWord> CreateInvocationWords(CommandRegistryEntry entry,
         IReadOnlyList<SyntaxWord> args)
     {
         var result = new List<SyntaxWord>(args.Count + 1)
@@ -108,7 +112,7 @@ public static class CommandCompat
             new(entry.Identifier)
         };
 
-        foreach (var arg in args)
+        foreach (SyntaxWord arg in args)
         {
             result.Add(arg);
         }
