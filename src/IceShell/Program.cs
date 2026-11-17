@@ -8,7 +8,6 @@ using IceShell.Batching;
 using IceShell.Core;
 using IceShell.Core.CLI.Editor.Reboot;
 using IceShell.Core.CLI.Languages;
-using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Settings;
 using IceShell.Core.Utilities;
 using IceShell.Platform.Linux;
@@ -127,8 +126,6 @@ if (RuntimeFeature.IsDynamicCodeSupported)
 {
     shell.ModuleManager.LoadDirectory(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "modules"));
 }
-
-DefaultCommands.Register(shell.Dispatcher);
 
 var retCode = -255;
 

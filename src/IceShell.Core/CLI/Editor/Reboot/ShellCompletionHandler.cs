@@ -54,8 +54,7 @@ internal class RebootAutoCompleteHandler : IAutoCompleteHandler
 
         var list = new List<string>();
 
-        foreach (var command in _manager.EnumerateCommandNames()
-                     .Concat(_manager.EnumerateAliases()))
+        foreach (var command in _manager.EnumerateCommandNames())
         {
             if (command.StartsWith(begin, StringComparison.OrdinalIgnoreCase)
                 && !list.Contains(command, StringComparer.OrdinalIgnoreCase))

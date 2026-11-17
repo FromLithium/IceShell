@@ -9,8 +9,6 @@ using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Registry;
-using IceShell.Core.Commands.Simple;
-using IceShell.Core.Syntax;
 using IceShell.Core.Utilities;
 using Spectre.Console;
 
@@ -49,16 +47,13 @@ public static class HelpCommand
 
     private static CommandResult ExecuteDetailed(IShell shell, string commandName)
     {
-        var dispatcher = shell.Dispatcher;
-        var resolvedName = ResolveCommandName(dispatcher, commandName);
-
-        if (!dispatcher.TryGetCommandInfo(resolvedName, out var definition)
+        if (!DefaultCommands.TryGetCommandInfo(commandName, out var definition)
             || definition == null)
         {
             return CommandResult.WithError(CommandErrorCode.BadArgument, LangMessage.GetFormat("help_not_found", commandName ?? ""));
         }
 
-        PrintHelp(definition, dispatcher.EnumerateAliases(definition.Identifier));
+        PrintHelp(definition);
         return CommandResult.Ok();
     }
 
@@ -66,7 +61,7 @@ public static class HelpCommand
     {
         var dispatcher = shell.Dispatcher;
 
-        if (dispatcher.CommandCount == 0 && dispatcher.AliasCount == 0)
+        if (dispatcher.CommandCount == 0)
         {
             Console.WriteLine(LangMessage.Get("help_no_commands"));
             return CommandResult.Ok();
@@ -80,16 +75,13 @@ public static class HelpCommand
         grid.AddRow(" ", " ");
 
         var names = dispatcher.EnumerateCommandNames()
-            .Concat(dispatcher.EnumerateAliases())
-            .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(x => x, StringComparer.OrdinalIgnoreCase);
 
         foreach (var cmdName in names)
         {
             var description = string.Empty;
-            var resolvedName = ResolveCommandName(dispatcher, cmdName);
 
-            if (dispatcher.TryGetCommandInfo(resolvedName, out var item)
+            if (DefaultCommands.TryGetCommandInfo(cmdName, out var item)
                 && item != null)
             {
                 description = LangMessage.Get(GetCommandDescription(item.Identifier));
@@ -101,35 +93,6 @@ public static class HelpCommand
         AnsiConsole.Write(grid);
 
         return CommandResult.Ok();
-    }
-
-    private static string ResolveCommandName(ISimpleCommandDispatcher dispatcher, string commandName)
-    {
-        var current = commandName;
-        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        while (visited.Add(current)
-               && dispatcher.TryGetAlias(current, out var commandLine)
-               && !string.IsNullOrWhiteSpace(commandLine))
-        {
-            try
-            {
-                var words = new CommandWordBreaker().RunParse(commandLine);
-
-                if (words.Count == 0)
-                {
-                    break;
-                }
-
-                current = words[0].Content;
-            }
-            catch (FormatException)
-            {
-                break;
-            }
-        }
-
-        return current;
     }
 
     private static string AssembleUsage(CommandRegistryEntry definition)

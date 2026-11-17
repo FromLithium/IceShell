@@ -6,23 +6,25 @@ namespace IceShell.Core.Commands.Compat;
 using IceShell.Core.Api;
 using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands.Registry;
-using IceShell.Core.Commands.Simple;
 using IceShell.Parsing;
 
 /// <summary>
-/// Provides a compatibility layer that allows commands written for the registry command system
-/// to be registered to a <see cref="ISimpleCommandDispatcher"/>.
+/// Provides a compatibility layer that translates commands written for the registry command
+/// system into internal commands of the simple command system.
 /// </summary>
 internal sealed class RegistryCommandRegistrationBridge : IRegistryCommandDispatcher
 {
-    private readonly ISimpleCommandDispatcher _dispatcher;
+    private readonly Dictionary<string, InternalCommand> _commands =
+        new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, CommandRegistryEntry> _entries =
         new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, string> _aliases = new(StringComparer.OrdinalIgnoreCase);
 
-    internal RegistryCommandRegistrationBridge(ISimpleCommandDispatcher dispatcher)
+    internal IReadOnlyDictionary<string, InternalCommand> Commands => _commands;
+
+    internal bool TryGetEntry(string name, out CommandRegistryEntry? entry)
     {
-        _dispatcher = dispatcher;
+        return _entries.TryGetValue(name, out entry);
     }
 
     /// <inheritdoc />
@@ -56,10 +58,8 @@ internal sealed class RegistryCommandRegistrationBridge : IRegistryCommandDispat
     /// <inheritdoc />
     public void Register(CommandRegistryEntry command, CommandDelegate routine)
     {
-        _dispatcher.Register(command.Identifier, CommandCompat.FromRegistry(command, routine), command);
-        _entries[command.Identifier] = command;
-
-        // The registry dispatcher always exposes the identifier itself as an alias.
+        _commands.Add(command.Identifier, CommandCompat.FromRegistry(command, routine));
+        _entries.Add(command.Identifier, command);
         _aliases[command.Identifier] = command.Identifier;
     }
 
@@ -90,11 +90,6 @@ internal sealed class RegistryCommandRegistrationBridge : IRegistryCommandDispat
         }
 
         _aliases[alias] = id;
-
-        if (!alias.Equals(id, StringComparison.OrdinalIgnoreCase))
-        {
-            _dispatcher.SetAlias(alias, id);
-        }
     }
 
     /// <inheritdoc />

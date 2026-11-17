@@ -5,7 +5,6 @@ namespace IceShell.Tests;
 
 using IceShell.Core;
 using IceShell.Core.Api;
-using IceShell.Core.Commands.Bundled;
 
 public class IntegratedShellTests
 {
@@ -13,7 +12,6 @@ public class IntegratedShellTests
     public void Execute_HelloWorld()
     {
         var shell = new Shell();
-        DefaultCommands.Register(shell.Dispatcher);
         var result = shell.Execute("echo Hello World!");
         
         Assert.True(CommandResult.IsSuccess(result));

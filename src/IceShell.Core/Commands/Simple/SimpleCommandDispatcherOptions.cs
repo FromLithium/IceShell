@@ -20,10 +20,4 @@ public sealed class SimpleCommandDispatcherOptions
     /// opened using the shell execute facility.
     /// </summary>
     public bool UseShellExecuteForNonExecutableFiles { get; set; }
-
-    /// <summary>
-    /// Gets or sets the maximum number of aliases that may be expanded in a single command
-    /// invocation. This prevents alias cycles from causing endless execution.
-    /// </summary>
-    public int MaxAliasDepth { get; set; } = 64;
 }

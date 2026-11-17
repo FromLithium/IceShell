@@ -6,7 +6,6 @@ namespace IceShell.Tests.CommandTests;
 using IceShell.Core;
 using IceShell.Core.Api;
 using IceShell.Core.Commands;
-using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Commands.Simple;
 using IceShell.Core.Settings;
 using IceShell.Parsing;
@@ -19,14 +18,12 @@ public class SimpleCommandDispatcherTests
     [Fact]
     public void Execute_InternalCommand_ReceivesArguments()
     {
-        var dispatcher = new SimpleCommandDispatcher();
         IReadOnlyList<SyntaxWord>? received = null;
-
-        dispatcher.Register("test", (_, _, args) =>
+        var dispatcher = CreateDispatcher(("test", (_, _, args) =>
         {
             received = args;
             return 42;
-        });
+        }));
 
         var words = new[]
         {
@@ -50,8 +47,8 @@ public class SimpleCommandDispatcherTests
     [Fact]
     public void Execute_InternalCommandThrows_Returns255()
     {
-        var dispatcher = new SimpleCommandDispatcher();
-        dispatcher.Register("test", (_, _, _) => throw new InvalidOperationException("Test"));
+        var dispatcher = CreateDispatcher(("test", (_, _, _) =>
+            throw new InvalidOperationException("Test")));
 
         var exitCode = dispatcher.Execute(Substitute.For<IShell>(),
             Substitute.For<ICommandDocument>(),
@@ -61,41 +58,14 @@ public class SimpleCommandDispatcherTests
     }
 
     [Fact]
-    public void Execute_Alias_ExpandsArguments()
-    {
-        var dispatcher = new SimpleCommandDispatcher();
-        IReadOnlyList<SyntaxWord>? received = null;
-
-        dispatcher.Register("test", (_, _, args) =>
-        {
-            received = args;
-            return 0;
-        });
-        dispatcher.SetAlias("t", "test hello");
-
-        var exitCode = dispatcher.Execute(Substitute.For<IShell>(),
-            Substitute.For<ICommandDocument>(),
-            [new SyntaxWord("t"), new SyntaxWord("world")]);
-
-        Assert.Multiple(
-            () => Assert.Equal(0, exitCode),
-            () => Assert.NotNull(received),
-            () => Assert.Equal(2, received!.Count),
-            () => Assert.Equal("hello", received![0].Content),
-            () => Assert.Equal("world", received![1].Content));
-    }
-
-    [Fact]
     public void Execute_QuotedCommandName_DoesNotUseInternalCommand()
     {
-        var dispatcher = new SimpleCommandDispatcher();
         var called = false;
-
-        dispatcher.Register("test", (_, _, _) =>
+        var dispatcher = CreateDispatcher(("test", (_, _, _) =>
         {
             called = true;
             return 0;
-        });
+        }));
 
         var exitCode = dispatcher.Execute(Substitute.For<IShell>(),
             Substitute.For<ICommandDocument>(),
@@ -109,14 +79,12 @@ public class SimpleCommandDispatcherTests
     [Fact]
     public void Execute_DotPrefixedName_DoesNotUseInternalCommand()
     {
-        var dispatcher = new SimpleCommandDispatcher();
         var called = false;
-
-        dispatcher.Register(".test", (_, _, _) =>
+        var dispatcher = CreateDispatcher((".test", (_, _, _) =>
         {
             called = true;
             return 0;
-        });
+        }));
 
         var exitCode = dispatcher.Execute(Substitute.For<IShell>(),
             Substitute.For<ICommandDocument>(),
@@ -142,7 +110,7 @@ public class SimpleCommandDispatcherTests
                 UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
 #pragma warning restore CA1416
 
-            var dispatcher = new SimpleCommandDispatcher();
+            var dispatcher = CreateDispatcher();
             var exitCode = dispatcher.Execute(Substitute.For<IShell>(),
                 Substitute.For<ICommandDocument>(),
                 [
@@ -171,14 +139,12 @@ public class SimpleCommandDispatcherTests
 
         try
         {
-            var dispatcher = new SimpleCommandDispatcher();
             string? received = null;
-
-            dispatcher.Register("test", (_, _, args) =>
+            var dispatcher = CreateDispatcher(("test", (_, _, args) =>
             {
                 received = args[0].Content;
                 return 0;
-            });
+            }));
 
             var shell = new Shell(new ShellSettings
             {
@@ -204,14 +170,12 @@ public class SimpleCommandDispatcherTests
 
         try
         {
-            var dispatcher = new SimpleCommandDispatcher();
             string? received = null;
-
-            dispatcher.Register("test", (_, _, args) =>
+            var dispatcher = CreateDispatcher(("test", (_, _, args) =>
             {
                 received = args[0].Content;
                 return 0;
-            });
+            }));
 
             var shell = new Shell(new ShellSettings
             {
@@ -237,13 +201,10 @@ public class SimpleCommandDispatcherTests
 
         try
         {
-            var dispatcher = new SimpleCommandDispatcher();
-            DefaultCommands.Register(dispatcher);
-
             var shell = new Shell(new ShellSettings
             {
                 ExpandVariablesForAllValues = true
-            }, dispatcher);
+            }, new SimpleCommandDispatcher());
             var result = shell.Execute($"set %{variableName}% value");
 
             Assert.Multiple(
@@ -256,53 +217,16 @@ public class SimpleCommandDispatcherTests
         }
     }
 
-    [Fact]
-    public void AliasCommand_CreatesAndInvokesAlias()
+    private static SimpleCommandDispatcher CreateDispatcher(
+        params (string Name, InternalCommand Command)[] commands)
     {
-        var dispatcher = new SimpleCommandDispatcher();
-        IReadOnlyList<SyntaxWord>? received = null;
+        var table = new Dictionary<string, InternalCommand>(StringComparer.OrdinalIgnoreCase);
 
-        dispatcher.Register("test", (_, _, args) =>
+        foreach (var (name, command) in commands)
         {
-            received = args;
-            return 0;
-        });
-        AliasCommand.RegisterTo(dispatcher);
+            table[name] = command;
+        }
 
-        var shell = new Shell(new ShellSettings(), dispatcher);
-
-        Assert.Equal(0, shell.Execute("alias t test hello").ExitCode);
-        Assert.Equal(0, shell.Execute("t world").ExitCode);
-
-        Assert.Multiple(
-            () => Assert.NotNull(received),
-            () => Assert.Equal(2, received!.Count),
-            () => Assert.Equal("hello", received![0].Content),
-            () => Assert.Equal("world", received![1].Content));
-    }
-
-    [Fact]
-    public void AliasCommand_PreservesQuotedArguments()
-    {
-        var dispatcher = new SimpleCommandDispatcher();
-        IReadOnlyList<SyntaxWord>? received = null;
-
-        dispatcher.Register("test", (_, _, args) =>
-        {
-            received = args;
-            return 0;
-        });
-        AliasCommand.RegisterTo(dispatcher);
-
-        var shell = new Shell(new ShellSettings(), dispatcher);
-
-        Assert.Equal(0, shell.Execute("alias t test \"hello world\"").ExitCode);
-        Assert.Equal(0, shell.Execute("t").ExitCode);
-
-        Assert.Multiple(
-            () => Assert.NotNull(received),
-            () => Assert.Single(received!),
-            () => Assert.Equal("hello world", received![0].Content),
-            () => Assert.Equal(WordQuoteType.Quotes, received![0].QuoteType));
+        return new SimpleCommandDispatcher(table);
     }
 }

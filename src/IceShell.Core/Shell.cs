@@ -11,7 +11,7 @@ using System.Reflection;
 using IceShell.Core.Api;
 using IceShell.Core.CLI.Editor;
 using IceShell.Core.CLI.Languages;
-using IceShell.Core.Commands.Compat;
+using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Commands.Registry;
 using IceShell.Core.Commands.Simple;
 using IceShell.Core.Exceptions;
@@ -19,7 +19,6 @@ using IceShell.Core.FileSystem;
 using IceShell.Core.Settings;
 using IceShell.Core.Syntax;
 using IceShell.Parsing;
-using IceShell.Parsing.Util;
 using NexusKrop.IceShell.Core.CLI;
 
 /// <summary>
@@ -68,7 +67,10 @@ public class Shell : IShell
         _lineEditor = lineEditor ?? new BasicLineEditor();
         Prompt = DefaultPrompt;
         Dispatcher = dispatcher ?? new SimpleCommandDispatcher();
-        ModuleManager = new ModuleManager(new RegistryCommandRegistrationBridge(Dispatcher));
+
+        // Module commands still use the legacy registry dispatcher and are not yet bridged into
+        // the simple command dispatcher.
+        ModuleManager = new ModuleManager(new RegistryCommandDispatcher());
     }
 
     /// <inheritdoc />
@@ -144,8 +146,7 @@ public class Shell : IShell
             ExpandWord(words[0], document)
         };
 
-        var commandName = ResolveCommandName(result[0]);
-        Dispatcher.TryGetCommandInfo(commandName, out var info);
+        DefaultCommands.TryGetCommandInfo(result[0].Content, out var info);
 
         for (var i = 1; i < words.Count; i++)
         {
@@ -180,48 +181,6 @@ public class Shell : IShell
 
         return argumentIndex >= info.Values.Count
                || !info.Values[argumentIndex].NoExpandVariables;
-    }
-
-    private string ResolveCommandName(SyntaxWord nameWord)
-    {
-        if (nameWord.QuoteType != WordQuoteType.None || IsFilePath(nameWord.Content))
-        {
-            return nameWord.Content;
-        }
-
-        var current = nameWord.Content;
-        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        while (visited.Add(current)
-               && Dispatcher.TryGetAlias(current, out var aliasLine)
-               && !string.IsNullOrWhiteSpace(aliasLine))
-        {
-            try
-            {
-                var aliasWords = new CommandWordBreaker().RunParse(aliasLine);
-
-                if (aliasWords.Count == 0)
-                {
-                    break;
-                }
-
-                current = aliasWords[0].Content;
-            }
-            catch (FormatException)
-            {
-                break;
-            }
-        }
-
-        return current;
-    }
-
-    private static bool IsFilePath(string name)
-    {
-        return name.StartsWith('.')
-               || Path.IsPathFullyQualified(name)
-               || name.Contains(Path.DirectorySeparatorChar)
-               || name.Contains(Path.AltDirectorySeparatorChar);
     }
 
     /// <summary>
