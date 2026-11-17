@@ -90,6 +90,11 @@ internal sealed class RegistryCommandRegistrationBridge : IRegistryCommandDispat
         }
 
         _aliases[alias] = id;
+
+        // This is a stopgap solution to not introduce behaviour mismatch.
+        _commands[alias] = (shell, docs, args) => {
+            return _commands[id](shell, docs, args);
+        };
     }
 
     /// <inheritdoc />

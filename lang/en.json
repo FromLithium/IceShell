@@ -10,6 +10,7 @@
     "shell_require_elevation": "This operation requires elevation; {0}.",
     "shell_windows_elevation_help": "Restart IceShell as Administrator then try again",
     "shell_linux_elevation_help": "Try again with the \u0027sudo\u0027 command",
+    "generic_out_stream_read_error": "Failed to read legacy command output stream",
     "generic_bad_directory": "Directory not found - {0}",
     "generic_unauthorized_file": "Unauthorized access - {0}",
     "generic_unauthorized_write": "Insufficient permissions or read-only file system",
