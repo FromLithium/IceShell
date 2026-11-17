@@ -9,8 +9,10 @@ using IceShell.Core.CLI.Languages;
 using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Commands.Parsing;
 using IceShell.Core.Commands.Registry;
+using IceShell.Core.Commands.Utilities;
 using IceShell.Core.Exceptions;
 using IceShell.Parsing;
+using NexusKrop.IceShell.Core.CLI;
 
 /// <summary>
 /// Provides compatibility helpers for commands written for the registry command system.
@@ -97,6 +99,20 @@ public static class CommandCompat
 
     private static int ToExitCode(CommandResult result)
     {
+        if (result.OutStream != null)
+        {
+            try
+            {
+                StreamHelper.CopyText(result.OutStream, Console.Out);
+            }
+            catch (IOException ex)
+            {
+                ConsoleOutput.PrintShellError(LangMessage.Get(
+                    "generic_out_stream_read_error"));
+                ConsoleOutput.PrintShellError(ex.ToString());
+            }
+        }
+
         if (result.ErrorCode == CommandErrorCode.None)
         {
             return result.ExitCode;
