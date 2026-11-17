@@ -84,16 +84,15 @@ internal sealed class RegistryCommandRegistrationBridge : IRegistryCommandDispat
     /// <inheritdoc />
     public void PutAlias(string alias, string id)
     {
-        if (!_entries.ContainsKey(id))
+        if (!_commands.TryGetValue(id, out InternalCommand? target))
         {
             throw new ArgumentException("The specified ID does not exist.", nameof(id));
         }
 
         _aliases[alias] = id;
-
-        // This is a stopgap solution to not introduce behaviour mismatch.
-        _commands[alias] = (shell, docs, args) => {
-            return _commands[id](shell, docs, args);
+        _commands[alias] = (shell, docs, args) =>
+        {
+            return target(shell, docs, args);
         };
     }
 
