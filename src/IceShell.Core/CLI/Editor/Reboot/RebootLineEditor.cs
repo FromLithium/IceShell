@@ -1,6 +1,6 @@
 namespace IceShell.Core.CLI.Editor.Reboot;
 
-using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Simple;
 using ReadLineReboot;
 
 /// <summary>
@@ -10,13 +10,13 @@ using ReadLineReboot;
 public sealed class RebootLineEditor : ILineEditor
 {
     /// <inheritdoc/>
-    public string? DoReadLine(IRegistryCommandDispatcher dispatcher, string? prompt)
+    public string? DoReadLine(ISimpleCommandDispatcher dispatcher, string? prompt)
     {
         return ReadLine.Read(prompt);
     }
 
     /// <inheritdoc/>
-    public void Initialize(IRegistryCommandDispatcher dispatcher)
+    public void Initialize(ISimpleCommandDispatcher dispatcher)
     {
         ReadLine.HistoryEnabled = true;
         ReadLine.AutoCompletionHandler =

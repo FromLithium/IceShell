@@ -3,20 +3,20 @@
 
 namespace IceShell.Core.CLI.Editor.Reboot;
 
-using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Simple;
 using IceShell.Core.Syntax;
 using NexusKrop.IceShell.Core.Completion.Cache;
 using ReadLineReboot;
 
 internal class RebootAutoCompleteHandler : IAutoCompleteHandler
 {
-    internal RebootAutoCompleteHandler(IRegistryCommandDispatcher manager, DirCache cache)
+    internal RebootAutoCompleteHandler(ISimpleCommandDispatcher manager, DirCache cache)
     {
         _manager = manager;
         _cache = cache;
     }
 
-    private readonly IRegistryCommandDispatcher _manager;
+    private readonly ISimpleCommandDispatcher _manager;
     private readonly DirCache _cache;
 
     public char[] Separators { get; set; } = new char[] { ' ', '.', '\\' };
@@ -52,19 +52,13 @@ internal class RebootAutoCompleteHandler : IAutoCompleteHandler
             return Array.Empty<string>();
         }
 
-        var list = new List<string>(_manager.AliasCount);
+        var list = new List<string>();
 
-        foreach (var command in _manager.EnumerateAliases())
+        foreach (var command in _manager.EnumerateCommandNames()
+                     .Concat(_manager.EnumerateAliases()))
         {
-            var upper = begin.ToUpperInvariant();
-            
-            if (command.Equals(upper))
-            {
-                list.Add(command);
-                break;
-            }
-
-            if (command.StartsWith(upper))
+            if (command.StartsWith(begin, StringComparison.OrdinalIgnoreCase)
+                && !list.Contains(command, StringComparer.OrdinalIgnoreCase))
             {
                 list.Add(command);
             }

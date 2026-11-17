@@ -4,12 +4,26 @@
 namespace IceShell.Core.Commands.Bundled;
 
 using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Compat;
+using IceShell.Core.Commands.Simple;
 
 /// <summary>
 /// Provides easy registry access to default commands.
 /// </summary>
 public static class DefaultCommands
 {
+    /// <summary>
+    /// Registers the default commands to the specified simple command dispatcher.
+    /// </summary>
+    /// <param name="dispatcher">The dispatcher to register the commands to.</param>
+    public static void Register(ISimpleCommandDispatcher dispatcher)
+    {
+        AliasCommand.RegisterTo(dispatcher);
+        UnaliasCommand.RegisterTo(dispatcher);
+
+        Register(new RegistryCommandRegistrationBridge(dispatcher));
+    }
+
     /// <summary>
     /// Registers the default commands to the specified command dispatcher.
     /// </summary>

@@ -20,6 +20,6 @@ public class CallCommand : IShellCommand
 
         CommandChecks.FileExists(full);
 
-        return BatchFile.Parse(File.ReadAllLines(full), shell.Dispatcher).RunBatch(shell);
+        return BatchFile.Parse(File.ReadAllLines(full)).RunBatch(shell);
     }
 }

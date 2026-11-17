@@ -1,6 +1,6 @@
 namespace IceShell.Core.CLI.Editor;
 
-using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Simple;
 
 /// <summary>
 /// Defines the standardised abstraction for line editors.
@@ -11,7 +11,7 @@ public interface ILineEditor
     /// Initializes the line editor for use.
     /// </summary>
     /// <param name="dispatcher">The command dispatcher.</param>
-    void Initialize(IRegistryCommandDispatcher dispatcher);
+    void Initialize(ISimpleCommandDispatcher dispatcher);
 
     /// <summary>
     /// Reads the input, beginning from the current cursor to the end of the line.
@@ -19,6 +19,6 @@ public interface ILineEditor
     /// <param name="dispatcher">The command dispatcher.</param>
     /// <param name="prompt">The prompt.</param>
     /// <returns>The user input read.</returns>
-    string? DoReadLine(IRegistryCommandDispatcher dispatcher,
+    string? DoReadLine(ISimpleCommandDispatcher dispatcher,
         string? prompt);
 }

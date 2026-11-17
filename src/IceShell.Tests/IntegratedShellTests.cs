@@ -13,7 +13,7 @@ public class IntegratedShellTests
     public void Execute_HelloWorld()
     {
         var shell = new Shell();
-        EchoCommand.RegisterTo(shell.Dispatcher);
+        DefaultCommands.Register(shell.Dispatcher);
         var result = shell.Execute("echo Hello World!");
         
         Assert.True(CommandResult.IsSuccess(result));
