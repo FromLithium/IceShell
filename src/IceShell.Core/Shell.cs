@@ -6,17 +6,19 @@
 namespace IceShell.Core;
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using IceShell.Core.Api;
-using IceShell.Core.Api.Commands;
 using IceShell.Core.CLI.Editor;
 using IceShell.Core.CLI.Languages;
-using IceShell.Core.Commands;
+using IceShell.Core.Commands.Bundled;
 using IceShell.Core.Commands.Registry;
+using IceShell.Core.Commands.Simple;
 using IceShell.Core.Exceptions;
+using IceShell.Core.FileSystem;
 using IceShell.Core.Settings;
+using IceShell.Core.Syntax;
+using IceShell.Parsing;
 using NexusKrop.IceShell.Core.CLI;
 
 /// <summary>
@@ -58,14 +60,17 @@ public class Shell : IShell
     /// <param name="dispatcher">The dispatcher to use. If <see langword="null"/>, a default one is used.</param>
     /// <param name="lineEditor">The line editor implementation to use.</param>
     public Shell(ShellSettings settings,
-        IRegistryCommandDispatcher? dispatcher = null,
+        ISimpleCommandDispatcher? dispatcher = null,
         ILineEditor? lineEditor = null)
     {
         _settings = settings;
         _lineEditor = lineEditor ?? new BasicLineEditor();
         Prompt = DefaultPrompt;
-        Dispatcher = dispatcher ?? new RegistryCommandDispatcher(settings.ExpandVariablesForAllValues);
-        ModuleManager = new ModuleManager(Dispatcher);
+        Dispatcher = dispatcher ?? new SimpleCommandDispatcher();
+
+        // Module commands still use the legacy registry dispatcher and are not yet bridged into
+        // the simple command dispatcher.
+        ModuleManager = new ModuleManager(new RegistryCommandDispatcher());
     }
 
     /// <inheritdoc />
@@ -75,7 +80,7 @@ public class Shell : IShell
     public string Prompt { get; set; }
 
     /// <inheritdoc />
-    public IRegistryCommandDispatcher Dispatcher { get; }
+    public ISimpleCommandDispatcher Dispatcher { get; }
 
     /// <inheritdoc/>
     public int LastExitCode { get; private set; }
@@ -98,27 +103,24 @@ public class Shell : IShell
     /// <param name="document">The executor to pass to commands (or have this instance to act on behalf of). If <see langword="null"/>, the Shell will run commands on its own behalf.</param>
     public CommandResult Execute(string line, ICommandDocument? document = null)
     {
+        var actualDocument = document ?? _document;
         CommandResult cmdResult;
 
         try
         {
-            var batchLine = Dispatcher.Parse(line, document);
+            var words = new CommandWordBreaker().RunParse(line);
+            var resolvedWords = ExpandVariables(words, actualDocument);
+            var exitCode = Dispatcher.Execute(this, actualDocument, resolvedWords);
 
-            cmdResult = Dispatcher.Execute(this, document ?? _document, batchLine);
+            cmdResult = CommandResult.WithCode(exitCode);
         }
         catch (CommandFormatException ex)
         {
             cmdResult = CommandResult.WithError(CommandErrorCode.GenericCommandFail, ex.Message);
         }
-        catch (CommandInterruptException ex)
+        catch (FormatException ex)
         {
-            cmdResult = ex.Result;
-        }
-        catch (Win32Exception x) when (OperatingSystem.IsWindows() && x.NativeErrorCode == 740)
-        {
-            // 740 = Operating requires elevation
-            ConsoleOutput.PrintShellError(string.Format(LangMessage.Get("shell_require_elevation"), LangMessage.Get("shell_windows_elevation_help")));
-            cmdResult = CommandResult.WithError(CommandErrorCode.ElevationRequired);
+            cmdResult = CommandResult.WithError(CommandErrorCode.SyntaxError, ex.Message);
         }
         catch (Exception ex)
         {
@@ -131,10 +133,54 @@ public class Shell : IShell
         return cmdResult;
     }
 
-    /// <inheritdoc />
-    public CommandResult Execute(CommandSectionCompound compound, ICommandDocument? document = null)
+    private IReadOnlyList<SyntaxWord> ExpandVariables(IReadOnlyList<SyntaxWord> words,
+        ICommandDocument document)
     {
-        return Dispatcher.Execute(this, document ?? _document, compound);
+        if (words.Count == 0 || !_settings.ExpandVariablesForAllValues)
+        {
+            return words;
+        }
+
+        var result = new List<SyntaxWord>(words.Count)
+        {
+            ExpandWord(words[0], document)
+        };
+
+        DefaultCommands.TryGetCommandInfo(result[0].Content, out var info);
+
+        for (var i = 1; i < words.Count; i++)
+        {
+            result.Add(ShouldExpandVariables(info, i - 1)
+                ? ExpandWord(words[i], document)
+                : words[i]);
+        }
+
+        return result;
+    }
+
+    private static SyntaxWord ExpandWord(SyntaxWord word, ICommandDocument document)
+    {
+        var expanded = PathSearcher.ExpandVariables(word.Content, document: document);
+
+        return expanded == word.Content
+            ? word
+            : new SyntaxWord(expanded, word.QuoteType, word.StartsFrom);
+    }
+
+    private static bool ShouldExpandVariables(CommandRegistryEntry? info, int argumentIndex)
+    {
+        if (info == null)
+        {
+            return true;
+        }
+
+        if (info.NoParseVariables || info.VariableValues)
+        {
+            return false;
+        }
+
+        return argumentIndex >= info.Values.Count
+               || !info.Values[argumentIndex].NoExpandVariables;
     }
 
     /// <summary>

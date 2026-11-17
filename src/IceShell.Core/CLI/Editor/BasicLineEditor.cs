@@ -1,6 +1,6 @@
 namespace IceShell.Core.CLI.Editor;
 
-using IceShell.Core.Api.Commands;
+using IceShell.Core.Commands.Simple;
 
 /// <summary>
 /// Provides a basic implementation of line reading and editing based on standard library function
@@ -9,7 +9,7 @@ using IceShell.Core.Api.Commands;
 public sealed class BasicLineEditor : ILineEditor
 {
     /// <inheritdoc/>
-    public string? DoReadLine(IRegistryCommandDispatcher dispatcher, string? prompt)
+    public string? DoReadLine(ISimpleCommandDispatcher dispatcher, string? prompt)
     {
         if (!string.IsNullOrWhiteSpace(prompt))
         {
@@ -20,7 +20,7 @@ public sealed class BasicLineEditor : ILineEditor
     }
 
     /// <inheritdoc/>
-    public void Initialize(IRegistryCommandDispatcher dispatcher)
+    public void Initialize(ISimpleCommandDispatcher dispatcher)
     {
         // No need to setup.
     }

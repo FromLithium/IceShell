@@ -47,19 +47,21 @@ public static class HelpCommand
 
     private static CommandResult ExecuteDetailed(IShell shell, string commandName)
     {
-        if (!shell.Dispatcher.SearchInfoByAlias(commandName, out var definition)
-        || definition == null)
+        if (!DefaultCommands.TryGetCommandInfo(commandName, out var definition)
+            || definition == null)
         {
             return CommandResult.WithError(CommandErrorCode.BadArgument, LangMessage.GetFormat("help_not_found", commandName ?? ""));
         }
 
-        PrintHelp(definition, shell.Dispatcher);
+        PrintHelp(definition);
         return CommandResult.Ok();
     }
 
     private static CommandResult ExecuteSummary(IShell shell)
     {
-        if (!shell.Dispatcher.AnyCommand())
+        var dispatcher = shell.Dispatcher;
+
+        if (dispatcher.CommandCount == 0)
         {
             Console.WriteLine(LangMessage.Get("help_no_commands"));
             return CommandResult.Ok();
@@ -72,18 +74,20 @@ public static class HelpCommand
         grid.AddColumn();
         grid.AddRow(" ", " ");
 
-        var keysEnumerable = shell.Dispatcher.EnumerateAliases();
-        var keys = new List<string>(keysEnumerable);
-        keys.Sort();
+        var names = dispatcher.EnumerateCommandNames()
+            .OrderBy(x => x, StringComparer.OrdinalIgnoreCase);
 
-        foreach (var cmdName in keys)
+        foreach (var cmdName in names)
         {
-            if (!shell.Dispatcher.SearchInfoByAlias(cmdName, out var item))
+            var description = string.Empty;
+
+            if (DefaultCommands.TryGetCommandInfo(cmdName, out var item)
+                && item != null)
             {
-                continue;
+                description = LangMessage.Get(GetCommandDescription(item.Identifier));
             }
 
-            grid.AddRow(Markup.Escape(cmdName), Markup.Escape(LangMessage.Get(GetCommandDescription(item.Identifier))));
+            grid.AddRow(Markup.Escape(cmdName), Markup.Escape(description));
         }
 
         AnsiConsole.Write(grid);
@@ -128,13 +132,24 @@ public static class HelpCommand
         return string.Format(DescriptionMessageFormat, commandId);
     }
 
+    internal static void PrintHelp(CommandRegistryEntry definition)
+    {
+        PrintHelp(definition, Array.Empty<string>());
+    }
+
     internal static void PrintHelp(CommandRegistryEntry definition, IRegistryCommandDispatcher manager)
+    {
+        PrintHelp(definition, manager.EnumerateAliases(definition.Identifier));
+    }
+
+    internal static void PrintHelp(CommandRegistryEntry definition, IEnumerable<string> aliases)
     {
         Console.WriteLine(LangMessage.Get(string.Format(DescriptionMessageFormat, definition.Identifier)));
         Console.WriteLine();
         var usage = AssembleUsage(definition);
 
-        foreach (var alias in manager.EnumerateAliases(definition.Identifier))
+        foreach (var alias in aliases.Append(definition.Identifier)
+                     .Distinct(StringComparer.OrdinalIgnoreCase))
         {
             Console.WriteLine("{0}{1}", alias, usage);
         }

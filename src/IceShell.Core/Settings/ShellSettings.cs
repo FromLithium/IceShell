@@ -33,7 +33,7 @@ public class ShellSettings
     /// <summary>
     /// Gets or sets a value indicating whether to expand variables for all value arguments.
     /// </summary>
-    public bool ExpandVariablesForAllValues { get; set; }
+    public bool ExpandVariablesForAllValues { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the language file to use.

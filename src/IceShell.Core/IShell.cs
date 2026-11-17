@@ -4,8 +4,7 @@
 namespace IceShell.Core;
 
 using IceShell.Core.Api;
-using IceShell.Core.Api.Commands;
-using IceShell.Core.Commands;
+using IceShell.Core.Commands.Simple;
 
 /// <summary>
 /// Represents a command-line shell interpreter.
@@ -20,7 +19,7 @@ public interface IShell
     /// <summary>
     /// Gets the command dispatcher for this instance.
     /// </summary>
-    IRegistryCommandDispatcher Dispatcher { get; }
+    ISimpleCommandDispatcher Dispatcher { get; }
 
     /// <summary>
     /// Gets the module manager for this instance.
@@ -50,12 +49,4 @@ public interface IShell
     /// <param name="document">The command documemnt.</param>
     /// <returns>The return code of the command.</returns>
     CommandResult Execute(string line, ICommandDocument? document = null);
-
-    /// <summary>
-    /// Executes an already passed command compound.
-    /// </summary>
-    /// <param name="compound">The compound to execute.</param>
-    /// <param name="document">The command document.</param>
-    /// <returns>The return code of the command. Zero means success.</returns>
-    CommandResult Execute(CommandSectionCompound compound, ICommandDocument? document = null);
 }

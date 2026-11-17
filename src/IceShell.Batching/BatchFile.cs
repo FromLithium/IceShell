@@ -6,16 +6,10 @@ namespace IceShell.Batching;
 using IceShell.Core;
 using IceShell.Core.Api;
 using IceShell.Core.CLI.Languages;
-using IceShell.Core.Commands;
 using IceShell.Core.Exceptions;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using IceShell.Core.Api.Commands;
 
 public class BatchFile(
-    IList<CommandSectionCompound> lines,
+    IList<string> lines,
     IDictionary<string, int> labels,
     IDictionary<string, string>? variables)
     : ICommandDocument
@@ -24,10 +18,10 @@ public class BatchFile(
 
     public int CurrentLine { get; private set; }
 
-    public static BatchFile Parse(IEnumerable<string> lines, IRegistryCommandDispatcher dispatcher,
+    public static BatchFile Parse(IEnumerable<string> lines,
         IDictionary<string, string>? variables = null)
     {
-        var retVal = new List<CommandSectionCompound>();
+        var retVal = new List<string>();
         var labels = new Dictionary<string, int>();
         var lineNum = 0;
 
@@ -35,22 +29,13 @@ public class BatchFile(
         {
             lineNum++;
 
-            // Double comments
-            if (line.StartsWith("::"))
-            {
-                retVal.Add(CommandSectionCompound.Empty());
-                continue;
-            }
-
             // Label
-            if (line.StartsWith(':'))
+            if (line.StartsWith(':') && !line.StartsWith("::"))
             {
                 labels.Add(line[1..], lineNum);
-                retVal.Add(CommandSectionCompound.Empty());
-                continue;
             }
 
-            retVal.Add(dispatcher.Parse(line));
+            retVal.Add(line);
         }
 
         return new(retVal, labels, variables);
@@ -63,7 +48,9 @@ public class BatchFile(
             var line = lines[CurrentLine];
             CurrentLine++;
 
-            if (!line.Any())
+            if (string.IsNullOrWhiteSpace(line)
+                || line.StartsWith("::")
+                || line.StartsWith(':'))
             {
                 continue;
             }
