@@ -207,13 +207,12 @@ public sealed class SimpleCommandDispatcher : ISimpleCommandDispatcher
         {
             var process = Process.Start(startInfo);
 
-            if (process == null)
+            // In ShellExecute, process == null is not a failure condition. Neither do processes
+            // exiting immediately after started.
+            if (process != null && !process.HasExited)
             {
-                Console.Error.WriteLine(LangMessage.MsgUnableStartProcess());
-                return ExitCodeUnexpectedError;
+                Executive.WatchProcess(process);
             }
-
-            Executive.WatchProcess(process);
             return 0;
         }
         catch (Exception ex)
