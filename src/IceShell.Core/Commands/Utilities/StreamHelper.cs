@@ -13,13 +13,16 @@ internal static class StreamHelper
 
         try
         {
-            int readLen = from.Read(buf);
-            if (readLen == 0)
+            while (true)
             {
-                return;
-            }
+                int readLen = from.Read(buf);
+                if (readLen == 0)
+                {
+                    break;
+                }
 
-            to.Write(buf[..readLen]);
+                to.Write(buf[..readLen]);
+            }
         }
         finally
         {
