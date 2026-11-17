@@ -4,10 +4,11 @@ This is the specification of a new command system for IceShell. This system is n
 
 ## Terminology
 
-- _combinator_: See [Command Combinators](./Combinations.md).
+- _combinator_: Pipes, redirections and conditions. See [Command Combinators](./Combinations.md) for details.
 - _command name_: The first word of a command line (e.g. if `foo bar`, then `foo` is the command name).
 - _dispatcher_: The command dispatcher, responsible for locating and invoking commands.
 - _shell_: The shell (`IShell`) implementation, responsible for taking user input.
+- _word_: A `SyntaxWord`, which is broken from user input by the word breaker.
 
 ## Shell
 
@@ -16,7 +17,7 @@ The shell is responsible for the following tasks:
 - Retrieving user input command line.
 - Break the user input down into `SyntaxWord` list by invoking the word breaker (lexer).
 - Resolving environment variables and other special notation in the word list.
-- Passing the word list to the dispatcher.
+- Passing the word list, shell and document to the dispatcher.
 
 ## Dispatcher
 
@@ -51,8 +52,6 @@ The new system supports a **finite** set of internal commands built into the cor
 
 Internal commands MUST take precedence over external commands. An external can be explicitly invoked by specifying it as a path to the executable.
 
-The implementation would use a `switch` expression, or if it needs to be, a hash map, depending on the amount of internal commands; however whatever else appropriate is accepted.
-
 ### Executing internal commands
 
 The dispatcher executes an internal command by calling its `Action` with a list of words broken from the input command line.
@@ -61,7 +60,13 @@ The return value of the `Action` is the exit code of the internal command. If an
 
 ### Executing external commands
 
-See [external commands](#external-commands).
+The `ExecutableSearcher` class provide implementations for locating external executables.
+
+If the returned file is not executable, and the dispatcher is so configured, the file MAY be executed by `ShellExecute`. In this case, the process MUST NOT be waited for exit.
+
+Arguments MUST be passed to external commands by using the Argument List, not the argument string. The content of each `SyntaxWord` is passed as one entry to the external command regardless of how the word was quoted.
+
+The dispatcher MUST NOT add quote characters when assembling argument list.
 
 ## Internal commands
 
@@ -73,24 +78,9 @@ delegate int InternalCommand(IShell shell,
     IReadOnlyList<SyntaxWord> args);
 ```
 
+The shell is responsible for invoking word breaker to get `args` and passing itself (`IShell`) and the `ICommandDocument` instance to the dispatcher.
+
 Internal commands SHOULD NOT throw exceptions. The dispatcher, however, MUST treat exceptions from internal command functions as unexpected errors.
-
-## External commands
-
-External commands are executable programs specified by name or path.
-
-File paths, when used as a command name, MUST be interpreted as external commands. If configured, a command name not corresponding to an internal command can also be interpreted as an external command.
-
-Arguments MUST be passed to external commands by using the Argument List, not the argument string. The content of each word is passed as one entry to the external command, disregarding the quote status.
-
-### Locating external commands
-
-The dispatcher MUST resolve a command name to the full path of an executable by trying the following methods in order, until one of them succeeds:
-
-- If the command name is an absolute path, **use the absolute path**.
-- If the command name is a _relative_ file path (contains file path separator or the dot '`.`' character), **resolve its full path using the current directory as the base path**.
-- If the PATHEXT environment variable exists, then for each extension in PATHEXT, in order, append that extension to the command name and search for the resulting file - first in the current directory, then in each directory listed in PATH - stopping at the first file found.
-- Search for a file with same name as the command name - first in the current directory, then in each directory listed in PATH - stopping at the first file found.
 
 ## Aliases
 
@@ -126,9 +116,6 @@ This method MUST wrap the provided `delegate` and perform actions previously han
 
 ## Other notes
 
-- The previous system handled some combinators but not all of the DOS combinators.
-  - It is advisable that the combinator implementation is left out in the initial implementation, but there should be room for implementing combinators at a later point.
-- As the customisable alias system isn't present in the old command system, it can also be left out in the initial run.
 - Modularisation and extensibility factors are considered feature creep for IceShell. This factor MUST NOT be considered for the new command system, and the system itself have been planned for removal.
   
 ## References
