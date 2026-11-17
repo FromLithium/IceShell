@@ -63,6 +63,25 @@ public static class CommandCompat
                 document,
                 new CommandContext(parsed, SyntaxNextAction.None));
 
+            // Process the output stream, copy its contents into the standard output.
+            if (result.OutStream != null)
+            {
+                try
+                {
+                    StreamHelper.CopyText(result.OutStream, Console.Out);
+                }
+                catch (IOException ex)
+                {
+                    ConsoleOutput.PrintShellError(LangMessage.Get(
+                        "generic_out_stream_read_error"));
+                    ConsoleOutput.PrintShellError(ex.ToString());
+                }
+                finally
+                {
+                    result.OutStream.Dispose();
+                }
+            }
+
             return ToExitCode(result);
         }
         catch (CommandInterruptException ex)
@@ -99,20 +118,6 @@ public static class CommandCompat
 
     private static int ToExitCode(CommandResult result)
     {
-        if (result.OutStream != null)
-        {
-            try
-            {
-                StreamHelper.CopyText(result.OutStream, Console.Out);
-            }
-            catch (IOException ex)
-            {
-                ConsoleOutput.PrintShellError(LangMessage.Get(
-                    "generic_out_stream_read_error"));
-                ConsoleOutput.PrintShellError(ex.ToString());
-            }
-        }
-
         if (result.ErrorCode == CommandErrorCode.None)
         {
             return result.ExitCode;
