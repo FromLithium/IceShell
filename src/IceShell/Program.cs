@@ -3,7 +3,6 @@
 
 using System.Collections.Specialized;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using IceShell.Batching;
 using IceShell.Core;
 using IceShell.Core.CLI.Editor.Reboot;
@@ -119,12 +118,6 @@ if (sh.AddPlatformModules)
     {
         shell.ModuleManager.AddModule(new LinuxPlatformModule());
     }
-}
-
-// Add all other modules.
-if (RuntimeFeature.IsDynamicCodeSupported)
-{
-    shell.ModuleManager.LoadDirectory(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!, "modules"));
 }
 
 var retCode = -255;

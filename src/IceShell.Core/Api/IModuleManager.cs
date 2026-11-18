@@ -32,6 +32,7 @@ public interface IModuleManager
     /// <param name="file">The assembly file to load modules from.</param>
     /// <exception cref="InvalidOperationException">This instance is already initialised.</exception>
     [RequiresUnreferencedCode("Requires reflection on the specified file.")]
+    [Obsolete("Loading external modules are now not supported.", true)]
     void LoadAssembly(string file);
 
     /// <summary>
@@ -40,6 +41,7 @@ public interface IModuleManager
     /// <param name="assembly">The assembly to load modules from.</param>
     /// <exception cref="InvalidOperationException">This instance is already initialised.</exception>
     [RequiresUnreferencedCode("Requires reflection on the specified assembly.")]
+    [Obsolete("Loading external modules are now not supported.", true)]
     void LoadAssembly(Assembly assembly);
 
     /// <summary>
@@ -48,6 +50,7 @@ public interface IModuleManager
     /// <param name="directory">The directory to load modules from.</param>
     /// <exception cref="InvalidOperationException">This instance is already initialised.</exception>
     [RequiresUnreferencedCode("Requires reflection on the specified directory.")]
+    [Obsolete("Loading external modules are now not supported.", true)]
     void LoadDirectory(string directory);
 
     /// <summary>

@@ -17,7 +17,7 @@ using IceShell.Core.Api.Commands;
 /// </summary>
 public class ModuleManager : IModuleManager
 {
-    private readonly List<IModule> _modules = new();
+    private readonly List<IModule> _modules = [];
     private readonly IRegistryCommandDispatcher _commandDispatcher;
     private bool _initialised;
 
@@ -32,6 +32,8 @@ public class ModuleManager : IModuleManager
 
     private static InvalidOperationException ExceptionInitialised()
         => new("This module manager have already been initialised.");
+    private static NotSupportedException ExceptionNotSupported()
+        => new("Loading external modules are no longer supported.");
 
     private void CheckInitialised()
     {
@@ -40,44 +42,20 @@ public class ModuleManager : IModuleManager
             throw ExceptionInitialised();
         }
     }
-    
+
     /// <inheritdoc />
     [RequiresUnreferencedCode("Requires reflection on the specified directory.")]
+    [Obsolete("Loading external modules are now not supported.", true)]
     public void LoadDirectory(string directory)
     {
-        CheckInitialised();
-        
-        if (!Directory.Exists(directory))
-        {
-            // Nothing to load
-            return;
-        }
-
-        foreach (var file in Directory.GetFiles(directory, "*.dll"))
-        {
-            try
-            {
-                LoadAssembly(file);
-            }
-            catch (BadImageFormatException)
-            {
-                ConsoleOutput.PrintShellError($"Invalid plugin {file}");
-            }
-            catch (Exception ex)
-            {
-                ConsoleOutput.PrintShellError(ex.ToString());
-#if !DEBUG
-                throw;
-#endif
-            }
-        }
+        throw ExceptionNotSupported();
     }
 
     /// <inheritdoc />
     public void AddModule(IModule module)
     {
         CheckInitialised();
-        
+
         _modules.Add(module);
     }
 
@@ -86,8 +64,8 @@ public class ModuleManager : IModuleManager
     public void AddModule(Type type)
     {
         CheckInitialised();
-        
-        var moduleI = type.GetInterface(nameof(IModule));
+
+        Type? moduleI = type.GetInterface(nameof(IModule));
 
         if (moduleI != typeof(IModule) ||
             Activator.CreateInstance(type) is not IModule module)
@@ -97,36 +75,29 @@ public class ModuleManager : IModuleManager
 
         AddModule(module);
     }
-    
+
     /// <inheritdoc/>
+    [Obsolete("Loading external modules are now not supported.", true)]
     [RequiresUnreferencedCode("Requires reflection on the specified assembly.")]
     public void LoadAssembly(string file)
     {
-#pragma warning disable S3885
-        // This was never intended to be anywhere near predictable
-        // It is up to the user to determine whether the modules are safe
-        var assembly = Assembly.LoadFrom(file);
-#pragma warning restore S3885
-
-        LoadAssembly(assembly);
+        throw ExceptionNotSupported();
     }
 
     /// <inheritdoc/>
+    [Obsolete("Loading external modules are now not supported.", true)]
     [RequiresUnreferencedCode("Requires reflection on the specified assembly.")]
     public void LoadAssembly(Assembly assembly)
     {
-        foreach (var type in assembly.GetTypes())
-        {
-            AddModule(type);
-        }
+        throw ExceptionNotSupported();
     }
 
     /// <inheritdoc/>
     public void Initialize()
     {
         CheckInitialised();
-        
-        foreach (var module in _modules)
+
+        foreach (IModule module in _modules)
         {
             try
             {
