@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2023, 2026 WithLithum
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-using NexusKrop.IceShell.Core.FileSystem;
-
 namespace IceShell.Core.Utilities;
 
 /// <summary>
@@ -56,11 +54,30 @@ public static class ExecutableSearcher
     /// external command matching the specified command name.
     /// </summary>
     /// <param name="commandName">The name of the command.</param>
+    /// <param name="path">
+    /// A list of directory paths to search the command name in, separated by
+    /// <see cref="Path.PathSeparator"/>. If <see langword="null"/>, defaults to the value of
+    /// <c>PATH</c> environment variable.
+    /// </param>
+    /// <param name="pathExtensions">
+    /// The path extensions to use. Defaults to the value of <c>PATHEXT</c> environment variable.
+    /// </param>
+    /// <param name="currentDirectory">
+    /// The directory to begin searching from.
+    /// </param>
+    /// <param name="matchCurrentDirectory">
+    /// If <see langword="true"/>, search in the current directory before searching in directories
+    /// in <paramref name="path"/>.
+    /// </param>
     /// <returns>
     /// A probable path to the command specified by <paramref name="commandName"/>. The file is
     /// <i>not</i> guaranteed to exist.
     /// </returns>
-    public static string? FindSystem(string commandName)
+    public static string? FindSystem(string commandName,
+        string? path = null,
+        string? pathExtensions = null,
+        string? currentDirectory = null,
+        bool matchCurrentDirectory = false)
     {
         // If absolute path, return the absolute path.
         if (Path.IsPathFullyQualified(commandName))
@@ -68,21 +85,25 @@ public static class ExecutableSearcher
             return commandName;
         }
 
+        currentDirectory ??= Environment.CurrentDirectory;
+
         // If relative path, resolve full path and return.
-        if (commandName.Contains('/') || commandName.Contains('.'))
+        if (commandName.Contains(Path.DirectorySeparatorChar))
         {
             return Path.GetFullPath(commandName,
-                Environment.CurrentDirectory);
+                currentDirectory);
         }
 
         // If pathext exists, search every extension specified
-        var pathExtString = Environment.GetEnvironmentVariable("PATHEXT");
-        if (pathExtString != null)
+        pathExtensions ??= Environment.GetEnvironmentVariable("PATHEXT");
+        if (commandName.Contains('.') && pathExtensions != null)
         {
-            string? pathDest = SearchPathExtCore(commandName, pathExtString)
-                ?? TestPathForExtCore(Directory.GetCurrentDirectory(),
+            string? pathDest = (matchCurrentDirectory
+                ? TestPathForExtCore(currentDirectory,
                     commandName,
-                    pathExtString);
+                    pathExtensions)
+                : null)
+                ?? SearchPathExtCore(commandName, pathExtensions, path);
             if (pathDest != null)
             {
                 return pathDest;
@@ -90,7 +111,10 @@ public static class ExecutableSearcher
         }
 
         // Finally attempt to search for PATH for the file name as is.
-        string? searchPathResult = SearchPathCore(commandName);
+        string? searchPathResult = (matchCurrentDirectory
+            ? SearchDirectoryCore(commandName, currentDirectory)
+            : null)
+            ?? SearchPathCore(commandName, path);
         if (searchPathResult != null)
         {
             return searchPathResult;
@@ -99,9 +123,22 @@ public static class ExecutableSearcher
         return null;
     }
 
-    private static string? SearchPathCore(string commandName)
+    private static string? SearchDirectoryCore(string commandName,
+        string directory)
     {
-        var pathString = Environment.GetEnvironmentVariable("PATH");
+        string path = Path.GetFullPath(commandName, directory);
+        if (File.Exists(path))
+        {
+            return path;
+        }
+
+        return null;
+    }
+
+    private static string? SearchPathCore(string commandName,
+        string? pathString = null)
+    {
+        pathString ??= Environment.GetEnvironmentVariable("PATH");
         if (pathString == null)
         {
             return null;
@@ -121,9 +158,10 @@ public static class ExecutableSearcher
     }
 
     private static string? SearchPathExtCore(string commandName,
-        in ReadOnlySpan<char> pathExtBuf)
+        in ReadOnlySpan<char> pathExtBuf,
+        string? pathString = null)
     {
-        var pathString = Environment.GetEnvironmentVariable("PATH");
+        pathString ??= Environment.GetEnvironmentVariable("PATH");
         if (pathString == null)
         {
             return null;
