@@ -6,6 +6,29 @@ namespace IceShell.Tests;
 public class ExecutableSearcherTest
 {
     [Fact]
+    public void FindSystem_BareNameInPathWithOneIsExecute_MatchExecutable()
+    {
+        // Arrange
+        const string fileName = "foo";
+        string tempDir1 = TestIO.GetTestDir("ExSearchPathTestA");
+        string tempDir2 = TestIO.GetTestDir("ExSearchPathTestB");
+        string cd = TestIO.GetTestDir("ExSearchPathTestCwd");
+        string file1 = Path.Combine(tempDir1, fileName);
+        string file2 = Path.Combine(tempDir2, fileName);
+
+        File.WriteAllText(file1, "People Sit On Chairs");
+        TestIO.MakeMockExecutable(file2);
+
+        // Act
+        string? result = ExecutableSearcher.FindSystem(fileName,
+            path: $"{tempDir1}{Path.PathSeparator}{tempDir2}",
+            currentDirectory: cd);
+
+        // Assert
+        Assert.Equal(file2, result);
+    }
+
+    [Fact]
     public void FindSystem_BareNameNotInCwd_MatchPath()
     {
         // Arrange

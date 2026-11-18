@@ -18,8 +18,16 @@ public static class FileUtility
     /// Determines whether the specified file is an executable.
     /// </summary>
     /// <param name="file">The file.</param>
-    /// <returns><see langword="true" /> if the specified file is an executable; otherwise, <see langword="false"/>. </returns>
-    public static bool IsExecutable(string file)
+    /// <param name="noPeCheck">
+    /// If <see langword="true"/>, on Windows, always return <see langword="true"/> if the file
+    /// exists.
+    /// </param>
+    /// <returns>
+    /// <see langword="true" /> if the specified file exists and is executable; otherwise,
+    /// <see langword="false"/>.
+    /// </returns>
+    public static bool IsExecutable(string file,
+        bool noPeCheck = false)
     {
         if (!File.Exists(file))
         {
@@ -28,7 +36,7 @@ public static class FileUtility
 
         if (OperatingSystem.IsWindows())
         {
-            return IsExecutableCoreWindows(file);
+            return noPeCheck || IsExecutableCoreWindows(file);
         }
         else if (Environment.OSVersion.Platform == PlatformID.Unix)
         {

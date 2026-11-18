@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023, 2026 WithLithum
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+using NexusKrop.IceShell.Core.FileSystem;
+
 namespace IceShell.Core.Utilities;
 
 /// <summary>
@@ -25,7 +27,7 @@ public static class ExecutableSearcher
             return null;
         }
 
-        return TestPathForExtCore(null, fileName, pathExtString);
+        return FindCoreWithPathExt(null, fileName, pathExtString);
     }
 
     /// <summary>
@@ -46,7 +48,7 @@ public static class ExecutableSearcher
             return null;
         }
 
-        return TestPathForExtCore(directory, fileName, pathExtString);
+        return FindCoreWithPathExt(directory, fileName, pathExtString);
     }
 
     /// <summary>
@@ -96,25 +98,51 @@ public static class ExecutableSearcher
 
         // If pathext exists, search every extension specified
         pathExtensions ??= Environment.GetEnvironmentVariable("PATHEXT");
+        path ??= Environment.GetEnvironmentVariable("PATH");
+
+        return FindSystemInternalPathExt(commandName,
+            path,
+            pathExtensions,
+            currentDirectory,
+            matchCurrentDirectory)
+            ?? FindSystemInternalBareName(commandName,
+                path,
+                currentDirectory,
+                matchCurrentDirectory);
+    }
+
+    private static string? FindSystemInternalPathExt(string commandName,
+        string? path,
+        string? pathExtensions,
+        string? currentDirectory,
+        bool matchCurrentDirectory = false)
+    {
         if (commandName.Contains('.') && pathExtensions != null)
         {
             string? pathDest = (matchCurrentDirectory
-                ? TestPathForExtCore(currentDirectory,
+                ? FindCoreWithPathExt(currentDirectory,
                     commandName,
                     pathExtensions)
                 : null)
-                ?? SearchPathExtCore(commandName, pathExtensions, path);
+                ?? SearchPathCoreWithPathExt(commandName, pathExtensions, path);
             if (pathDest != null)
             {
                 return pathDest;
             }
         }
 
-        // Finally attempt to search for PATH for the file name as is.
+        return null;
+    }
+
+    private static string? FindSystemInternalBareName(string commandName,
+        string? systemPaths,
+        string currentDirectory,
+        bool matchCurrentDirectory)
+    {
         string? searchPathResult = (matchCurrentDirectory
-            ? SearchDirectoryCore(commandName, currentDirectory)
+            ? TestExecutableInDirectoryCore(commandName, currentDirectory)
             : null)
-            ?? SearchPathCore(commandName, path);
+            ?? SearchPathCore(commandName, systemPaths);
         if (searchPathResult != null)
         {
             return searchPathResult;
@@ -123,22 +151,35 @@ public static class ExecutableSearcher
         return null;
     }
 
-    private static string? SearchDirectoryCore(string commandName,
+    /// <summary>
+    /// Determines whether the specified file exists in the specified directory, and is executable.
+    /// This method performs an exact match and does not consider file extensions.
+    /// </summary>
+    /// <param name="fileName">The name of the file to test.</param>
+    /// <param name="directory">The name of the directory where the file is in.</param>
+    /// <returns>
+    /// The path to the file, if the specified file exists and is executable; otherwise,
+    /// <see langword="false" />.
+    /// </returns>
+    private static string? TestExecutableInDirectoryCore(string fileName,
         string directory)
     {
-        string path = Path.GetFullPath(commandName, directory);
-        if (File.Exists(path))
+        string fullPath = Path.GetFullPath(fileName, directory);
+
+        // Disable PE check for this purpose.
+        //
+        if (File.Exists(fullPath) && FileUtility.IsExecutable(fullPath,
+            noPeCheck: true))
         {
-            return path;
+            return fullPath;
         }
 
         return null;
     }
 
     private static string? SearchPathCore(string commandName,
-        string? pathString = null)
+        string? pathString)
     {
-        pathString ??= Environment.GetEnvironmentVariable("PATH");
         if (pathString == null)
         {
             return null;
@@ -147,8 +188,8 @@ public static class ExecutableSearcher
         // TODO move the split above so we don't allocate too many times.
         foreach (var path in pathString.Split(Path.PathSeparator))
         {
-            string? testedPath = Path.GetFullPath(commandName, path);
-            if (File.Exists(testedPath))
+            string? testedPath = TestExecutableInDirectoryCore(commandName, path);
+            if (testedPath != null)
             {
                 return testedPath;
             }
@@ -157,7 +198,7 @@ public static class ExecutableSearcher
         return null;
     }
 
-    private static string? SearchPathExtCore(string commandName,
+    private static string? SearchPathCoreWithPathExt(string commandName,
         in ReadOnlySpan<char> pathExtBuf,
         string? pathString = null)
     {
@@ -169,7 +210,7 @@ public static class ExecutableSearcher
 
         foreach (var path in pathString.Split(Path.PathSeparator))
         {
-            string? testedPath = TestPathForExtCore(path, commandName, in pathExtBuf);
+            string? testedPath = FindCoreWithPathExt(path, commandName, in pathExtBuf);
             if (testedPath != null)
             {
                 return testedPath;
@@ -179,7 +220,7 @@ public static class ExecutableSearcher
         return null;
     }
 
-    private static string? TestPathForExtCore(string? baseDirectory,
+    private static string? FindCoreWithPathExt(string? baseDirectory,
         string commandName,
         in ReadOnlySpan<char> pathExt)
     {
