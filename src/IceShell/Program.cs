@@ -113,11 +113,6 @@ if (sh.AddPlatformModules)
     {
         shell.ModuleManager.AddModule(new WindowsPlatformModule());
     }
-
-    if (OperatingSystem.IsLinux())
-    {
-        shell.ModuleManager.AddModule(new LinuxPlatformModule());
-    }
 }
 
 var retCode = -255;
