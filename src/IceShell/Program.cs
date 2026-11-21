@@ -3,7 +3,6 @@
 
 using System.Collections.Specialized;
 using System.Reflection;
-using IceShell.Batching;
 using IceShell.Core;
 using IceShell.Core.CLI.Editor.Reboot;
 using IceShell.Core.CLI.Languages;
@@ -109,7 +108,6 @@ if (argList.Count == 0)
 }
 else if (argList.Count == 1)
 {
-    shell.ModuleManager.Initialize();
     retCode = shell.Execute(args[0]).ExitCode;
 }
 

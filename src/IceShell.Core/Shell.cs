@@ -67,14 +67,7 @@ public class Shell : IShell
         _lineEditor = lineEditor ?? new BasicLineEditor();
         Prompt = DefaultPrompt;
         Dispatcher = dispatcher ?? new SimpleCommandDispatcher();
-
-        // Module commands still use the legacy registry dispatcher and are not yet bridged into
-        // the simple command dispatcher.
-        ModuleManager = new ModuleManager(new RegistryCommandDispatcher());
     }
-
-    /// <inheritdoc />
-    public IModuleManager ModuleManager { get; }
 
     /// <inheritdoc />
     public string Prompt { get; set; }
@@ -191,7 +184,6 @@ public class Shell : IShell
     public int RunInteractive()
     {
         _lineEditor.Initialize(Dispatcher);
-        ModuleManager.Initialize();
 
         // show date and time if allowed
         if (_settings.DisplayDateTimeOnStartUp)

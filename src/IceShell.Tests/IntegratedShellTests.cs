@@ -13,14 +13,7 @@ public class IntegratedShellTests
     {
         var shell = new Shell();
         var result = shell.Execute("echo Hello World!");
-        
-        Assert.True(CommandResult.IsSuccess(result));
-    }
 
-    [Fact]
-    public void ModuleManager_NotNull()
-    {
-        var shell = new Shell();
-        Assert.NotNull(shell.ModuleManager);
+        Assert.True(CommandResult.IsSuccess(result));
     }
 }

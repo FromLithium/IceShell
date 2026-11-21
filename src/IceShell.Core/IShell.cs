@@ -22,15 +22,10 @@ public interface IShell
     ISimpleCommandDispatcher Dispatcher { get; }
 
     /// <summary>
-    /// Gets the module manager for this instance.
-    /// </summary>
-    IModuleManager ModuleManager { get; }
-
-    /// <summary>
     /// Gets the error code returned by the last command.
     /// </summary>
     CommandErrorCode LastError { get; }
-    
+
     /// <summary>
     /// Gets the exit code returned by the last command.
     /// </summary>

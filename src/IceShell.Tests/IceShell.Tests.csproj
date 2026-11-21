@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IceShell.Batching\IceShell.Batching.csproj" />
     <ProjectReference Include="..\IceShell.Core\IceShell.Core.csproj" />
     <ProjectReference Include="..\IceShell.Parsing\IceShell.Parsing.csproj" />
   </ItemGroup>
