@@ -9,8 +9,6 @@ using IceShell.Core.CLI.Editor.Reboot;
 using IceShell.Core.CLI.Languages;
 using IceShell.Core.Settings;
 using IceShell.Core.Utilities;
-using IceShell.Platform.Linux;
-using IceShell.Platform.Windows;
 using Spectre.Console;
 
 if (args.Length > 1)
@@ -105,15 +103,6 @@ var shell = new Shell(sh,
 
 // Add the default modules.
 shell.ModuleManager.AddModule(new BatchingModule());
-
-// Add the platform modules.
-if (sh.AddPlatformModules)
-{
-    if (OperatingSystem.IsWindows())
-    {
-        shell.ModuleManager.AddModule(new WindowsPlatformModule());
-    }
-}
 
 var retCode = -255;
 
