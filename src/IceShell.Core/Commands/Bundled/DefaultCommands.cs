@@ -5,6 +5,7 @@ namespace IceShell.Core.Commands.Bundled;
 
 using IceShell.Core.Api.Commands;
 using IceShell.Core.Commands.Compat;
+using IceShell.Core.Commands.Internal;
 using IceShell.Core.Commands.Registry;
 
 /// <summary>
@@ -55,5 +56,7 @@ public static class DefaultCommands
         DateCommand.RegisterTo(dispatcher);
         TypeCommand.RegisterTo(dispatcher);
         FindCommand.RegisterTo(dispatcher);
+        CallCommand.RegisterTo(dispatcher);
+        GotoCommand.RegisterTo(dispatcher);
     }
 }

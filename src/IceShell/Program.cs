@@ -101,9 +101,6 @@ if (help)
 var shell = new Shell(sh,
     lineEditor: new RebootLineEditor());
 
-// Add the default modules.
-shell.ModuleManager.AddModule(new BatchingModule());
-
 var retCode = -255;
 
 if (argList.Count == 0)
